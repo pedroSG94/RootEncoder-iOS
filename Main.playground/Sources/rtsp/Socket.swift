@@ -98,9 +98,6 @@ public class Socket: NSObject, StreamDelegate {
                 break
             case Stream.Event.hasBytesAvailable:
                 print("buffer input")
-                let response = self.read()
-                print("response: \(response)")
-                self.disconnect()
                 break
             case Stream.Event.endEncountered:
                 print("end input")
