@@ -33,8 +33,8 @@ public class CommandsManager {
     }
     
     private func addHeader() -> String {
-        let session = sessionId != nil ? "Session: \(sessionId as Optional)\r\n" : ""
-        let auth = authorization != nil ? "Authorization: \(authorization as Optional)\r\n" : ""
+        let session = sessionId != nil ? "Session: \(sessionId!)\r\n" : ""
+        let auth = authorization != nil ? "Authorization: \(authorization!)\r\n" : ""
         cSeq += 1
         return "CSeq: \(cSeq)\r\n\(session)\(auth)\r\n"
     }
@@ -59,7 +59,8 @@ public class CommandsManager {
     
     public func createAnnounce() -> String {
         let body = createBody()
-        return "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nCSeq: \(cSeq += 1)\r\nContent-Length: \(body.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
+        cSeq += 1
+        return "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nCSeq: \(cSeq)\r\nContent-Length: \(body.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
     }
     
     public func createAuth(authResponse: String) -> String {
@@ -117,27 +118,22 @@ public class CommandsManager {
     
     public func getResponse(response: String, isAudio: Bool, connectCheckerRtsp: ConnectCheckerRtsp?) {
         let sessionResults = response.groups(for: "Session: (\\w+)")
-        print("session")
         if sessionResults.count > 0 {
-            self.sessionId = sessionResults[0][0]
-            print("sessionId ok: \(sessionId)")
+            self.sessionId = sessionResults[0][1]
         }
-        print("session 2")
+        
         let serverPortsResults = response.groups(for: "server_port=([0-9]+)-([0-9]+)")
-        print("ports")
         if serverPortsResults.count > 0 {
+            print("ports: \(serverPortsResults)")
             if isAudio {
                 self.audioServerPorts[0] = Int(serverPortsResults[0][0])!
                 self.audioServerPorts[1] = Int(serverPortsResults[0][1])!
             } else {
-                print("ports ok")
                 self.videoServerPorts[0] = Int(serverPortsResults[0][0])!
                 self.videoServerPorts[1] = Int(serverPortsResults[0][1])!
             }
         }
-        print("ports 2")
         let status = getResonseStatus(response: response)
-        print("status: \(status)")
         if status != 200 {
             connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, \(response)")
         }
@@ -146,8 +142,7 @@ public class CommandsManager {
     public func getResonseStatus(response: String) -> Int {
         let statusResults = response.groups(for: "RTSP/\\d.\\d (\\d+) (\\w+)")
         if statusResults.count > 0 {
-            let status = Int(statusResults[0][0])!
-            print("status: \(status)")
+            let status = Int(statusResults[0][1])!
             return status
         } else {
             return -1

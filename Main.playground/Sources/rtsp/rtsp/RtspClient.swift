@@ -46,14 +46,11 @@ public class RtspClient {
                 socket?.write(data: commandsManager.createOptions())
                 let optionsResponse = socket?.readBlock(blockTime: 1000)
                 commandsManager.getResponse(response: optionsResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                print("get respose options")
                 //Announce
                 socket?.write(data: commandsManager.createAnnounce())
                 let announceResponse = socket?.readBlock(blockTime: 1000)
                 commandsManager.getResponse(response: announceResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                print("get respose announce")
                 let status = commandsManager.getResonseStatus(response: announceResponse!)
-                print("get status announce")
                 if status == 403 {
                     connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
                 } else if status == 401 {

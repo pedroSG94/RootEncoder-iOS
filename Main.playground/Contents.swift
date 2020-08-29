@@ -28,28 +28,17 @@ class Test: ConnectCheckerRtsp {
     
     let url = "rtsp://192.168.0.32:554/live/pedro"
     var rtspClient: RtspClient? = nil
-    private let commandsManager = CommandsManager()
-    
-    func testCommands() {
-        let response = """
-        RTSP/1.0 200 OK
-        CSeq: 1
-        Session: -TsTUgzgR
-        Public: DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE, OPTIONS, ANNOUNCE, RECORD
-
-        """
-        commandsManager.getResponse(response: response, isAudio: false, connectCheckerRtsp: self)
-    }
     
     init() {
         rtspClient = RtspClient(connectCheckerRtsp: self)
     }
     
     func test() {
-        rtspClient?.setOnlyAudio(onlyAudio: true)
+        rtspClient?.setAudioInfo(sampleRate: 44100, isStereo: true)
+        rtspClient?.setVideoInfo(sps: "Z0KAHtoHgUZA", pps: "aM4NiA==", vps: nil)
         rtspClient?.connect(url: self.url)
         rtspClient?.disconnect()
     }
 }
 
-Test().testCommands()
+Test().test()

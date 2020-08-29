@@ -42,9 +42,10 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) {
-        print("write: \(data)")
+        print("\(data)")
         let buffer = [UInt8](data.utf8)
-        outputStream?.write(buffer, maxLength: buffer.count)
+        let result = outputStream?.write(buffer, maxLength: buffer.count)
+        print("write: \(result)")
     }
     
     public func readBlock(blockTime: Int64) -> String {
@@ -56,7 +57,7 @@ public class Socket: NSObject, StreamDelegate {
             usleep(UInt32(sleepMillis * 1000))
         }
         let response = self.read()
-        print("read: \(response)")
+        print("\(response)")
         return response
     }
     
@@ -79,7 +80,7 @@ public class Socket: NSObject, StreamDelegate {
                 print("EOF")
                 break
             }
-            let output = String(bytes: buffer, encoding: .ascii)
+            let output = String(bytes: buffer, encoding: .utf8)
             if nil != output {
                 result = result + output!
             }
