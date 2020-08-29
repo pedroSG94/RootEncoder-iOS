@@ -1,18 +1,55 @@
 import UIKit
 import Main_Sources
 
+class Test: ConnectCheckerRtsp {
+    func onConnectionSuccessRtsp() {
+        print("connection success")
+    }
+    
+    func onConnectionFailedRtsp(reason: String) {
+        print("connection failed: \(reason)")
+    }
+    
+    func onNewBitrateRtsp(bitrate: UInt64) {
+        print("new bitrate: \(bitrate)")
+    }
+    
+    func onDisconnectRtsp() {
+        print("disconnected")
+    }
+    
+    func onAuthErrorRtsp() {
+        print("auth error")
+    }
+    
+    func onAuthSuccessRtsp() {
+        print("auth success")
+    }
+    
+    let url = "rtsp://192.168.0.32:554/live/pedro"
+    var rtspClient: RtspClient? = nil
+    private let commandsManager = CommandsManager()
+    
+    func testCommands() {
+        let response = """
+        RTSP/1.0 200 OK
+        CSeq: 1
+        Session: -TsTUgzgR
+        Public: DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE, OPTIONS, ANNOUNCE, RECORD
 
-let host = "192.168.0.32"
-let port = 554
+        """
+        commandsManager.getResponse(response: response, isAudio: false, connectCheckerRtsp: self)
+    }
+    
+    init() {
+        rtspClient = RtspClient(connectCheckerRtsp: self)
+    }
+    
+    func test() {
+        rtspClient?.setOnlyAudio(onlyAudio: true)
+        rtspClient?.connect(url: self.url)
+        rtspClient?.disconnect()
+    }
+}
 
-let socket = Socket(host: host, port: port)
-print("socket initialized")
-socket.connect()
-print("socket connected")
-let options = "OPTIONS rtsp://\(host):\(port)/live/pedro RTSP/1.0\r\nCSeq: 0\r\n\r\n"
-socket.write(data: options)
-print("socket write data: \(options)")
-let response = socket.readBlock(blockTime: 1000)
-print("socket response: \(response)")
-socket.disconnect()
-print("socket disconnected")
+Test().testCommands()

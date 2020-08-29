@@ -42,6 +42,7 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) {
+        print("write: \(data)")
         let buffer = [UInt8](data.utf8)
         outputStream?.write(buffer, maxLength: buffer.count)
     }
@@ -54,7 +55,9 @@ public class Socket: NSObject, StreamDelegate {
             let sleepMillis = 10
             usleep(UInt32(sleepMillis * 1000))
         }
-        return self.read()
+        let response = self.read()
+        print("read: \(response)")
+        return response
     }
     
     public func read() -> String {
