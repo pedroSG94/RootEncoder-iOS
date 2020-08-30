@@ -42,10 +42,9 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) {
-        print("\(data)")
         let buffer = [UInt8](data.utf8)
         let result = outputStream?.write(buffer, maxLength: buffer.count)
-        print("write: \(result)")
+        print("\(data)")
     }
     
     public func readBlock(blockTime: Int64) -> String {

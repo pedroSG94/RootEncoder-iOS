@@ -4,7 +4,7 @@ public class CommandsManager {
     private var host: String?
     private var port: Int?
     private var path: String?
-    private var mProtocol: Protocol = .TCP
+    private var mProtocol: Protocol = .UDP
     private var cSeq = 0
     private var sessionId: String? = nil
     private var authorization: String? = nil
@@ -35,8 +35,9 @@ public class CommandsManager {
     private func addHeader() -> String {
         let session = sessionId != nil ? "Session: \(sessionId!)\r\n" : ""
         let auth = authorization != nil ? "Authorization: \(authorization!)\r\n" : ""
+        let result = "CSeq: \(cSeq)\r\n\(session)\(auth)\r\n"
         cSeq += 1
-        return "CSeq: \(cSeq)\r\n\(session)\(auth)\r\n"
+        return result
     }
     
     public func createOptions() -> String {
@@ -59,8 +60,9 @@ public class CommandsManager {
     
     public func createAnnounce() -> String {
         let body = createBody()
+        let result = "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nCSeq: \(cSeq)\r\nContent-Length: \(body.utf8.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
         cSeq += 1
-        return "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nCSeq: \(cSeq)\r\nContent-Length: \(body.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
+        return result
     }
     
     public func createAuth(authResponse: String) -> String {
@@ -126,11 +128,11 @@ public class CommandsManager {
         if serverPortsResults.count > 0 {
             print("ports: \(serverPortsResults)")
             if isAudio {
-                self.audioServerPorts[0] = Int(serverPortsResults[0][0])!
-                self.audioServerPorts[1] = Int(serverPortsResults[0][1])!
+                self.audioServerPorts[0] = Int(serverPortsResults[0][1])!
+                self.audioServerPorts[1] = Int(serverPortsResults[0][2])!
             } else {
-                self.videoServerPorts[0] = Int(serverPortsResults[0][0])!
-                self.videoServerPorts[1] = Int(serverPortsResults[0][1])!
+                self.videoServerPorts[0] = Int(serverPortsResults[0][1])!
+                self.videoServerPorts[1] = Int(serverPortsResults[0][2])!
             }
         }
         let status = getResonseStatus(response: response)
