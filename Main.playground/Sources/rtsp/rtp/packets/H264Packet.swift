@@ -10,7 +10,7 @@ public class H264Packet: BasePacket {
         super.init(clock: Int64(RtpConstants.clockVideoFrequency))
         self.callback = videoPacketCallback
         self.channelIdentifier = 0x02
-        self.stapA = setSpsPps(sps: sps, pps: pps)
+        setSpsPps(sps: sps, pps: pps)
     }
     
     public func createAndSendPacket(buffer: Array<UInt8>, ts: Int64) {
@@ -94,7 +94,7 @@ public class H264Packet: BasePacket {
         }
     }
     
-    private func setSpsPps(sps: String, pps: String) -> Array<UInt8> {
+    private func setSpsPps(sps: String, pps: String) {
         let spsBuffer = [UInt8](sps.utf8)
         let ppsBuffer = [UInt8](pps.utf8)
         stapA = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 5)
@@ -102,11 +102,11 @@ public class H264Packet: BasePacket {
         // STAP-A NAL header is 24
         stapA![0] = UInt8(24)
         // Write NALU 1 size into the array (NALU 1 is the SPS).
-        stapA![1] = spsBuffer.count >> UInt8(8)
-        stapA![2] = ppsBuffer.count & 0xFF
+        stapA![1] = UInt8(spsBuffer.count) >> UInt8(8)
+        stapA![2] = UInt8(ppsBuffer.count) & 0xFF
         // Write NALU 2 size into the array (NALU 2 is the PPS).
-        stapA![spsBuffer.count + 3] = ppsBuffer.count >> UInt8(8)
-        stapA![spsBuffer.count + 4] = ppsBuffer.count & 0xFF
+        stapA![spsBuffer.count + 3] = UInt8(ppsBuffer.count) >> UInt8(8)
+        stapA![spsBuffer.count + 4] = UInt8(ppsBuffer.count) & 0xFF
         
         // Write NALU 1 into the array, then write NALU 2 into the array.
         stapA![3...spsBuffer.count + 3] = spsBuffer[0...spsBuffer.count]
