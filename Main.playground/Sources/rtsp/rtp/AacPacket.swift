@@ -12,7 +12,30 @@ public class AacPacket: BasePacket {
     }
     
     public func createAndSendPacket(buffer: Array<UInt8>, ts: Int64) {
+        let lenght = buffer.count
+        
+        var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
+        rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count] = buffer[0...buffer.count]
+        self.markPacket(buffer: rtpBuffer)
+        self.updateTimeStamp(buffer: rtpBuffer, timeStamp: ts)
+        
+        // AU-headers-length field: contains the size in bits of a AU-header
+        // 13+3 = 16 bits -> 13bits for AU-size and 3bits for AU-Index / AU-Index-delta
+        // 13 bits will be enough because ADTS uses 13 bits for frame length
+        rtpBuffer[RtpConstants.rtpHeaderLength] = 0x00;
+        rtpBuffer[RtpConstants.rtpHeaderLength + 1] = 0x10;
+        // AU-size
+        rtpBuffer[RtpConstants.rtpHeaderLength + 2] = length >> 5;
+        rtpBuffer[RtpConstants.rtpHeaderLength + 3] = length << 3;
+        // AU-Index
+        rtpBuffer[RtpConstants.rtpHeaderLength + 3] &= 0xF8;
+        rtpBuffer[RtpConstants.rtpHeaderLength + 3] |= 0x00;
+        
         let frame = RtpFrame()
+        frame.timeStamp = ts
+        frame.length = rtpBuffer.count
+        frame.buffer = rtpBuffer
+        frame.channelIdentifier = self.channelIdentifier
         callback?.onAudioFrameCreated(rtpFrame: frame)
     }
 }

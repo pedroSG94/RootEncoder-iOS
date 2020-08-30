@@ -8,6 +8,7 @@ public class RtspClient {
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
     private var isOnlyAudio = false
+    private var rtpSender: RtpSender?
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -103,5 +104,13 @@ public class RtspClient {
             self.streaming = false
             self.connectCheckerRtsp?.onDisconnectRtsp()
         }
+    }
+    
+    public func sendVideo(buffer: Array<UInt8>, ts: Int64) {
+        rtpSender?.sendVideo(buffer: buffer, ts: ts)
+    }
+    
+    public func sendAudio(buffer: Array<UInt8>, ts: Int64) {
+        rtpSender?.sendAudio(buffer: buffer, ts: ts)
     }
 }
