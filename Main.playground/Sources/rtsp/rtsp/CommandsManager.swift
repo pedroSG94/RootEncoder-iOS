@@ -4,7 +4,7 @@ public class CommandsManager {
     private var host: String?
     private var port: Int?
     private var path: String?
-    private var mProtocol: Protocol = .UDP
+    private var mProtocol: Protocol = .TCP
     private var cSeq = 0
     private var sessionId: String? = nil
     private var authorization: String? = nil
@@ -126,7 +126,6 @@ public class CommandsManager {
         
         let serverPortsResults = response.groups(for: "server_port=([0-9]+)-([0-9]+)")
         if serverPortsResults.count > 0 {
-            print("ports: \(serverPortsResults)")
             if isAudio {
                 self.audioServerPorts[0] = Int(serverPortsResults[0][1])!
                 self.audioServerPorts[1] = Int(serverPortsResults[0][2])!
