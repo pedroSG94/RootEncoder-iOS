@@ -20,24 +20,30 @@ public class MicrophoneManager {
     }
     
     public func start() {
+        print("start -1")
         let inputNode = self.audioEngine.inputNode
-        let inputFormat = inputNode.outputFormat(forBus: 0)
-        
-        let recordingFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 44100, channels: 2, interleaved: true)
-        let formatConverter = AVAudioConverter(from: inputFormat, to: recordingFormat!)
-        
-        inputNode.installTap(onBus: 0, bufferSize: AVAudioFrameCount(4096), format: inputFormat) { buffer, time in
+        print("start 0")
+        let inputFormat = inputNode.inputFormat(forBus: 0)
+        if (inputFormat.channelCount == 0) {
+            print("input format error")
+        }
+        print("start 1")
+        let recordingFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 44100.0, channels: 2, interleaved: true)
+//        let formatConverter = AVAudioConverter(from: inputFormat, to: recordingFormat!)
+        print("start 2")
+        inputNode.installTap(onBus: 0, bufferSize: AVAudioFrameCount(2048), format: inputFormat) { buffer, time in
+            print("start 5")
             self.thread.async {
-                var error: NSError? = nil
+                let error: NSError? = nil
                 let capacity = AVAudioFrameCount(recordingFormat!.sampleRate * 2)
                 let pcmBuffer = AVAudioPCMBuffer(pcmFormat: recordingFormat!, frameCapacity: capacity)
-                
-                let inputBlock: AVAudioConverterInputBlock = {inNumPackets, outStatus in
-                    outStatus.pointee = AVAudioConverterInputStatus.haveData
-                    return buffer
-                }
-                
-                formatConverter?.convert(to: pcmBuffer!, error: &error, withInputFrom: inputBlock)
+
+//                let inputBlock: AVAudioConverterInputBlock = {inNumPackets, outStatus in
+//                    outStatus.pointee = AVAudioConverterInputStatus.haveData
+//                    return buffer
+//                }
+
+//                formatConverter?.convert(to: pcmBuffer!, error: &error, withInputFrom: inputBlock)
                 if error != nil {
                     print(error!.localizedDescription)
                 } else if let channelData = pcmBuffer!.int16ChannelData {
@@ -45,15 +51,16 @@ public class MicrophoneManager {
                     let channelData = stride(from: 0, to: Int(pcmBuffer!.frameLength), by: buffer.stride).map { channelDataPointer[$0] }
                     var frame = Frame()
                     //TODO change to Array<UInt8>
-                    //                frame.buffer = channelData
+                    frame.buffer = byteArray(from: channelData)
                     frame.length = channelData.count
                     frame.timeStamp = Int64(time.hostTime)
                     self.callback?.getPcmData(frame: frame)
                 }
             }
         }
-        
+        print("start 3")
         self.audioEngine.prepare()
+        print("start 4")
         do {
             try self.audioEngine.start()
         } catch {

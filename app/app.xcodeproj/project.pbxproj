@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		043AB0FD2504524000725086 /* Conversor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043AB0FC2504524000725086 /* Conversor.swift */; };
 		044138352501A02300732969 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138342501A02300732969 /* AppDelegate.swift */; };
 		044138372501A02300732969 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138362501A02300732969 /* SceneDelegate.swift */; };
 		044138392501A02300732969 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138382501A02300732969 /* ViewController.swift */; };
@@ -54,6 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		043AB0FC2504524000725086 /* Conversor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversor.swift; sourceTree = "<group>"; };
 		044138312501A02300732969 /* app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = app.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		044138342501A02300732969 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		044138362501A02300732969 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				044138652501A05000732969 /* MicrophoneManager.swift */,
 				0441388C2501A2E800732969 /* GetMicrophoneData.swift */,
 				044138902501A36500732969 /* Frame.swift */,
+				043AB0FC2504524000725086 /* Conversor.swift */,
 			);
 			path = encoder;
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				0441387F2501A1A600732969 /* Protocol.swift in Sources */,
 				044138712501A14B00732969 /* Utils.swift in Sources */,
 				0441387B2501A1A600732969 /* CommandsManager.swift in Sources */,
+				043AB0FD2504524000725086 /* Conversor.swift in Sources */,
 				044138392501A02300732969 /* ViewController.swift in Sources */,
 				044138722501A14B00732969 /* SyncQueue.swift in Sources */,
 				044138752501A14B00732969 /* Socket.swift in Sources */,
