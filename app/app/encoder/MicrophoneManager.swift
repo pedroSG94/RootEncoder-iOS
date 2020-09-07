@@ -13,54 +13,72 @@ public class MicrophoneManager {
     
     private let thread = DispatchQueue.global()
     private let audioEngine = AVAudioEngine()
+    private var startTime = 0
     private var callback: GetMicrophoneData?
     
     public init(callback: GetMicrophoneData) {
         self.callback = callback
     }
     
+    private func convertToAAC(from buffer: AVAudioBuffer, error outError: inout NSError?) -> AVAudioCompressedBuffer? {
+        
+        let outputFormat = getAACFormat()
+        let outBuffer = AVAudioCompressedBuffer(format: outputFormat!, packetCapacity: 8, maximumPacketSize: 768)
+        self.convert(from: buffer, to: outBuffer, error: &outError)
+        return outBuffer
+    }
+    
+    private var converter: AVAudioConverter? = nil
+    
+    private func convert(from sourceBuffer: AVAudioBuffer, to destinationBuffer: AVAudioBuffer, error outError: inout NSError?) {
+        
+        //init converter
+        let inputFormat = sourceBuffer.format
+        let outputFormat = destinationBuffer.format
+        if converter == nil {
+            converter = AVAudioConverter(from: inputFormat, to: outputFormat)
+            converter!.bitRate = 64000
+        }
+        let inputBlock : AVAudioConverterInputBlock = { inNumPackets, outStatus in
+            outStatus.pointee = AVAudioConverterInputStatus.haveData
+            return sourceBuffer
+        }
+        
+        _ = converter!.convert(to: destinationBuffer, error: &outError, withInputFrom: inputBlock)
+    }
+    
+    private func getAACFormat() -> AVAudioFormat? {
+        var description = AudioStreamBasicDescription(mSampleRate: 44100, mFormatID: kAudioFormatMPEG4AAC, mFormatFlags: 0, mBytesPerPacket: 0, mFramesPerPacket: 0, mBytesPerFrame: 0, mChannelsPerFrame: 2, mBitsPerChannel: 0, mReserved: 0)
+        return AVAudioFormat(streamDescription: &description)
+    }
+    
     public func start() {
-        print("start -1")
         let inputNode = self.audioEngine.inputNode
-        print("start 0")
         let inputFormat = inputNode.inputFormat(forBus: 0)
         if (inputFormat.channelCount == 0) {
             print("input format error")
         }
-        print("start 1")
-        let recordingFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 44100.0, channels: 2, interleaved: true)
-//        let formatConverter = AVAudioConverter(from: inputFormat, to: recordingFormat!)
-        print("start 2")
         inputNode.installTap(onBus: 0, bufferSize: AVAudioFrameCount(2048), format: inputFormat) { buffer, time in
-            print("start 5")
             self.thread.async {
-                let error: NSError? = nil
-                let capacity = AVAudioFrameCount(recordingFormat!.sampleRate * 2)
-                let pcmBuffer = AVAudioPCMBuffer(pcmFormat: recordingFormat!, frameCapacity: capacity)
-
-//                let inputBlock: AVAudioConverterInputBlock = {inNumPackets, outStatus in
-//                    outStatus.pointee = AVAudioConverterInputStatus.haveData
-//                    return buffer
-//                }
-
-//                formatConverter?.convert(to: pcmBuffer!, error: &error, withInputFrom: inputBlock)
+                var error: NSError? = nil
+                let aacBuffer = AudioBufferConverter.convertToAAC(from: buffer, error: &error)!
                 if error != nil {
-                    print(error!.localizedDescription)
-                } else if let channelData = pcmBuffer!.int16ChannelData {
-                    let channelDataPointer = channelData.pointee
-                    let channelData = stride(from: 0, to: Int(pcmBuffer!.frameLength), by: buffer.stride).map { channelDataPointer[$0] }
+                    print("Encode error: \(error.debugDescription)")
+                } else {
+                    let data = UnsafeBufferPointer(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength))
                     var frame = Frame()
-                    //TODO change to Array<UInt8>
-                    frame.buffer = byteArray(from: channelData)
-                    frame.length = channelData.count
+                    frame.buffer = Array(data)
+                    frame.length = data.count
                     frame.timeStamp = Int64(time.hostTime)
                     self.callback?.getPcmData(frame: frame)
                 }
             }
         }
-        print("start 3")
+        var info = mach_timebase_info()
+        mach_timebase_info(&info)
+
+        let start = mach_absolute_time()
         self.audioEngine.prepare()
-        print("start 4")
         do {
             try self.audioEngine.start()
         } catch {

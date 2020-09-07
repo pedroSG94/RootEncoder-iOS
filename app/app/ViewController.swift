@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 
 class ViewController: UIViewController, GetMicrophoneData {
+    
     func getPcmData(frame: Frame) {
         print("new pcm buffer")
     }
@@ -34,6 +35,7 @@ class ViewController: UIViewController, GetMicrophoneData {
     func validatePermissions() {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
+            self.startMicrophone()
             break
         case .denied:
             break

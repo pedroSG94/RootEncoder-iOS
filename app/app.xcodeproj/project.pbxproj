@@ -35,6 +35,7 @@
 		0441388D2501A2E800732969 /* GetMicrophoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441388C2501A2E800732969 /* GetMicrophoneData.swift */; };
 		0441388F2501A34500732969 /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441388E2501A34500732969 /* RtspClient.swift */; };
 		044138912501A36500732969 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138902501A36500732969 /* Frame.swift */; };
+		04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0D204250641AB007F1631 /* AudioEncoder.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +90,7 @@
 		0441388C2501A2E800732969 /* GetMicrophoneData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMicrophoneData.swift; sourceTree = "<group>"; };
 		0441388E2501A34500732969 /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
 		044138902501A36500732969 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
+		04E0D204250641AB007F1631 /* AudioEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 				0441388C2501A2E800732969 /* GetMicrophoneData.swift */,
 				044138902501A36500732969 /* Frame.swift */,
 				043AB0FC2504524000725086 /* Conversor.swift */,
+				04E0D204250641AB007F1631 /* AudioEncoder.swift */,
 			);
 			path = encoder;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 				0441387D2501A1A600732969 /* RtpFrame.swift in Sources */,
 				044138372501A02300732969 /* SceneDelegate.swift in Sources */,
 				044138912501A36500732969 /* Frame.swift in Sources */,
+				04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,7 +589,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.apprtsp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -603,7 +607,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.apprtsp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
