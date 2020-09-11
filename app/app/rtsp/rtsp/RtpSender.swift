@@ -19,7 +19,7 @@ public class RtpSender: AudioPacketCallback {
         
     }
     
-    public func sendAudio(buffer: Array<UInt8>, ts: Int64) {
+    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         audioPacketizer?.createAndSendPacket(buffer: buffer, ts: ts)
     }
     

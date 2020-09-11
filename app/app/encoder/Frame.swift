@@ -10,6 +10,6 @@ import Foundation
 
 public struct Frame {
     var buffer: Array<UInt8>?
-    var length: Int?
-    var timeStamp: Int64?
+    var length: UInt32?
+    var timeStamp: UInt64?
 }

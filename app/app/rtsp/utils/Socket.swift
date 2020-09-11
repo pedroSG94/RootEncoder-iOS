@@ -46,7 +46,6 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) {
-        print("write: \(data)")
         let buffer = [UInt8](data.utf8)
         self.write(buffer: buffer)
     }

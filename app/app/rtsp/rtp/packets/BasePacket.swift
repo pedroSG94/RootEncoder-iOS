@@ -3,26 +3,26 @@ import Foundation
 public class BasePacket {
     public let maxPacketSize: Int = RtpConstants.MTU - 28
     public var channelIdentifier: UInt8?
-    public var rtpPort: Int?
-    public var rtcpPort: Int?
+    public var rtpPort: UInt32?
+    public var rtcpPort: UInt32?
     
-    private var clock: Int64?
-    private var seq: Int64 = 0
-    private var ssrc: Int64?
+    private var clock: UInt64?
+    private var seq: UInt64 = 0
+    private var ssrc: UInt64?
     
-    public init(clock: Int64) {
+    public init(clock: UInt64) {
         self.clock = clock
-        self.ssrc = Int64(Int.random(in: 0..<Int.max))
+        self.ssrc = UInt64(UInt64(Int.random(in: 0..<Int.max)))
     }
     
-    public func setPorts(rtpPort: Int, rtcpPort: Int) {
+    public func setPorts(rtpPort: UInt32, rtcpPort: UInt32) {
         self.rtpPort = rtpPort
         self.rtcpPort = rtcpPort
     }
     
     public func reset() {
         self.seq = 0
-        self.ssrc = Int64(Int.random(in: Int.min..<Int.max))
+        self.ssrc = UInt64(Int.random(in: Int.min..<Int.max))
     }
     
     public func getBuffer(size: Int) -> Array<UInt8> {
@@ -34,15 +34,15 @@ public class BasePacket {
         return buffer
     }
     
-    public func updateTimeStamp(buffer: inout Array<UInt8>, timeStamp: Int64) {
-        var ts = timeStamp * self.clock! / 1000000000
+    public func updateTimeStamp(buffer: inout Array<UInt8>, timeStamp: UInt64) {
+        var ts: UInt64 = timeStamp * self.clock! / 1000000000
         setLong(buffer: &buffer, n: &ts, begin: 4, end: 8)
     }
     
-    public func setLong(buffer: inout Array<UInt8>, n: inout Int64, begin: Int, end: Int) {
-        let i = end - 1
-        for i in stride(from: i, to: begin, by: -1) {
-            buffer[i] = UInt8(n % 256)
+    public func setLong(buffer: inout Array<UInt8>, n: inout UInt64, begin: Int32, end: Int32) {
+        let start = end - 1
+        for i in stride(from: start, to: begin - 1, by: -1) {
+            buffer[Int(i)] = intToBytes(from: n % 256)[0]
             n >>= 8
         }
     }
@@ -56,7 +56,7 @@ public class BasePacket {
         buffer[1] |= 0x80
     }
     
-    private func setLongSSRC(buffer: inout Array<UInt8>, ssrc: inout Int64) {
+    private func setLongSSRC(buffer: inout Array<UInt8>, ssrc: inout UInt64) {
         setLong(buffer: &buffer, n: &ssrc, begin: 8, end: 12)
     }
     

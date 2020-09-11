@@ -9,7 +9,7 @@
 import Foundation
 
 public func intToBytes<T>(from value: T) -> [UInt8] where T: FixedWidthInteger {
-    withUnsafeBytes(of: value.bigEndian, Array.init)
+    withUnsafeBytes(of: value.littleEndian, Array.init)
 }
 
 public func byteArray<T>(from value: [T]) -> [UInt8] where T: FixedWidthInteger {

@@ -51,14 +51,34 @@ class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
         // Do any additional setup after loading the view.
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        microphone?.stop()
+        client?.disconnect()
+    }
+    
     private var client: RtspClient?
+    private var microphone: MicrophoneManager?
+    
+    public func setLong(buffer: inout Array<UInt8>, n: inout Int64, begin: Int, end: Int) {
+        let start = end - 1
+        for i in stride(from: start, to: begin - 1, by: -1) {
+            print("n: \(n)")
+            let a = intToBytes(from: n % 256)
+            print("a: \(a)")
+            buffer[i] = a[0]
+            print("n %: \(n % 256)")
+            n >>= 8
+        }
+    }
     
     func startMicrophone() {
         print("start microphone")
         client = RtspClient(connectCheckerRtsp: self)
+        client?.setOnlyAudio(onlyAudio: true)
         client?.setAudioInfo(sampleRate: 44100, isStereo: true)
         client?.connect(url: "rtsp://192.168.0.31:554/live/pedro")
-        MicrophoneManager(callback: self).start()
+        microphone = MicrophoneManager(callback: self)
+        microphone?.start()
     }
     
     func validatePermissions() {

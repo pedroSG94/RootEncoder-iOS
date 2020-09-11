@@ -7,13 +7,13 @@ public class H264Packet: BasePacket {
     private var stapA: Array<UInt8>?
     
     public init(sps: String, pps: String, videoPacketCallback: VideoPacketCallback) {
-        super.init(clock: Int64(RtpConstants.clockVideoFrequency))
+        super.init(clock: UInt64(RtpConstants.clockVideoFrequency))
         self.callback = videoPacketCallback
         self.channelIdentifier = 0x02
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public func createAndSendPacket(buffer: Array<UInt8>, ts: Int64) {
+    public func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64) {
         var frame = RtpFrame()
         frame.timeStamp = ts
         frame.channelIdentifier = self.channelIdentifier
@@ -30,7 +30,7 @@ public class H264Packet: BasePacket {
             rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count] = stapA![0...stapA!.count]
             self.updateSeq(buffer: &rtpBuffer)
             
-            frame.length = rtpBuffer.count
+            frame.length = UInt32(rtpBuffer.count)
             frame.buffer = rtpBuffer
             callback?.onVideoFrameCreated(rtpFrame: frame)
             self.sendKeyFrame = true
@@ -49,7 +49,7 @@ public class H264Packet: BasePacket {
                 self.markPacket(buffer: &rtpBuffer)
                 self.updateSeq(buffer: &rtpBuffer)
                 
-                frame.length = rtpBuffer.count
+                frame.length = UInt32(rtpBuffer.count)
                 frame.buffer = rtpBuffer
                 callback?.onVideoFrameCreated(rtpFrame: frame)
             }
@@ -84,7 +84,7 @@ public class H264Packet: BasePacket {
                     }
                     self.updateSeq(buffer: &rtpBuffer)
                     
-                    frame.length = rtpBuffer.count
+                    frame.length = UInt32(rtpBuffer.count)
                     frame.buffer = rtpBuffer
                     callback?.onVideoFrameCreated(rtpFrame: frame)
                     // Switch start bit

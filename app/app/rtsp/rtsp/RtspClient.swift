@@ -112,7 +112,7 @@ public class RtspClient {
         rtpSender?.sendVideo(buffer: buffer, ts: ts)
     }
     
-    public func sendAudio(buffer: Array<UInt8>, ts: Int64) {
+    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (streaming) {
             rtpSender?.sendAudio(buffer: buffer, ts: ts)
         }

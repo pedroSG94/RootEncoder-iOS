@@ -2,9 +2,9 @@ import Foundation
 
 public struct RtpFrame {
     var buffer: Array<UInt8>?
-    var length: Int?
-    var timeStamp: Int64?
-    var rtpPort: Int?
-    var rtcpPort: Int?
+    var length: UInt32?
+    var timeStamp: UInt64?
+    var rtpPort: UInt32?
+    var rtcpPort: UInt32?
     var channelIdentifier: UInt8?
 }

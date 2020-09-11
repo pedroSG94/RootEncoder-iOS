@@ -76,8 +76,8 @@ public class MicrophoneManager {
                     
                     var frame = Frame()
                     frame.buffer = Array(data)
-                    frame.length = data.count
-                    frame.timeStamp = Int64(elapsed_nanoseconds)
+                    frame.length = UInt32(data.count)
+                    frame.timeStamp = UInt64(elapsed_nanoseconds)
                     self.callback?.getPcmData(frame: frame)
                 }
             }

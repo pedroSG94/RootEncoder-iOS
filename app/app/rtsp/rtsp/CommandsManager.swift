@@ -15,8 +15,8 @@ public class CommandsManager {
     private var sampleRate = 44100
     private var isStereo = true
     //Video
-    private var sps: String = ""
-    private var pps: String = ""
+    private var sps: String = "Z0KAHtoHgUZA"
+    private var pps: String = "aM4NiA=="
     private var vps: String? = nil
     //Auth
     private var user: String? = nil
