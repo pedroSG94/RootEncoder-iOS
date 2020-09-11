@@ -43,6 +43,7 @@ public class RtspClient {
                 self.commandsManager.setUrl(host: host, port: port, path: path)
                 socket = Socket(host: host, port: port)
                 socket?.connect()
+                rtpSender = RtpSender(socket: socket!)
                 //Options
                 socket?.write(data: commandsManager.createOptions())
                 let optionsResponse = socket?.readBlock(blockTime: 1000)
@@ -88,6 +89,7 @@ public class RtspClient {
                 let recordResponse = socket?.readBlock(blockTime: 1000)
                 commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
                 self.streaming = true
+                rtpSender?.setAudioInfo(sampleRate: commandsManager.getSampleRate())
                 self.connectCheckerRtsp?.onConnectionSuccessRtsp()
             } else {
                 self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
@@ -111,6 +113,8 @@ public class RtspClient {
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: Int64) {
-        rtpSender?.sendAudio(buffer: buffer, ts: ts)
+        if (streaming) {
+            rtpSender?.sendAudio(buffer: buffer, ts: ts)
+        }
     }
 }

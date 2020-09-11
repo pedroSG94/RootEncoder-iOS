@@ -41,10 +41,14 @@ public class Socket: NSObject, StreamDelegate {
         outputStream = nil
     }
     
-    public func write(data: String) {
-        let buffer = [UInt8](data.utf8)
+    public func write(buffer: [UInt8]) {
         let result = outputStream?.write(buffer, maxLength: buffer.count)
-        print("\(data)")
+    }
+    
+    public func write(data: String) {
+        print("write: \(data)")
+        let buffer = [UInt8](data.utf8)
+        self.write(buffer: buffer)
     }
     
     public func readBlock(blockTime: Int64) -> String {
@@ -56,7 +60,7 @@ public class Socket: NSObject, StreamDelegate {
             usleep(UInt32(sleepMillis * 1000))
         }
         let response = self.read()
-        print("\(response)")
+        print("read: \(response)")
         return response
     }
     

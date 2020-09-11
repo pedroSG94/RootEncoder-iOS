@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  app
 //
-//  Created by Mac on 04/09/2020.
+//  Created by Pedro on 04/09/2020.
 //  Copyright © 2020 pedroSG94. All rights reserved.
 //
 

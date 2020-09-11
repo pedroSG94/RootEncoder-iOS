@@ -13,9 +13,8 @@ public class AacPacket: BasePacket {
     
     public func createAndSendPacket(buffer: Array<UInt8>, ts: Int64) {
         let length = buffer.count
-        
         var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
-        rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count] = buffer[0...buffer.count]
+        rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
         self.markPacket(buffer: &rtpBuffer)
         self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
         
@@ -25,12 +24,13 @@ public class AacPacket: BasePacket {
         rtpBuffer[RtpConstants.rtpHeaderLength] = 0x00;
         rtpBuffer[RtpConstants.rtpHeaderLength + 1] = 0x10;
         // AU-size
-        rtpBuffer[RtpConstants.rtpHeaderLength + 2] = UInt8(length >> 5);
-        rtpBuffer[RtpConstants.rtpHeaderLength + 3] = UInt8(length << 3);
+        rtpBuffer[RtpConstants.rtpHeaderLength + 2] = intToBytes(from: UInt32(length >> 5))[0];
+        rtpBuffer[RtpConstants.rtpHeaderLength + 3] = intToBytes(from: UInt32(length << 3))[0];
         // AU-Index
         rtpBuffer[RtpConstants.rtpHeaderLength + 3] &= 0xF8;
         rtpBuffer[RtpConstants.rtpHeaderLength + 3] |= 0x00;
         
+        self.updateSeq(buffer: &rtpBuffer)
         var frame = RtpFrame()
         frame.timeStamp = ts
         frame.length = rtpBuffer.count
@@ -38,6 +38,6 @@ public class AacPacket: BasePacket {
         frame.channelIdentifier = self.channelIdentifier
         frame.rtpPort = self.rtpPort
         frame.rtcpPort = self.rtcpPort
-        callback?.onAudioFrameCreated(rtpFrame: frame)
+        callback?.onAudioFrameCreated(rtpFrame: &frame)
     }
 }

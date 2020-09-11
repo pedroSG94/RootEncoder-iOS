@@ -12,7 +12,7 @@ public class BasePacket {
     
     public init(clock: Int64) {
         self.clock = clock
-        self.ssrc = Int64(Int.random(in: Int.min..<Int.max))
+        self.ssrc = Int64(Int.random(in: 0..<Int.max))
     }
     
     public func setPorts(rtpPort: Int, rtcpPort: Int) {

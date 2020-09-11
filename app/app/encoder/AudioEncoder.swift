@@ -110,6 +110,5 @@ class AudioBufferConverter {
         }
 
         let status = withConverter.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
-        print("status: \(status.rawValue)")
     }
 }

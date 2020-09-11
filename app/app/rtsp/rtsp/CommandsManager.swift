@@ -32,6 +32,10 @@ public class CommandsManager {
         timeStamp = (time / 1000) << 32 & (((time - ((time / 1000) * 1000)) >> 32) / 1000)
     }
     
+    public func getSampleRate() -> Int {
+        return sampleRate
+    }
+    
     private func addHeader() -> String {
         let session = sessionId != nil ? "Session: \(sessionId!)\r\n" : ""
         let auth = authorization != nil ? "Authorization: \(authorization!)\r\n" : ""

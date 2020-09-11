@@ -36,6 +36,8 @@
 		0441388F2501A34500732969 /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441388E2501A34500732969 /* RtspClient.swift */; };
 		044138912501A36500732969 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138902501A36500732969 /* Frame.swift */; };
 		04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0D204250641AB007F1631 /* AudioEncoder.swift */; };
+		EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */; };
+		EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,8 @@
 		0441388E2501A34500732969 /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
 		044138902501A36500732969 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		04E0D204250641AB007F1631 /* AudioEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
+		EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
+		EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SenderReportTcp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,6 +236,7 @@
 		0441386B2501A0CD00732969 /* rtcp */ = {
 			isa = PBXGroup;
 			children = (
+				EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */,
 			);
 			path = rtcp;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 		044138812501A1D100732969 /* sockets */ = {
 			isa = PBXGroup;
 			children = (
+				EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */,
 			);
 			path = sockets;
 			sourceTree = "<group>";
@@ -389,10 +395,12 @@
 				0441388B2501A20500732969 /* AudioPacketCallback.swift in Sources */,
 				044138882501A20500732969 /* VideoPacketCallback.swift in Sources */,
 				0441387C2501A1A600732969 /* Body.swift in Sources */,
+				EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */,
 				044138742501A14B00732969 /* RtpConstants.swift in Sources */,
 				0441388A2501A20500732969 /* AacPacket.swift in Sources */,
 				044138732501A14B00732969 /* ConnectCheckerRtsp.swift in Sources */,
 				0441387F2501A1A600732969 /* Protocol.swift in Sources */,
+				EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */,
 				044138712501A14B00732969 /* Utils.swift in Sources */,
 				0441387B2501A1A600732969 /* CommandsManager.swift in Sources */,
 				043AB0FD2504524000725086 /* Conversor.swift in Sources */,

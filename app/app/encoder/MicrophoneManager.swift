@@ -58,6 +58,10 @@ public class MicrophoneManager {
         if (inputFormat.channelCount == 0) {
             print("input format error")
         }
+        
+
+        let start = Date().millisecondsSince1970
+
         inputNode.installTap(onBus: 0, bufferSize: AVAudioFrameCount(2048), format: inputFormat) { buffer, time in
             self.thread.async {
                 var error: NSError? = nil
@@ -66,18 +70,19 @@ public class MicrophoneManager {
                     print("Encode error: \(error.debugDescription)")
                 } else {
                     let data = UnsafeBufferPointer(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength))
+                    
+                    let end = Date().millisecondsSince1970
+                    let elapsed_nanoseconds = (end - start) * 1000000
+                    
                     var frame = Frame()
                     frame.buffer = Array(data)
                     frame.length = data.count
-                    frame.timeStamp = Int64(time.hostTime)
+                    frame.timeStamp = Int64(elapsed_nanoseconds)
                     self.callback?.getPcmData(frame: frame)
                 }
             }
         }
-        var info = mach_timebase_info()
-        mach_timebase_info(&info)
 
-        let start = mach_absolute_time()
         self.audioEngine.prepare()
         do {
             try self.audioEngine.start()
