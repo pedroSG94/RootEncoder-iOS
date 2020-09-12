@@ -3,6 +3,8 @@ Library to stream in rtmp and rtsp for IOS. All code in Swift
 
 ## State
 
+RTSP TCP audio streaming working.
+
 This project is under develop and it is not usable.
 This will take so much time so don't expect anything about it.
 

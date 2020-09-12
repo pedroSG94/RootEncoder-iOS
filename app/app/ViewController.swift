@@ -37,7 +37,7 @@ class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
     
     func getPcmData(frame: Frame) {
         print("new aac buffer")
-        client?.sendAudio(buffer: frame.buffer!, ts: Int64(frame.timeStamp!))
+        client?.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
     }
     
     override func viewDidAppear(_ animated: Bool) {

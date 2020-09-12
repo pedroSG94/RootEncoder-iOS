@@ -108,7 +108,7 @@ public class RtspClient {
         }
     }
     
-    public func sendVideo(buffer: Array<UInt8>, ts: Int64) {
+    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         rtpSender?.sendVideo(buffer: buffer, ts: ts)
     }
     
