@@ -13,10 +13,11 @@ public class AacPacket: BasePacket {
     
     public func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64) {
         let length = buffer.count
+        let dts = ts * 1000
         var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
         rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
         self.markPacket(buffer: &rtpBuffer)
-        self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
+        self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
         
         // AU-headers-length field: contains the size in bits of a AU-header
         // 13+3 = 16 bits -> 13bits for AU-size and 3bits for AU-Index / AU-Index-delta

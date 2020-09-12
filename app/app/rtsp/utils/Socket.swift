@@ -43,6 +43,9 @@ public class Socket: NSObject, StreamDelegate {
     
     public func write(buffer: [UInt8]) {
         let result = outputStream?.write(buffer, maxLength: buffer.count)
+        if (result! <= 1) {
+            print("write error")
+        }
     }
     
     public func write(data: String) {
