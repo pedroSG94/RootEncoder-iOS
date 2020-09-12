@@ -69,11 +69,11 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
         print("start microphone")
         client = RtspClient(connectCheckerRtsp: self)
         client?.setOnlyAudio(onlyAudio: true)
-        client?.setAudioInfo(sampleRate: 44100, isStereo: false)
+        client?.setAudioInfo(sampleRate: 44100, isStereo: true)
         client?.connect(url: "rtsp://192.168.0.31:554/live/pedro")
         microphone = MicrophoneManager(callback: self)
         audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
-        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 1, bitrate: 32000)
+        audioEncoder?.prepareAudio(sampleRate: 44100.0, channels: 2, bitrate: 128000)
         microphone?.start()
     }
     

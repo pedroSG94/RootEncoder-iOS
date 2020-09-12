@@ -20,7 +20,7 @@ public class AudioEncoder {
         self.callback = callback
     }
     
-    public func prepareAudio(sampleRate: Int, channels: Int, bitrate: Int) {
+    public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) {
         outputFormat = self.getAACFormat(sampleRate: sampleRate, channels: channels)
         converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
         converter!.bitRate = bitrate
@@ -74,8 +74,8 @@ public class AudioEncoder {
         _ = converter!.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
     }
     
-    private func getAACFormat(sampleRate: Int, channels: Int) -> AVAudioFormat? {
-        var description = AudioStreamBasicDescription(mSampleRate: 44100, mFormatID: kAudioFormatMPEG4AAC, mFormatFlags: 0, mBytesPerPacket: 0, mFramesPerPacket: 0, mBytesPerFrame: 0, mChannelsPerFrame: 1, mBitsPerChannel: 0, mReserved: 0)
+    private func getAACFormat(sampleRate: Double, channels: UInt32) -> AVAudioFormat? {
+        var description = AudioStreamBasicDescription(mSampleRate: sampleRate, mFormatID: kAudioFormatMPEG4AAC, mFormatFlags: 0, mBytesPerPacket: 0, mFramesPerPacket: 0, mBytesPerFrame: 0, mChannelsPerFrame: channels, mBitsPerChannel: 0, mReserved: 0)
         return AVAudioFormat(streamDescription: &description)
     }
 }
