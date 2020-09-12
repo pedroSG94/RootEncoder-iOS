@@ -9,7 +9,10 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
+class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCheckerRtsp {
+    
+    
+    
     func onConnectionSuccessRtsp() {
         print("success")
     }
@@ -34,10 +37,12 @@ class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
         print("auth success")
     }
     
-    
-    func getPcmData(frame: Frame) {
-        print("new aac buffer")
+    func getAacData(frame: Frame) {
         client?.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
+    }
+    
+    func getPcmData(from buffer: AVAudioPCMBuffer, initTS: Int64) {
+        audioEncoder?.encodeFrame(from: buffer, initTS: initTS)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -58,6 +63,7 @@ class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
     
     private var client: RtspClient?
     private var microphone: MicrophoneManager?
+    private var audioEncoder: AudioEncoder?
     
     func startMicrophone() {
         print("start microphone")
@@ -66,6 +72,8 @@ class ViewController: UIViewController, GetMicrophoneData, ConnectCheckerRtsp {
         client?.setAudioInfo(sampleRate: 44100, isStereo: false)
         client?.connect(url: "rtsp://192.168.0.31:554/live/pedro")
         microphone = MicrophoneManager(callback: self)
+        audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
+        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 1, bitrate: 32000)
         microphone?.start()
     }
     

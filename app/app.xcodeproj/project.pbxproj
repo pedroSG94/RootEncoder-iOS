@@ -37,6 +37,7 @@
 		044138912501A36500732969 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138902501A36500732969 /* Frame.swift */; };
 		04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0D204250641AB007F1631 /* AudioEncoder.swift */; };
 		EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */; };
+		EBBF0732250D621900E18C5A /* GetAacData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBF0731250D621900E18C5A /* GetAacData.swift */; };
 		EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */; };
 /* End PBXBuildFile section */
 
@@ -94,6 +95,7 @@
 		044138902501A36500732969 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		04E0D204250641AB007F1631 /* AudioEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
 		EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
+		EBBF0731250D621900E18C5A /* GetAacData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
 		EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SenderReportTcp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -179,11 +181,13 @@
 		044138642501A03A00732969 /* encoder */ = {
 			isa = PBXGroup;
 			children = (
+				EBBF0730250D5A5000E18C5A /* audio */,
 				044138652501A05000732969 /* MicrophoneManager.swift */,
 				0441388C2501A2E800732969 /* GetMicrophoneData.swift */,
 				044138902501A36500732969 /* Frame.swift */,
 				043AB0FC2504524000725086 /* Conversor.swift */,
 				04E0D204250641AB007F1631 /* AudioEncoder.swift */,
+				EBBF0731250D621900E18C5A /* GetAacData.swift */,
 			);
 			path = encoder;
 			sourceTree = "<group>";
@@ -259,6 +263,13 @@
 				EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */,
 			);
 			path = sockets;
+			sourceTree = "<group>";
+		};
+		EBBF0730250D5A5000E18C5A /* audio */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -398,6 +409,7 @@
 				EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */,
 				044138742501A14B00732969 /* RtpConstants.swift in Sources */,
 				0441388A2501A20500732969 /* AacPacket.swift in Sources */,
+				EBBF0732250D621900E18C5A /* GetAacData.swift in Sources */,
 				044138732501A14B00732969 /* ConnectCheckerRtsp.swift in Sources */,
 				0441387F2501A1A600732969 /* Protocol.swift in Sources */,
 				EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */,

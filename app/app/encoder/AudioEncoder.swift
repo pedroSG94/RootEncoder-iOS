@@ -1,4 +1,3 @@
-//
 //  AudioEncoder.swift
 //  app
 //
@@ -9,91 +8,54 @@
 import Foundation
 import AVFoundation
 
-class AudioBufferFormatHelper {
-
-    static func PCMFormat() -> AVAudioFormat? {
-        return AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 44100, channels: 1, interleaved: false)
+public class AudioEncoder {
+    
+    private var converter: AVAudioConverter? = nil
+    private var outputFormat: AVAudioFormat?
+    private var inputFormat: AVAudioFormat?
+    private var callback: GetAacData?
+    
+    public init(inputFormat: AVAudioFormat, callback: GetAacData) {
+        self.inputFormat = inputFormat
+        self.callback = callback
     }
-
-    static func AACFormat() -> AVAudioFormat? {
-
-        var outDesc = AudioStreamBasicDescription(
-            mSampleRate: 44100,
-            mFormatID: kAudioFormatMPEG4AAC,
-            mFormatFlags: 0,
-            mBytesPerPacket: 0,
-            mFramesPerPacket: 0,
-            mBytesPerFrame: 0,
-            mChannelsPerFrame: 1,
-            mBitsPerChannel: 0,
-            mReserved: 0)
-        let outFormat = AVAudioFormat(streamDescription: &outDesc)
-        return outFormat
+    
+    public func prepareAudio(sampleRate: Int, channels: Int, bitrate: Int) {
+        outputFormat = self.getAACFormat(sampleRate: sampleRate, channels: channels)
+        converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
+        converter!.bitRate = bitrate
     }
-}
-
-class AudioBufferConverter {
-    static var lpcmToAACConverter: AVAudioConverter! = nil
-
-    static func convertToAAC(from buffer: AVAudioBuffer, error outError: inout NSError?) -> AVAudioCompressedBuffer? {
-
-        let outputFormat = AudioBufferFormatHelper.AACFormat()
+    
+    public func encodeFrame(from buffer: AVAudioBuffer, initTS: Int64) {
+        var error: NSError? = nil
+        let aacBuffer = convertToAAC(from: buffer, error: &error)!
+        if error != nil {
+            print("Encode error: \(error.debugDescription)")
+        } else {
+            let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
+            for i in 0..<aacBuffer.packetCount {
+                let info = aacBuffer.packetDescriptions![Int(i)]
+                var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
+                mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
+                let end = Date().millisecondsSince1970
+                let elapsed_nanoseconds = (end - initTS) * 1000000
+            
+                var frame = Frame()
+                frame.buffer = mBuffer
+                frame.length = UInt32(mBuffer.count)
+                frame.timeStamp = UInt64(elapsed_nanoseconds)
+                self.callback?.getAacData(frame: frame)
+            }
+        }
+    }
+    
+    private func convertToAAC(from buffer: AVAudioBuffer, error outError: inout NSError?) -> AVAudioCompressedBuffer? {
         let outBuffer = AVAudioCompressedBuffer(format: outputFormat!, packetCapacity: 8, maximumPacketSize: 768)
-
-        //init converter once
-        if lpcmToAACConverter == nil {
-            let inputFormat = buffer.format
-
-            lpcmToAACConverter = AVAudioConverter(from: inputFormat, to: outputFormat!)
-//            print("available rates \(lpcmToAACConverter.applicableEncodeBitRates)")
-//          lpcmToAACConverter!.bitRate = 96000
-            lpcmToAACConverter.bitRate = 32000    // have end of stream problems with this, not sure why
-        }
-
-        self.convert(withConverter:lpcmToAACConverter, from: buffer, to: outBuffer, error: &outError)
-
+        self.convert(from: buffer, to: outBuffer, error: &outError)
         return outBuffer
     }
-
-    static var aacToLPCMConverter: AVAudioConverter! = nil
-
-    static func convertToPCM(from buffer: AVAudioBuffer, error outError: NSErrorPointer) -> AVAudioPCMBuffer? {
-
-        let outputFormat = AudioBufferFormatHelper.PCMFormat()
-        guard let outBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat!, frameCapacity: 4410) else {
-            return nil
-        }
-
-        //init converter once
-        if aacToLPCMConverter == nil {
-            let inputFormat = buffer.format
-
-            aacToLPCMConverter = AVAudioConverter(from: inputFormat, to: outputFormat!)
-        }
-
-        self.convert(withConverter: aacToLPCMConverter, from: buffer, to: outBuffer, error: outError)
-
-        return outBuffer
-    }
-
-    static func convertToAAC(from data: Data, packetDescriptions: [AudioStreamPacketDescription]) -> AVAudioCompressedBuffer? {
-
-        let nsData = NSData(data: data)
-        let inputFormat = AudioBufferFormatHelper.AACFormat()
-        let maximumPacketSize = packetDescriptions.map { $0.mDataByteSize }.max()!
-        let buffer = AVAudioCompressedBuffer(format: inputFormat!, packetCapacity: AVAudioPacketCount(packetDescriptions.count), maximumPacketSize: Int(maximumPacketSize))
-        buffer.byteLength = UInt32(data.count)
-        buffer.packetCount = AVAudioPacketCount(packetDescriptions.count)
-
-        buffer.data.copyMemory(from: nsData.bytes, byteCount: nsData.length)
-        buffer.packetDescriptions!.pointee.mDataByteSize = UInt32(data.count)
-        buffer.packetDescriptions!.initialize(from: packetDescriptions, count: packetDescriptions.count)
-
-        return buffer
-    }
-
-
-    private static func convert(withConverter: AVAudioConverter, from sourceBuffer: AVAudioBuffer, to destinationBuffer: AVAudioBuffer, error outError: NSErrorPointer) {
+    
+    private func convert(from sourceBuffer: AVAudioBuffer, to destinationBuffer: AVAudioBuffer, error outError: NSErrorPointer) {
         // input each buffer only once
         var newBufferAvailable = true
 
@@ -109,6 +71,11 @@ class AudioBufferConverter {
             }
         }
 
-        let status = withConverter.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
+        _ = converter!.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
+    }
+    
+    private func getAACFormat(sampleRate: Int, channels: Int) -> AVAudioFormat? {
+        var description = AudioStreamBasicDescription(mSampleRate: 44100, mFormatID: kAudioFormatMPEG4AAC, mFormatFlags: 0, mBytesPerPacket: 0, mFramesPerPacket: 0, mBytesPerFrame: 0, mChannelsPerFrame: 1, mBitsPerChannel: 0, mReserved: 0)
+        return AVAudioFormat(streamDescription: &description)
     }
 }
