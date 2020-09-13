@@ -11,7 +11,7 @@ import AVFoundation
 
 class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCheckerRtsp {
     
-    
+    @IBOutlet weak var cameraview: UIView!
     
     func onConnectionSuccessRtsp() {
         print("success")
@@ -47,22 +47,33 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        validatePermissions()
+//        validatePermissions()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        cameraManager = CameraManager(cameraView: cameraview)
+        cameraManager?.createSession()
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        coordinator.animate(alongsideTransition: { (context) -> Void in
+            self.cameraManager?.viewTransation()
+        }, completion: { (context) -> Void in
+
+        })
+        super.viewWillTransition(to: size, with: coordinator)
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
-        microphone?.stop()
-        client?.disconnect()
+//        microphone?.stop()
+//        client?.disconnect()
     }
     
     private var client: RtspClient?
     private var microphone: MicrophoneManager?
+    private var cameraManager: CameraManager?
     private var audioEncoder: AudioEncoder?
     
     func startMicrophone() {

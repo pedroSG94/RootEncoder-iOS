@@ -39,6 +39,7 @@
 		EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */; };
 		EBBF0732250D621900E18C5A /* GetAacData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBF0731250D621900E18C5A /* GetAacData.swift */; };
 		EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */; };
+		EBE7CB55250E84EF0015E620 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE7CB54250E84EF0015E620 /* CameraManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,7 @@
 		EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
 		EBBF0731250D621900E18C5A /* GetAacData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
 		EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SenderReportTcp.swift; sourceTree = "<group>"; };
+		EBE7CB54250E84EF0015E620 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,13 +183,10 @@
 		044138642501A03A00732969 /* encoder */ = {
 			isa = PBXGroup;
 			children = (
+				EBE7CB53250E84BB0015E620 /* video */,
 				EBBF0730250D5A5000E18C5A /* audio */,
-				044138652501A05000732969 /* MicrophoneManager.swift */,
-				0441388C2501A2E800732969 /* GetMicrophoneData.swift */,
 				044138902501A36500732969 /* Frame.swift */,
 				043AB0FC2504524000725086 /* Conversor.swift */,
-				04E0D204250641AB007F1631 /* AudioEncoder.swift */,
-				EBBF0731250D621900E18C5A /* GetAacData.swift */,
 			);
 			path = encoder;
 			sourceTree = "<group>";
@@ -268,8 +267,20 @@
 		EBBF0730250D5A5000E18C5A /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				04E0D204250641AB007F1631 /* AudioEncoder.swift */,
+				EBBF0731250D621900E18C5A /* GetAacData.swift */,
+				044138652501A05000732969 /* MicrophoneManager.swift */,
+				0441388C2501A2E800732969 /* GetMicrophoneData.swift */,
 			);
 			path = audio;
+			sourceTree = "<group>";
+		};
+		EBE7CB53250E84BB0015E620 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				EBE7CB54250E84EF0015E620 /* CameraManager.swift */,
+			);
+			path = video;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -425,6 +436,7 @@
 				0441387E2501A1A600732969 /* RtpSender.swift in Sources */,
 				0441388F2501A34500732969 /* RtspClient.swift in Sources */,
 				0441388D2501A2E800732969 /* GetMicrophoneData.swift in Sources */,
+				EBE7CB55250E84EF0015E620 /* CameraManager.swift in Sources */,
 				044138352501A02300732969 /* AppDelegate.swift in Sources */,
 				0441387D2501A1A600732969 /* RtpFrame.swift in Sources */,
 				044138372501A02300732969 /* SceneDelegate.swift in Sources */,
