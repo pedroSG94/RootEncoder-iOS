@@ -14,7 +14,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var input: AVCaptureDeviceInput?
-    var output: AVCaptureMetadataOutput?
+    var output: AVCaptureVideoDataOutput?
     var prevLayer: AVCaptureVideoPreviewLayer?
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
@@ -45,7 +45,15 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
         cameraView.layer.addSublayer(prevLayer!)
-
+        
+        output = AVCaptureVideoDataOutput()
+        
+        let thread = DispatchQueue.global()
+        output?.setSampleBufferDelegate(self, queue: thread)
+        output?.alwaysDiscardsLateVideoFrames = true
+        output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
+        
+        session?.addOutput(output!)
         session?.startRunning()
     }
     
@@ -77,6 +85,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        print("raw camera frame")
+        let dims = sampleBuffer.formatDescription?.dimensions
+        print("raw camera frame \(dims!.width)x\(dims!.height)")
     }
 }
