@@ -38,12 +38,12 @@ public class AudioEncoder {
                 var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
                 mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
                 let end = Date().millisecondsSince1970
-                let elapsed_nanoseconds = (end - initTS) * 1000000
+                let elapsedNanoSeconds = (end - initTS) * 1000000
             
                 var frame = Frame()
                 frame.buffer = mBuffer
                 frame.length = UInt32(mBuffer.count)
-                frame.timeStamp = UInt64(elapsed_nanoseconds)
+                frame.timeStamp = UInt64(elapsedNanoSeconds)
                 self.callback?.getAacData(frame: frame)
             }
         }

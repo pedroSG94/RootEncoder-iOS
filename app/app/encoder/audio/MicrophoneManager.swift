@@ -13,7 +13,6 @@ public class MicrophoneManager {
     
     private let thread = DispatchQueue.global()
     private let audioEngine = AVAudioEngine()
-    private var startTime = 0
     private var inputNode: AVAudioInputNode?
     private var inputFormat: AVAudioFormat?
     
@@ -33,8 +32,6 @@ public class MicrophoneManager {
     }
     
     public func start() {
-        
-        
         let start = Date().millisecondsSince1970
 
         inputNode?.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in

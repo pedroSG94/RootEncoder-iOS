@@ -19,8 +19,12 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
     
-    public init(cameraView: UIView) {
+    private var startTime: Int64 = 0
+    private var callback: GetCameraData
+    
+    public init(cameraView: UIView, callback: GetCameraData) {
         self.cameraView = cameraView
+        self.callback = callback
     }
     
     public func createSession() {
@@ -42,7 +46,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         prevLayer = AVCaptureVideoPreviewLayer(session: session!)
         prevLayer?.frame.size = cameraView.frame.size
         prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-
+        
         prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
         cameraView.layer.addSublayer(prevLayer!)
         
@@ -55,6 +59,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         
         session?.addOutput(output!)
         session?.startRunning()
+        startTime = Date().millisecondsSince1970
     }
     
     public func viewTransation() {
@@ -85,7 +90,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        let dims = sampleBuffer.formatDescription?.dimensions
-        print("raw camera frame \(dims!.width)x\(dims!.height)")
+        callback.getYUVData(from: sampleBuffer, initTs: startTime)
     }
 }

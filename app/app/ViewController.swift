@@ -9,7 +9,8 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCheckerRtsp {
+class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAacData, GetH264Data,  ConnectCheckerRtsp {
+    
     
     @IBOutlet weak var cameraview: UIView!
     
@@ -45,14 +46,22 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
         audioEncoder?.encodeFrame(from: buffer, initTS: initTS)
     }
     
+    func getH264Data(frame: Frame) {
+        client?.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+    }
+    
+    func getYUVData(from buffer: CMSampleBuffer, initTs: Int64) {
+        videoEncoder?.encodeFrame(buffer: buffer, initTs: initTs)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        validatePermissions()
+        //validatePermissions()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        cameraManager = CameraManager(cameraView: cameraview)
+        cameraManager = CameraManager(cameraView: cameraview, callback: self)
         cameraManager?.createSession()
         // Do any additional setup after loading the view.
     }
@@ -75,8 +84,9 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
     private var microphone: MicrophoneManager?
     private var cameraManager: CameraManager?
     private var audioEncoder: AudioEncoder?
+    private var videoEncoder: VideoEncoder?
     
-    func startMicrophone() {
+    func startStream() {
         print("start microphone")
         client = RtspClient(connectCheckerRtsp: self)
         client?.setOnlyAudio(onlyAudio: true)
@@ -85,18 +95,20 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
         microphone = MicrophoneManager(callback: self)
         audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
         audioEncoder?.prepareAudio(sampleRate: 44100.0, channels: 2, bitrate: 128000)
+        videoEncoder = VideoEncoder(callback: self)
+        videoEncoder?.prepareVideo()
         microphone?.start()
     }
     
     func validatePermissions() {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
-            self.startMicrophone()
+            self.startStream()
             break
         case .denied:
             break
         case .undetermined:
-            self.startMicrophone()
+            self.startStream()
             break
         default:
             break
@@ -106,7 +118,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetAacData, ConnectCh
     func request() {
         AVAudioSession.sharedInstance().requestRecordPermission { granted in
             if granted {
-                self.startMicrophone()
+                self.startStream()
             } else {
                 
             }

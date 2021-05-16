@@ -57,6 +57,11 @@ public class SenderReportTcp {
         /* Byte 16,17,18,19  ->  RTP timestamp                     */
         /* Byte 20,21,22,23  ->  packet count                      */
         /* Byte 24,25,26,27  ->  octet count                     */
+        videoBuffer.insert(UInt8(28), at: 0)
+        videoBuffer.insert(0, at: 0)
+        videoBuffer.insert(1, at: 0)
+        videoBuffer.insert([UInt8]("$".utf8)[0], at: 0)
+        
         audioBuffer.insert(UInt8(28), at: 0)
         audioBuffer.insert(0, at: 0)
         audioBuffer.insert(1, at: 0)
@@ -76,6 +81,22 @@ public class SenderReportTcp {
             var ts = rtpFrame.timeStamp!
             self.setData(buffer: &audioBuffer, ntpts: nano, rtpts: &ts)
             sendReport(buffer: audioBuffer)
+        }
+    }
+    
+    public func updateVideo(rtpFrame: RtpFrame) {
+        videoPacketCount += 1
+        videoOctetCount += UInt64(rtpFrame.length!)
+        
+        setLong(buffer: &videoBuffer, n: &videoPacketCount, begin: 20, end: 24)
+        setLong(buffer: &videoBuffer, n: &videoOctetCount, begin: 24, end: 28);
+        let millis = UInt64(Date().millisecondsSince1970)
+        if (millis - videoTime >= interval) {
+            videoTime = UInt64(Date().millisecondsSince1970)
+            let nano = UInt64(Date().millisecondsSince1970) * 1000000
+            var ts = rtpFrame.timeStamp!
+            self.setData(buffer: &videoBuffer, ntpts: nano, rtpts: &ts)
+            sendReport(buffer: videoBuffer)
         }
     }
     

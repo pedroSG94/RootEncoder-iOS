@@ -6,7 +6,7 @@ public class H264Packet: BasePacket {
     private var sendKeyFrame = false
     private var stapA: Array<UInt8>?
     
-    public init(sps: String, pps: String, videoPacketCallback: VideoPacketCallback) {
+    public init(sps: Array<UInt8>, pps: Array<UInt8>, videoPacketCallback: VideoPacketCallback) {
         super.init(clock: UInt64(RtpConstants.clockVideoFrequency))
         self.callback = videoPacketCallback
         self.channelIdentifier = 0x02
@@ -32,7 +32,7 @@ public class H264Packet: BasePacket {
             
             frame.length = UInt32(rtpBuffer.count)
             frame.buffer = rtpBuffer
-            callback?.onVideoFrameCreated(rtpFrame: frame)
+            callback?.onVideoFrameCreated(rtpFrame: &frame)
             self.sendKeyFrame = true
         }
         if sendKeyFrame {
@@ -51,7 +51,7 @@ public class H264Packet: BasePacket {
                 
                 frame.length = UInt32(rtpBuffer.count)
                 frame.buffer = rtpBuffer
-                callback?.onVideoFrameCreated(rtpFrame: frame)
+                callback?.onVideoFrameCreated(rtpFrame: &frame)
             }
             // Large NAL unit => Split nal unit
             else {
@@ -86,7 +86,7 @@ public class H264Packet: BasePacket {
                     
                     frame.length = UInt32(rtpBuffer.count)
                     frame.buffer = rtpBuffer
-                    callback?.onVideoFrameCreated(rtpFrame: frame)
+                    callback?.onVideoFrameCreated(rtpFrame: &frame)
                     // Switch start bit
                     header[1] = header[1] & 0x7F
                 }
@@ -94,9 +94,9 @@ public class H264Packet: BasePacket {
         }
     }
     
-    private func setSpsPps(sps: String, pps: String) {
-        let spsBuffer = [UInt8](sps.utf8)
-        let ppsBuffer = [UInt8](pps.utf8)
+    private func setSpsPps(sps: Array<UInt8>, pps: Array<UInt8>) {
+        let spsBuffer = sps
+        let ppsBuffer = pps
         stapA = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 5)
         
         // STAP-A NAL header is 24
