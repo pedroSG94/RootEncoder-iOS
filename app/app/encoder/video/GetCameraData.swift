@@ -11,5 +11,5 @@ import AVFoundation
 
 
 public protocol GetCameraData {
-    func getYUVData(from buffer: CMSampleBuffer, initTs: Int64)
+    func getYUVData(from buffer: CMSampleBuffer)
 }

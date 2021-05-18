@@ -50,13 +50,13 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         client?.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
     }
     
-    func getYUVData(from buffer: CMSampleBuffer, initTs: Int64) {
-        videoEncoder?.encodeFrame(buffer: buffer, initTs: initTs)
+    func getYUVData(from buffer: CMSampleBuffer) {
+        videoEncoder?.encodeFrame(buffer: buffer)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //validatePermissions()
+        validatePermissions()
     }
     
     override func viewDidLoad() {
@@ -89,14 +89,8 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     func startStream() {
         print("start microphone")
         client = RtspClient(connectCheckerRtsp: self)
-        client?.setOnlyAudio(onlyAudio: true)
-        client?.setAudioInfo(sampleRate: 44100, isStereo: true)
-        client?.connect(url: "rtsp://192.168.0.31:554/live/pedro")
-        microphone = MicrophoneManager(callback: self)
-        audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
-        audioEncoder?.prepareAudio(sampleRate: 44100.0, channels: 2, bitrate: 128000)
+
         videoEncoder = VideoEncoder(callback: self)
-        videoEncoder?.prepareVideo()
         microphone?.start()
     }
     

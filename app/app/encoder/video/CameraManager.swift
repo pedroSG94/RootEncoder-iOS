@@ -19,7 +19,34 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
     
-    private var startTime: Int64 = 0
+    private var width = 1920
+    private var height = 1080
+    private var attributes: [NSString: NSObject] {
+            var attributes: [NSString: NSObject] = [
+                kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+                kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
+                kCVPixelBufferOpenGLESCompatibilityKey: kCFBooleanTrue
+            ]
+            attributes[kCVPixelBufferWidthKey] = NSNumber(value: width)
+            attributes[kCVPixelBufferHeightKey] = NSNumber(value: height)
+            return attributes
+        }
+    
+    private var _pixelBufferPool: CVPixelBufferPool?
+        private var pixelBufferPool: CVPixelBufferPool! {
+            get {
+                if _pixelBufferPool == nil {
+                    var pixelBufferPool: CVPixelBufferPool?
+                    CVPixelBufferPoolCreate(nil, nil, attributes as CFDictionary?, &pixelBufferPool)
+                    _pixelBufferPool = pixelBufferPool
+                }
+                return _pixelBufferPool!
+            }
+            set {
+                _pixelBufferPool = newValue
+            }
+        }
+    
     private var callback: GetCameraData
     
     public init(cameraView: UIView, callback: GetCameraData) {
@@ -59,7 +86,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         
         session?.addOutput(output!)
         session?.startRunning()
-        startTime = Date().millisecondsSince1970
     }
     
     public func viewTransation() {
@@ -90,6 +116,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        callback.getYUVData(from: sampleBuffer, initTs: startTime)
+        callback.getYUVData(from: sampleBuffer)
     }
 }
