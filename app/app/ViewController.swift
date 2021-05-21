@@ -12,7 +12,37 @@ import AVFoundation
 class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAacData, GetH264Data,  ConnectCheckerRtsp {
     
     
+    @IBOutlet weak var tvEndpoint: UITextField!
+    @IBOutlet weak var bStartStream: UIButton!
     @IBOutlet weak var cameraview: UIView!
+    
+    private var client: RtspClient?
+    private var microphone: MicrophoneManager?
+    private var cameraManager: CameraManager?
+    private var audioEncoder: AudioEncoder?
+    private var videoEncoder: VideoEncoder?
+    private var endpoint: String? = nil
+    
+    @IBAction func onClickstartStream(_ sender: UIButton) {
+        endpoint = tvEndpoint.text!
+        client = RtspClient(connectCheckerRtsp: self)
+        cameraManager = CameraManager(cameraView: cameraview, callback: self)
+        microphone = MicrophoneManager(callback: self)
+        videoEncoder = VideoEncoder(callback: self)
+        audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
+            
+        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
+        //videoEncoder?.prepareVideo()
+        
+        client?.setAudioInfo(sampleRate: 44100, isStereo: true)
+        client?.setOnlyAudio(onlyAudio: true)
+        //cameraManager?.createSession()
+        microphone?.start()
+        let thread = DispatchQueue(label: "rtsp thread")
+        thread.async {
+            self.client?.connect(url: self.endpoint!)
+        }
+    }
     
     func onConnectionSuccessRtsp() {
         print("success")
@@ -61,8 +91,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        cameraManager = CameraManager(cameraView: cameraview, callback: self)
-        cameraManager?.createSession()
+        
         // Do any additional setup after loading the view.
     }
     
@@ -80,29 +109,15 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
 //        client?.disconnect()
     }
     
-    private var client: RtspClient?
-    private var microphone: MicrophoneManager?
-    private var cameraManager: CameraManager?
-    private var audioEncoder: AudioEncoder?
-    private var videoEncoder: VideoEncoder?
     
-    func startStream() {
-        print("start microphone")
-        client = RtspClient(connectCheckerRtsp: self)
-
-        videoEncoder = VideoEncoder(callback: self)
-        microphone?.start()
-    }
     
     func validatePermissions() {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
-            self.startStream()
             break
         case .denied:
             break
         case .undetermined:
-            self.startStream()
             break
         default:
             break
@@ -112,7 +127,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     func request() {
         AVAudioSession.sharedInstance().requestRecordPermission { granted in
             if granted {
-                self.startStream()
+               
             } else {
                 
             }

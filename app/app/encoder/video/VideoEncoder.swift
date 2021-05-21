@@ -11,6 +11,14 @@ import AVFoundation
 import VideoToolbox
 import CoreFoundation
 
+extension OSStatus {
+    var error: NSError? {
+        guard self != noErr else { return nil }
+        
+        let message = SecCopyErrorMessageString(self, nil) as String? ?? "Unknown error"
+        return NSError(domain: NSOSStatusErrorDomain, code: Int(self), userInfo: [NSLocalizedDescriptionKey: message])
+    }
+}
 
 public class VideoEncoder {
     
@@ -47,7 +55,6 @@ public class VideoEncoder {
     
     public init(callback: GetH264Data) {
         self.callback = callback
-        prepareVideo()
     }
     
     public func prepareVideo() -> Bool {
@@ -75,12 +82,9 @@ public class VideoEncoder {
     public func encodeFrame(buffer: CMSampleBuffer) {
         guard let session: VTCompressionSession = session else { return }
         var flags: VTEncodeInfoFlags = []
-        if (buffer.imageBuffer == nil) {
-            print("nil???")
-        }
         VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.imageBuffer!, presentationTimeStamp: buffer.presentationTimeStamp, duration: buffer.duration, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flags)
+        print("flag: \(flags.rawValue)")
     }
-    
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, _: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
         guard
@@ -91,13 +95,9 @@ public class VideoEncoder {
                 }
             return
         }
-        let buffer = sampleBuffer.imageBuffer
-        if (buffer == nil) {
-            print("encoding error \(status)")
-            return
-        }
+        let data = try! sampleBuffer.dataBuffer?.dataBytes()
+        let bytes = [UInt8](data!)
         let encoder: VideoEncoder = Unmanaged<VideoEncoder>.fromOpaque(refcon).takeUnretainedValue()
-        let bytes = encoder.bufferToUInt(imageBuffer: buffer!)
         let end = Date().millisecondsSince1970
         let elapsedNanoSeconds = (end - encoder.initTs) * 1000000
         var frame = Frame()
