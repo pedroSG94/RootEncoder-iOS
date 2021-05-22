@@ -9,6 +9,7 @@ public class RtspClient {
     private var tlsEnabled = false
     private var isOnlyAudio = false
     private var rtpSender: RtpSender?
+    private var sps: Array<UInt8>? = nil, pps: Array<UInt8>? = nil
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -27,6 +28,8 @@ public class RtspClient {
     }
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        self.sps = sps
+        self.pps = pps
         let spsString = Data(sps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
         let ppsString = Data(pps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
         commandsManager.setVideoConfig(sps: spsString, pps: ppsString, vps: nil)
@@ -46,6 +49,7 @@ public class RtspClient {
                 socket = Socket(host: host, port: port)
                 socket?.connect()
                 rtpSender = RtpSender(socket: socket!)
+                rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
                 //Options
                 socket?.write(data: commandsManager.createOptions())
                 let optionsResponse = socket?.readBlock(blockTime: 1000)

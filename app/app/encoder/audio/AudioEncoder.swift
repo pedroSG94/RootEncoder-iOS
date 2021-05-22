@@ -14,6 +14,7 @@ public class AudioEncoder {
     private var outputFormat: AVAudioFormat?
     private var inputFormat: AVAudioFormat?
     private var callback: GetAacData?
+    private var running = false
     
     public init(inputFormat: AVAudioFormat, callback: GetAacData) {
         self.inputFormat = inputFormat
@@ -25,29 +26,36 @@ public class AudioEncoder {
         converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
         converter!.bitRate = bitrate
         print("prepare audio success")
+        running = true
     }
     
     public func encodeFrame(from buffer: AVAudioBuffer, initTS: Int64) {
-        var error: NSError? = nil
-        let aacBuffer = convertToAAC(from: buffer, error: &error)!
-        if error != nil {
-            print("Encode error: \(error.debugDescription)")
-        } else {
-            let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
-            for i in 0..<aacBuffer.packetCount {
-                let info = aacBuffer.packetDescriptions![Int(i)]
-                var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
-                mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
-                let end = Date().millisecondsSince1970
-                let elapsedNanoSeconds = (end - initTS) * 1000000
+        if (running) {
+            var error: NSError? = nil
+            let aacBuffer = convertToAAC(from: buffer, error: &error)!
+            if error != nil {
+                print("Encode error: \(error.debugDescription)")
+            } else {
+                let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
+                for i in 0..<aacBuffer.packetCount {
+                    let info = aacBuffer.packetDescriptions![Int(i)]
+                    var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
+                    mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
+                    let end = Date().millisecondsSince1970
+                    let elapsedNanoSeconds = (end - initTS) * 1000000
             
-                var frame = Frame()
-                frame.buffer = mBuffer
-                frame.length = UInt32(mBuffer.count)
-                frame.timeStamp = UInt64(elapsedNanoSeconds)
-                self.callback?.getAacData(frame: frame)
+                    var frame = Frame()
+                    frame.buffer = mBuffer
+                    frame.length = UInt32(mBuffer.count)
+                    frame.timeStamp = UInt64(elapsedNanoSeconds)
+                    self.callback?.getAacData(frame: frame)
+                }
             }
         }
+    }
+    
+    public func stop() {
+        running = false
     }
     
     private func convertToAAC(from buffer: AVAudioBuffer, error outError: inout NSError?) -> AVAudioCompressedBuffer? {

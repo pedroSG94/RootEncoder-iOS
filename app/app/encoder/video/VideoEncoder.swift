@@ -29,6 +29,7 @@ public class VideoEncoder {
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
+    private var running = false
 
     private var session: VTCompressionSession?
     private let callback: GetH264Data
@@ -77,13 +78,22 @@ public class VideoEncoder {
         }
         self.initTs = Date().millisecondsSince1970
         print("prepare video success")
+        running = true
         return true
     }
     
     public func encodeFrame(buffer: CMSampleBuffer) {
+        if (running) {
+            guard let session: VTCompressionSession = session else { return }
+            var flags: VTEncodeInfoFlags = []
+            VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.imageBuffer!, presentationTimeStamp: buffer.presentationTimeStamp, duration: buffer.duration, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flags)
+        }
+    }
+    
+    public func stop() {
+        running = false
         guard let session: VTCompressionSession = session else { return }
-        var flags: VTEncodeInfoFlags = []
-        VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.imageBuffer!, presentationTimeStamp: buffer.presentationTimeStamp, duration: buffer.duration, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flags)
+        VTCompressionSessionInvalidate(session)
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in

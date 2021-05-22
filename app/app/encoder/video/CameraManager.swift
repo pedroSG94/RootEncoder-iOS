@@ -54,6 +54,12 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         self.callback = callback
     }
     
+    public func stop() {
+        session?.stopRunning()
+        session?.removeOutput(output!)
+        session?.removeInput(input!)
+    }
+    
     public func createSession() {
         prevLayer?.frame.size = cameraView.frame.size
         session = AVCaptureSession()

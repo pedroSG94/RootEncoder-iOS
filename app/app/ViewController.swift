@@ -34,6 +34,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         client?.setAudioInfo(sampleRate: 44100, isStereo: true)
         audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
         videoEncoder?.prepareVideo()
+        microphone?.start()
         cameraManager?.createSession()
     }
     
@@ -76,7 +77,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
         print("connecting...")
         client?.setVideoInfo(sps: sps, pps: pps, vps: nil)
-        client?.connect(url: endpoint!)
+        client?.connect(url: "rtsp://192.168.1.133:80/live/pedro")
     }
     
     func getYUVData(from buffer: CMSampleBuffer) {
@@ -104,11 +105,11 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-//        microphone?.stop()
-//        client?.disconnect()
+        microphone?.stop()
+        cameraManager?.stop()
+        audioEncoder?.stop()
+        videoEncoder?.stop()
     }
-    
-    
     
     func validatePermissions() {
         switch AVAudioSession.sharedInstance().recordPermission {
@@ -121,6 +122,13 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         default:
             break
         }
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
+                if response {
+                    //access granted
+                } else {
+
+                }
+            }
     }
     
     func request() {

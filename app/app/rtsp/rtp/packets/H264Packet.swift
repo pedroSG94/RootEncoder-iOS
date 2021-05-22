@@ -27,7 +27,7 @@ public class H264Packet: BasePacket {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
             self.markPacket(buffer: &rtpBuffer)
-            rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count] = stapA![0...stapA!.count]
+            rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count - 1] = stapA![0...stapA!.count - 1]
             self.updateSeq(buffer: &rtpBuffer)
             
             frame.length = UInt32(rtpBuffer.count)
@@ -43,7 +43,7 @@ public class H264Packet: BasePacket {
                 var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[4]
                 
-                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count] = buffer[0...buffer.count]
+                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
                 
                 self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
                 self.markPacket(buffer: &rtpBuffer)
@@ -75,7 +75,7 @@ public class H264Packet: BasePacket {
                     
                     self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
                     
-                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count] = buffer[0...buffer.count]
+                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
                     
                     sum += length
                     if sum >= naluLength {
@@ -109,8 +109,8 @@ public class H264Packet: BasePacket {
         stapA![spsBuffer.count + 4] = UInt8(ppsBuffer.count) & 0xFF
         
         // Write NALU 1 into the array, then write NALU 2 into the array.
-        stapA![3...spsBuffer.count + 3] = spsBuffer[0...spsBuffer.count]
-        stapA![5 + spsBuffer.count...5 + spsBuffer.count + ppsBuffer.count] = ppsBuffer[0...ppsBuffer.count]
+        stapA![3...spsBuffer.count - 1 + 3] = spsBuffer[0...spsBuffer.count - 1]
+        stapA![5 + spsBuffer.count...5 + spsBuffer.count + ppsBuffer.count - 1] = ppsBuffer[0...ppsBuffer.count - 1]
     }
     
     override public func reset() {
