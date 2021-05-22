@@ -30,18 +30,11 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
-            
-        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
-        //videoEncoder?.prepareVideo()
         
         client?.setAudioInfo(sampleRate: 44100, isStereo: true)
-        client?.setOnlyAudio(onlyAudio: true)
-        //cameraManager?.createSession()
-        microphone?.start()
-        let thread = DispatchQueue(label: "rtsp thread")
-        thread.async {
-            self.client?.connect(url: self.endpoint!)
-        }
+        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
+        videoEncoder?.prepareVideo()
+        cameraManager?.createSession()
     }
     
     func onConnectionSuccessRtsp() {
@@ -78,6 +71,12 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     func getH264Data(frame: Frame) {
         client?.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+    }
+    
+    func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
+        print("connecting...")
+        client?.setVideoInfo(sps: sps, pps: pps, vps: nil)
+        client?.connect(url: endpoint!)
     }
     
     func getYUVData(from buffer: CMSampleBuffer) {

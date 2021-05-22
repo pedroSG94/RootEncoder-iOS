@@ -24,6 +24,7 @@ public class AudioEncoder {
         outputFormat = self.getAACFormat(sampleRate: sampleRate, channels: channels)
         converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
         converter!.bitRate = bitrate
+        print("prepare audio success")
     }
     
     public func encodeFrame(from buffer: AVAudioBuffer, initTS: Int64) {

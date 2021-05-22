@@ -28,6 +28,7 @@ public class VideoEncoder {
     private var bitrate: Int = 3000 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
+    private var isSpsAndPpsSend = false
 
     private var session: VTCompressionSession?
     private let callback: GetH264Data
@@ -75,7 +76,7 @@ public class VideoEncoder {
             return false
         }
         self.initTs = Date().millisecondsSince1970
-        print("prepare success")
+        print("prepare video success")
         return true
     }
     
@@ -83,39 +84,89 @@ public class VideoEncoder {
         guard let session: VTCompressionSession = session else { return }
         var flags: VTEncodeInfoFlags = []
         VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.imageBuffer!, presentationTimeStamp: buffer.presentationTimeStamp, duration: buffer.duration, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flags)
-        print("flag: \(flags.rawValue)")
     }
     
-    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, _: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
-        guard
-            let refcon: UnsafeMutableRawPointer = outputCallbackRefCon,
-            let sampleBuffer: CMSampleBuffer = sampleBuffer, status == noErr else {
-                if status == kVTParameterErr {
-                    // on iphone 11 with size=1792x827 this occurs
-                }
+    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
+        guard let sampleBuffer = sampleBuffer else { return }
+        guard let refcon: UnsafeMutableRawPointer = outputCallbackRefCon else { return }
+        if (status != noErr) {
+            print("encoding failed")
             return
         }
-        let data = try! sampleBuffer.dataBuffer?.dataBytes()
-        let bytes = [UInt8](data!)
+        if (!CMSampleBufferDataIsReady(sampleBuffer)) {
+            print("data is not ready")
+            return
+        }
+        
+        if (flags == VTEncodeInfoFlags.frameDropped) {
+            print("frame dropped")
+            return
+        }
+
         let encoder: VideoEncoder = Unmanaged<VideoEncoder>.fromOpaque(refcon).takeUnretainedValue()
+        var frame = Frame()
+        let data = encoder.getValidRawBuffer(sampleBuffer: sampleBuffer)
+        guard let buffer: Array<UInt8> = data else { return }
+        frame.buffer = buffer
         let end = Date().millisecondsSince1970
         let elapsedNanoSeconds = (end - encoder.initTs) * 1000000
-        var frame = Frame()
-        frame.buffer = bytes
         frame.timeStamp = UInt64(elapsedNanoSeconds)
-        frame.length = UInt32(bytes.count)
+        frame.length = UInt32(frame.buffer!.count)
         encoder.callback.getH264Data(frame: frame)
     }
     
-    private func bufferToUInt(imageBuffer: CVImageBuffer) -> [UInt8] {
-        CVPixelBufferLockBaseAddress(imageBuffer, CVPixelBufferLockFlags(rawValue: 0))
-        let byterPerRow = CVPixelBufferGetBytesPerRow(imageBuffer)
-        let height = CVPixelBufferGetHeight(imageBuffer)
-        let srcBuff = CVPixelBufferGetBaseAddress(imageBuffer)
-
-        let data = NSData(bytes: srcBuff, length: byterPerRow * height)
-        CVPixelBufferUnlockBaseAddress(imageBuffer, CVPixelBufferLockFlags(rawValue: 0))
-
-        return [UInt8].init(repeating: 0, count: data.length / MemoryLayout<UInt8>.size)
+    //In iOS only h264 body is provided. So we need add header information in buffers
+    private func getValidRawBuffer(sampleBuffer: CMSampleBuffer) -> [UInt8]? {
+        let startCode = [UInt8](arrayLiteral: 0x00, 0x00, 0x00, 0x01)
+        let keyFrame = isKeyFrame(sampleBuffer: sampleBuffer)
+        var rawH264 = Array<UInt8>()
+        var idrSlice: UInt8 = 61
+        rawH264.append(contentsOf: startCode)
+        if (keyFrame) {
+            //write sps and pps
+            guard let description = CMSampleBufferGetFormatDescription(sampleBuffer) else { return nil }
+            var parametersCount: Int = 0
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil, parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
+            if (parametersCount != 2) { return nil }
+            var sps: UnsafePointer<UInt8>?
+            var spsSize: Int = 0
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &sps, parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+            var pps: UnsafePointer<UInt8>?
+            var ppsSize: Int = 0
+            CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 1, parameterSetPointerOut: &pps, parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+            
+            var spsData = Array<UInt8>()
+            for i in 0...spsSize - 1 {
+                spsData.append(sps![i])
+            }
+            var ppsData = Array<UInt8>()
+            for i in 0...ppsSize - 1 {
+                ppsData.append(pps![i])
+            }
+            
+            if (!isSpsAndPpsSend) {
+                callback.getSpsAndPps(sps: spsData, pps: ppsData)
+                isSpsAndPpsSend = true
+            }
+            rawH264.append(contentsOf: spsData)
+            rawH264.append(contentsOf: startCode)
+            rawH264.append(contentsOf: ppsData)
+            rawH264.append(contentsOf: startCode)
+            idrSlice = 65
+        }
+        rawH264.append(idrSlice)
+        let body = try! sampleBuffer.dataBuffer?.dataBytes()
+        let bytes = [UInt8](body!)
+        rawH264.append(contentsOf: bytes)
+        return rawH264
+    }
+    
+    private func isKeyFrame(sampleBuffer: CMSampleBuffer) -> Bool {
+        guard
+            let attachments = CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, createIfNecessary: false) as? [[CFString: Any]],
+            let value = attachments.first?[kCMSampleAttachmentKey_NotSync] as? Bool else {
+            return true
+        }
+        return !value
     }
 }

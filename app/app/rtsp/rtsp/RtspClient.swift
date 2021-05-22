@@ -26,8 +26,10 @@ public class RtspClient {
         commandsManager.setAudioConfig(sampleRate: sampleRate, isStereo: isStereo)
     }
     
-    public func setVideoInfo(sps: String, pps: String, vps: String?) {
-        commandsManager.setVideoConfig(sps: sps, pps: pps, vps: vps)
+    public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        let spsString = Data(sps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
+        let ppsString = Data(pps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
+        commandsManager.setVideoConfig(sps: spsString, pps: ppsString, vps: nil)
     }
     
     public func connect(url: String) {
