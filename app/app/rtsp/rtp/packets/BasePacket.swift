@@ -49,7 +49,8 @@ public class BasePacket {
     
     public func updateSeq(buffer: inout Array<UInt8>) {
         self.seq += 1
-        setLong(buffer: &buffer, n: &seq, begin: 2, end: 4)
+        var count = self.seq
+        setLong(buffer: &buffer, n: &count, begin: 2, end: 4)
     }
     
     public func markPacket(buffer: inout Array<UInt8>) {

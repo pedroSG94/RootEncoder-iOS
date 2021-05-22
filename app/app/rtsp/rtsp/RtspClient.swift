@@ -46,7 +46,7 @@ public class RtspClient {
                 let port = defaultPort ? 554 : Int(groups[2])!
                 let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
                 self.commandsManager.setUrl(host: host, port: port, path: path)
-                socket = Socket(host: host, port: port)
+                socket = Socket(host: host, port: port, callback: connectCheckerRtsp!)
                 socket?.connect()
                 rtpSender = RtpSender(socket: socket!)
                 rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
@@ -114,13 +114,13 @@ public class RtspClient {
         }
     }
     
-    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        rtpSender?.sendVideo(buffer: buffer, ts: ts)
+    public func sendVideo(frame: Frame) {
+        rtpSender?.sendVideo(frame: frame)
     }
     
-    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
+    public func sendAudio(frame: Frame) {
         if (streaming) {
-            rtpSender?.sendAudio(buffer: buffer, ts: ts)
+            rtpSender?.sendAudio(frame: frame)
         }
     }
 }

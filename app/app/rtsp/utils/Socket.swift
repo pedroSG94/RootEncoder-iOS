@@ -5,10 +5,12 @@ public class Socket: NSObject, StreamDelegate {
     private var port: Int
     var inputStream: InputStream?
     var outputStream: OutputStream?
+    private var callback: ConnectCheckerRtsp
     
-    public init(host: String, port: Int) {
+    public init(host: String, port: Int, callback: ConnectCheckerRtsp) {
         self.host = host
         self.port = port
+        self.callback = callback
     }
     
     public func connect() {
@@ -45,6 +47,7 @@ public class Socket: NSObject, StreamDelegate {
         let result = outputStream?.write(buffer, maxLength: buffer.count)
         if (result! <= 1) {
             print("write error")
+            self.callback.onConnectionFailedRtsp(reason: "write packet failed")
         }
     }
     

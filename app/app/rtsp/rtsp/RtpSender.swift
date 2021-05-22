@@ -20,12 +20,12 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
         audioPacketizer = AacPacket(sampleRate: 44100, audioPacketCallback: self)
     }
     
-    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        videoPacketizer?.createAndSendPacket(buffer: buffer, ts: ts)
+    public func sendVideo(frame: Frame) {
+        videoPacketizer?.createAndSendPacket(data: frame)
     }
     
-    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
-        audioPacketizer?.createAndSendPacket(buffer: buffer, ts: ts)
+    public func sendAudio(frame: Frame) {
+        audioPacketizer?.createAndSendPacket(data: frame)
     }
     
     public func onVideoFrameCreated(rtpFrame: inout RtpFrame) {

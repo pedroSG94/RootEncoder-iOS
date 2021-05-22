@@ -25,7 +25,7 @@ public class VideoEncoder {
     private var width: Int = 1920
     private var height: Int = 1080
     private var fps: Int = 30
-    private var bitrate: Int = 3000 * 1000
+    private var bitrate: Int = 1000 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
@@ -115,6 +115,7 @@ public class VideoEncoder {
 
         let encoder: VideoEncoder = Unmanaged<VideoEncoder>.fromOpaque(refcon).takeUnretainedValue()
         var frame = Frame()
+        let keyFrame = encoder.isKeyFrame(sampleBuffer: sampleBuffer)
         let data = encoder.getValidRawBuffer(sampleBuffer: sampleBuffer)
         guard let buffer: Array<UInt8> = data else { return }
         frame.buffer = buffer
@@ -122,6 +123,7 @@ public class VideoEncoder {
         let elapsedNanoSeconds = (end - encoder.initTs) * 1000000
         frame.timeStamp = UInt64(elapsedNanoSeconds)
         frame.length = UInt32(frame.buffer!.count)
+        frame.flag = keyFrame ? 5 : 1
         encoder.callback.getH264Data(frame: frame)
     }
     
@@ -130,7 +132,7 @@ public class VideoEncoder {
         let startCode = [UInt8](arrayLiteral: 0x00, 0x00, 0x00, 0x01)
         let keyFrame = isKeyFrame(sampleBuffer: sampleBuffer)
         var rawH264 = Array<UInt8>()
-        var idrSlice: UInt8 = 61
+        var idrSlice: UInt8 = 65
         rawH264.append(contentsOf: startCode)
         if (keyFrame) {
             //write sps and pps
@@ -162,7 +164,7 @@ public class VideoEncoder {
             rawH264.append(contentsOf: startCode)
             rawH264.append(contentsOf: ppsData)
             rawH264.append(contentsOf: startCode)
-            idrSlice = 65
+            idrSlice = 101
         }
         rawH264.append(idrSlice)
         let body = try! sampleBuffer.dataBuffer?.dataBytes()

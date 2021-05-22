@@ -44,6 +44,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     func onConnectionFailedRtsp(reason: String) {
         print("failed: \(reason)")
+        stopStream()
     }
     
     func onNewBitrateRtsp(bitrate: UInt64) {
@@ -63,7 +64,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func getAacData(frame: Frame) {
-        client?.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
+        client?.sendAudio(frame: frame)
     }
     
     func getPcmData(from buffer: AVAudioPCMBuffer, initTS: Int64) {
@@ -71,7 +72,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func getH264Data(frame: Frame) {
-        client?.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+        client?.sendVideo(frame: frame)
     }
     
     func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
@@ -105,10 +106,15 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     override func viewDidDisappear(_ animated: Bool) {
+        stopStream()
+    }
+    
+    private func stopStream() {
         microphone?.stop()
         cameraManager?.stop()
         audioEncoder?.stop()
         videoEncoder?.stop()
+        client?.disconnect()
     }
     
     func validatePermissions() {

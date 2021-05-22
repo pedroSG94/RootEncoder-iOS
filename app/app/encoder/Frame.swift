@@ -12,4 +12,5 @@ public struct Frame {
     var buffer: Array<UInt8>?
     var length: UInt32?
     var timeStamp: UInt64?
+    var flag: Int? = 1
 }

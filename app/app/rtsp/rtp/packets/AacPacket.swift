@@ -11,8 +11,10 @@ public class AacPacket: BasePacket {
         self.callback = audioPacketCallback
     }
     
-    public func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64) {
-        let length = buffer.count
+    public func createAndSendPacket(data: Frame) {
+        let buffer = data.buffer!
+        let ts = data.timeStamp!
+        let length = Int(data.length!)
         let dts = ts * 1000
         var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
         rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]

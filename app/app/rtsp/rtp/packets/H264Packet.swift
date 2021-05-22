@@ -13,7 +13,10 @@ public class H264Packet: BasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64) {
+    public func createAndSendPacket(data: Frame) {
+        let buffer = data.buffer!
+        let ts = data.timeStamp!
+        let flag = data.flag!
         var frame = RtpFrame()
         frame.timeStamp = ts
         frame.channelIdentifier = self.channelIdentifier
@@ -21,10 +24,10 @@ public class H264Packet: BasePacket {
         frame.rtcpPort = self.rtcpPort
         
         var header = buffer[0...5]
-        let naluLength = buffer.count + 1
-        let type = header[4] & 0x1F
-        if type == RtpConstants.IDR {
+        let naluLength = Int(data.length!) + 1
+        if flag == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
+            header[4] = UInt8(RtpConstants.IDR)
             self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
             self.markPacket(buffer: &rtpBuffer)
             rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count - 1] = stapA![0...stapA!.count - 1]
@@ -64,26 +67,33 @@ public class H264Packet: BasePacket {
                 
                 var sum = 1
                 while sum < naluLength {
-                    let cont = ((naluLength - sum) > (maxPacketSize - RtpConstants.rtpHeaderLength - 2)) ?
-                        (maxPacketSize - RtpConstants.rtpHeaderLength - 2) : (naluLength - sum)
-                    let length = cont
-                    
-                    var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 1)
-                    
+                    var cont = 0
+                    if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
+                        cont = maxPacketSize - RtpConstants.rtpHeaderLength - 2
+                    } else {
+                        cont = naluLength - sum
+                    }
+                    var length = 0
+                    if (cont < buffer.count) {
+                        length = cont
+                    } else {
+                        length = buffer.count
+                    }
+                    var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 2)
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
                     rtpBuffer[RtpConstants.rtpHeaderLength + 1] = header[1]
-                    
+
                     self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
                     
-                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
-                    
+                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[sum - 1...sum - 1 + length - 1]
+
                     sum += length
                     if sum >= naluLength {
                         rtpBuffer[RtpConstants.rtpHeaderLength + 1] += 0x40
                         self.markPacket(buffer: &rtpBuffer)
                     }
                     self.updateSeq(buffer: &rtpBuffer)
-                    
+
                     frame.length = UInt32(rtpBuffer.count)
                     frame.buffer = rtpBuffer
                     callback?.onVideoFrameCreated(rtpFrame: &frame)
