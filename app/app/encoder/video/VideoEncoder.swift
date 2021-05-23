@@ -120,7 +120,7 @@ public class VideoEncoder {
         guard let buffer: Array<UInt8> = data else { return }
         frame.buffer = buffer
         let end = Date().millisecondsSince1970
-        let elapsedNanoSeconds = (end - encoder.initTs) * 1000000
+        let elapsedNanoSeconds = (end - encoder.initTs) * 1000
         frame.timeStamp = UInt64(elapsedNanoSeconds)
         frame.length = UInt32(frame.buffer!.count)
         frame.flag = keyFrame ? 5 : 1

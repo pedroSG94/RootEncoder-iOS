@@ -3,6 +3,8 @@ import Foundation
 public class Socket: NSObject, StreamDelegate {
     private var host: String
     private var port: Int
+    private var inputQueue = DispatchQueue(label: "input", qos: .userInitiated)
+    private var outputQueue = DispatchQueue(label: "output", qos: .userInitiated)
     var inputStream: InputStream?
     var outputStream: OutputStream?
     private var callback: ConnectCheckerRtsp
@@ -20,7 +22,13 @@ public class Socket: NSObject, StreamDelegate {
         CFStreamCreatePairWithSocketToHost(nil, self.host as CFString, UInt32(self.port), &readStream, &writeStream)
 
         self.inputStream = readStream!.takeRetainedValue()
+        if let inputStream = inputStream {
+            CFReadStreamSetDispatchQueue(inputStream, inputQueue)
+        }
         self.outputStream = writeStream!.takeRetainedValue()
+        if let outputStream = outputStream {
+            CFWriteStreamSetDispatchQueue(outputStream, outputQueue)
+        }
 
         self.inputStream?.delegate = self
         self.outputStream?.delegate = self
@@ -44,10 +52,18 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(buffer: [UInt8]) {
-        let result = outputStream?.write(buffer, maxLength: buffer.count)
-        if (result! <= 1) {
-            print("write error")
+        let status = self.outputStream?.streamStatus.rawValue ?? 2
+        if (status == 4) {
             self.callback.onConnectionFailedRtsp(reason: "write packet failed")
+            return
+        }
+        outputQueue.async {
+            print("writing...")
+            let result = self.outputStream?.write(buffer, maxLength: buffer.count)
+            if (result! <= 1) {
+                print("write error")
+                self.callback.onConnectionFailedRtsp(reason: "write packet failed")
+            }
         }
     }
     

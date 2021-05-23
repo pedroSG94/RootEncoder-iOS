@@ -15,6 +15,7 @@ public class AudioEncoder {
     private var inputFormat: AVAudioFormat?
     private var callback: GetAacData?
     private var running = false
+    private var initTs: Int64 = 0
     
     public init(inputFormat: AVAudioFormat, callback: GetAacData) {
         self.inputFormat = inputFormat
@@ -26,10 +27,11 @@ public class AudioEncoder {
         converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
         converter!.bitRate = bitrate
         print("prepare audio success")
+        initTs = Date().millisecondsSince1970
         running = true
     }
     
-    public func encodeFrame(from buffer: AVAudioBuffer, initTS: Int64) {
+    public func encodeFrame(from buffer: AVAudioBuffer) {
         if (running) {
             var error: NSError? = nil
             let aacBuffer = convertToAAC(from: buffer, error: &error)!
@@ -42,7 +44,7 @@ public class AudioEncoder {
                     var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
                     mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
                     let end = Date().millisecondsSince1970
-                    let elapsedNanoSeconds = (end - initTS) * 1000000
+                    let elapsedNanoSeconds = (end - self.initTs) * 1000
             
                     var frame = Frame()
                     frame.buffer = mBuffer

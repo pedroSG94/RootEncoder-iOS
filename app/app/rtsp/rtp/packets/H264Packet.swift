@@ -17,6 +17,7 @@ public class H264Packet: BasePacket {
         let buffer = data.buffer!
         let ts = data.timeStamp!
         let flag = data.flag!
+        let dts = ts * 1000
         var frame = RtpFrame()
         frame.timeStamp = ts
         frame.channelIdentifier = self.channelIdentifier
@@ -28,7 +29,7 @@ public class H264Packet: BasePacket {
         if flag == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             header[4] = UInt8(RtpConstants.IDR)
-            self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
+            self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             self.markPacket(buffer: &rtpBuffer)
             rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count - 1] = stapA![0...stapA!.count - 1]
             self.updateSeq(buffer: &rtpBuffer)
@@ -48,7 +49,7 @@ public class H264Packet: BasePacket {
                 
                 rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
                 
-                self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
+                self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                 self.markPacket(buffer: &rtpBuffer)
                 self.updateSeq(buffer: &rtpBuffer)
                 
@@ -83,7 +84,7 @@ public class H264Packet: BasePacket {
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
                     rtpBuffer[RtpConstants.rtpHeaderLength + 1] = header[1]
 
-                    self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: ts)
+                    self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                     
                     rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[sum - 1...sum - 1 + length - 1]
 

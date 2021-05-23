@@ -43,15 +43,15 @@ public class SenderReportTcp {
         audioBuffer[1] = 200
 
         /* Byte 2,3          ->  Length                             */
-        var nVideo: UInt64 = PACKET_LENGTH / 4 - 1
-        setLong(buffer: &videoBuffer, n: &nVideo, begin: 2, end: 4)
-        var nAudio: UInt64 = PACKET_LENGTH / 4 - 1
-        setLong(buffer: &audioBuffer, n: &nAudio, begin: 2, end: 4)
+        let nVideo: UInt64 = PACKET_LENGTH / 4 - 1
+        setLong(buffer: &videoBuffer, n: nVideo, begin: 2, end: 4)
+        let nAudio: UInt64 = PACKET_LENGTH / 4 - 1
+        setLong(buffer: &audioBuffer, n: nAudio, begin: 2, end: 4)
         /* Byte 4,5,6,7      ->  SSRC                            */
-        var ssrcVideo = UInt64(Int.random(in: 0..<Int.max))
-        setLong(buffer: &videoBuffer, n: &ssrcVideo, begin: 4, end: 8)
-        var ssrcAudio = UInt64(Int.random(in: 0..<Int.max))
-        setLong(buffer: &audioBuffer, n: &ssrcAudio, begin: 4, end: 8)
+        let ssrcVideo = UInt64(Int.random(in: 0..<Int.max))
+        setLong(buffer: &videoBuffer, n: ssrcVideo, begin: 4, end: 8)
+        let ssrcAudio = UInt64(Int.random(in: 0..<Int.max))
+        setLong(buffer: &audioBuffer, n: ssrcAudio, begin: 4, end: 8)
         /* Byte 8,9,10,11    ->  NTP timestamp hb                 */
         /* Byte 12,13,14,15  ->  NTP timestamp lb                 */
         /* Byte 16,17,18,19  ->  RTP timestamp                     */
@@ -72,15 +72,14 @@ public class SenderReportTcp {
         audioPacketCount += 1
         audioOctetCount += UInt64(rtpFrame.length!)
         
-        setLong(buffer: &audioBuffer, n: &audioPacketCount, begin: 20, end: 24)
-        setLong(buffer: &audioBuffer, n: &audioOctetCount, begin: 24, end: 28);
+        setLong(buffer: &audioBuffer, n: audioPacketCount, begin: 20, end: 24)
+        setLong(buffer: &audioBuffer, n: audioOctetCount, begin: 24, end: 28);
         let millis = UInt64(Date().millisecondsSince1970)
         if (millis - audioTime >= interval) {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            var ts = rtpFrame.timeStamp!
-            self.setData(buffer: &audioBuffer, ntpts: nano, rtpts: &ts)
-            sendReport(buffer: audioBuffer)
+            self.setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            sendReport(buffer: audioBuffer, type: "audio")
         }
     }
     
@@ -88,36 +87,36 @@ public class SenderReportTcp {
         videoPacketCount += 1
         videoOctetCount += UInt64(rtpFrame.length!)
         
-        setLong(buffer: &videoBuffer, n: &videoPacketCount, begin: 20, end: 24)
-        setLong(buffer: &videoBuffer, n: &videoOctetCount, begin: 24, end: 28);
+        setLong(buffer: &videoBuffer, n: videoPacketCount, begin: 20, end: 24)
+        setLong(buffer: &videoBuffer, n: videoOctetCount, begin: 24, end: 28);
         let millis = UInt64(Date().millisecondsSince1970)
         if (millis - videoTime >= interval) {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            var ts = rtpFrame.timeStamp!
-            self.setData(buffer: &videoBuffer, ntpts: nano, rtpts: &ts)
-            sendReport(buffer: videoBuffer)
+            self.setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            sendReport(buffer: videoBuffer, type: "video")
         }
     }
     
-    public func sendReport(buffer: Array<UInt8>) {
+    public func sendReport(buffer: Array<UInt8>, type: String) {
         socket?.write(buffer: buffer)
-        print("send audio report")
+        print("send \(type) report")
     }
     
-    private func setLong(buffer: inout Array<UInt8>, n: inout UInt64, begin: Int32, end: Int32) {
+    private func setLong(buffer: inout Array<UInt8>, n: UInt64, begin: Int32, end: Int32) {
         let start = end - 1
+        var value = n
         for i in stride(from: start, to: begin - 1, by: -1) {
-            buffer[Int(i)] = intToBytes(from: n % 256)[0]
-            n >>= 8
+            buffer[Int(i)] = intToBytes(from: value % 256)[0]
+            value >>= 8
         }
     }
     
-    private func setData(buffer: inout Array<UInt8>, ntpts: UInt64, rtpts: inout UInt64) {
-        var hb = ntpts / 1000000000
-        var lb = ((ntpts - hb * 1000000000) * 4294967296) / 1000000000
-        setLong(buffer: &buffer, n: &hb, begin: 8, end: 12)
-        setLong(buffer: &buffer, n: &lb, begin: 12, end: 16)
-        setLong(buffer: &buffer, n: &rtpts, begin: 16, end: 20)
+    private func setData(buffer: inout Array<UInt8>, ntpts: UInt64, rtpts: UInt64) {
+        let hb = ntpts / 1000000000
+        let lb = ((ntpts - hb * 1000000000) * 4294967296) / 1000000000
+        setLong(buffer: &buffer, n: hb, begin: 8, end: 12)
+        setLong(buffer: &buffer, n: lb, begin: 12, end: 16)
+        setLong(buffer: &buffer, n: rtpts, begin: 16, end: 20)
     }
 }

@@ -32,11 +32,9 @@ public class MicrophoneManager {
     }
     
     public func start() {
-        let start = Date().millisecondsSince1970
-
         inputNode?.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
             self.thread.async {
-                self.callback?.getPcmData(from: buffer, initTS: start)
+                self.callback?.getPcmData(from: buffer)
             }
         }
 

@@ -67,8 +67,8 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         client?.sendAudio(frame: frame)
     }
     
-    func getPcmData(from buffer: AVAudioPCMBuffer, initTS: Int64) {
-        audioEncoder?.encodeFrame(from: buffer, initTS: initTS)
+    func getPcmData(from buffer: AVAudioPCMBuffer) {
+        audioEncoder?.encodeFrame(from: buffer)
     }
     
     func getH264Data(frame: Frame) {
