@@ -1,5 +1,5 @@
 import Foundation
 
 public protocol AudioPacketCallback {
-    func onAudioFrameCreated(rtpFrame: inout RtpFrame)
+    func onAudioFrameCreated(rtpFrame: RtpFrame)
 }

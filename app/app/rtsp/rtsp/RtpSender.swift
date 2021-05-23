@@ -28,13 +28,13 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
         audioPacketizer?.createAndSendPacket(data: frame)
     }
     
-    public func onVideoFrameCreated(rtpFrame: inout RtpFrame) {
-        tcpSocket?.sendTcpFrame(rtpFrame: &rtpFrame)
+    public func onVideoFrameCreated(rtpFrame: RtpFrame) {
+        tcpSocket?.sendTcpFrame(rtpFrame: rtpFrame)
         tcpReport?.updateVideo(rtpFrame: rtpFrame)
     }
     
-    public func onAudioFrameCreated(rtpFrame: inout RtpFrame) {
-        tcpSocket?.sendTcpFrame(rtpFrame: &rtpFrame)
+    public func onAudioFrameCreated(rtpFrame: RtpFrame) {
+        tcpSocket?.sendTcpFrame(rtpFrame: rtpFrame)
         tcpReport?.updateAudio(rtpFrame: rtpFrame)
     }
 }

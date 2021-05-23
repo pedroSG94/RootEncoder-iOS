@@ -1,5 +1,5 @@
 import Foundation
 
 public protocol VideoPacketCallback {
-    func onVideoFrameCreated(rtpFrame: inout RtpFrame)
+    func onVideoFrameCreated(rtpFrame: RtpFrame)
 }

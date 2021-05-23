@@ -52,15 +52,9 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(buffer: [UInt8]) {
-        let status = self.outputStream?.streamStatus.rawValue ?? 2
-        if (status == 4) {
-            self.callback.onConnectionFailedRtsp(reason: "write packet failed")
-            return
-        }
         outputQueue.async {
-            print("writing...")
-            let result = self.outputStream?.write(buffer, maxLength: buffer.count)
-            if (result! <= 1) {
+            let result = self.outputStream?.write(buffer, maxLength: buffer.count) ?? -1
+            if (result <= 1) {
                 print("write error")
                 self.callback.onConnectionFailedRtsp(reason: "write packet failed")
             }
@@ -68,6 +62,7 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) {
+        print("write: \(data)")
         let buffer = [UInt8](data.utf8)
         self.write(buffer: buffer)
     }
@@ -81,7 +76,7 @@ public class Socket: NSObject, StreamDelegate {
             usleep(UInt32(sleepMillis * 1000))
         }
         let response = self.read()
-        print("read: \(response)")
+        //print("read: \(response)")
         return response
     }
     

@@ -16,46 +16,52 @@ public class H264Packet: BasePacket {
     public func createAndSendPacket(data: Frame) {
         let buffer = data.buffer!
         let ts = data.timeStamp!
-        let flag = data.flag!
         let dts = ts * 1000
         var frame = RtpFrame()
-        frame.timeStamp = ts
         frame.channelIdentifier = self.channelIdentifier
         frame.rtpPort = self.rtpPort
         frame.rtcpPort = self.rtcpPort
         
-        var header = buffer[0...5]
+        var header = buffer[0...4]
         let naluLength = Int(data.length!) + 1
-        if flag == RtpConstants.IDR {
+        let type: UInt8 = header[4] & 0x1F
+        print("type: \(type)")
+        if type == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
-            header[4] = UInt8(RtpConstants.IDR)
-            self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
+            let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             self.markPacket(buffer: &rtpBuffer)
-            rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count - 1] = stapA![0...stapA!.count - 1]
+            rtpBuffer[RtpConstants.rtpHeaderLength...RtpConstants.rtpHeaderLength + stapA!.count - 1] = stapA![0...stapA!.count - 1]
             self.updateSeq(buffer: &rtpBuffer)
             
+            frame.timeStamp = rtpTs
             frame.length = UInt32(rtpBuffer.count)
             frame.buffer = rtpBuffer
-            callback?.onVideoFrameCreated(rtpFrame: &frame)
+            callback?.onVideoFrameCreated(rtpFrame: frame)
             self.sendKeyFrame = true
         }
         if sendKeyFrame {
             // Small NAL unit => Single NAL unit
             if (naluLength <= self.maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
-                let length = naluLength
-                
+                let cont = naluLength - 1
+                var length = 0
+                if (cont < buffer.count) {
+                    length = cont
+                } else {
+                    length = buffer.count
+                }
                 var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[4]
                 
-                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
+                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...length - 1]
                 
-                self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
+                let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                 self.markPacket(buffer: &rtpBuffer)
                 self.updateSeq(buffer: &rtpBuffer)
                 
+                frame.timeStamp = rtpTs
                 frame.length = UInt32(rtpBuffer.count)
                 frame.buffer = rtpBuffer
-                callback?.onVideoFrameCreated(rtpFrame: &frame)
+                callback?.onVideoFrameCreated(rtpFrame: frame)
             }
             // Large NAL unit => Split nal unit
             else {
@@ -84,7 +90,7 @@ public class H264Packet: BasePacket {
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
                     rtpBuffer[RtpConstants.rtpHeaderLength + 1] = header[1]
 
-                    self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
+                    let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                     
                     rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[sum - 1...sum - 1 + length - 1]
 
@@ -95,9 +101,10 @@ public class H264Packet: BasePacket {
                     }
                     self.updateSeq(buffer: &rtpBuffer)
 
+                    frame.timeStamp = rtpTs
                     frame.length = UInt32(rtpBuffer.count)
                     frame.buffer = rtpBuffer
-                    callback?.onVideoFrameCreated(rtpFrame: &frame)
+                    callback?.onVideoFrameCreated(rtpFrame: frame)
                     // Switch start bit
                     header[1] = header[1] & 0x7F
                 }

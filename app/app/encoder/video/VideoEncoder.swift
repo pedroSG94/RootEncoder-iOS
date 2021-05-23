@@ -160,10 +160,10 @@ public class VideoEncoder {
                 callback.getSpsAndPps(sps: spsData, pps: ppsData)
                 isSpsAndPpsSend = true
             }
-            rawH264.append(contentsOf: spsData)
-            rawH264.append(contentsOf: startCode)
-            rawH264.append(contentsOf: ppsData)
-            rawH264.append(contentsOf: startCode)
+            //rawH264.append(contentsOf: spsData)
+            //rawH264.append(contentsOf: startCode)
+            //rawH264.append(contentsOf: ppsData)
+            //rawH264.append(contentsOf: startCode)
             idrSlice = 101
         }
         rawH264.append(idrSlice)

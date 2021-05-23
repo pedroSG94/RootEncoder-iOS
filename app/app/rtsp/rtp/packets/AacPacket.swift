@@ -19,7 +19,7 @@ public class AacPacket: BasePacket {
         var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
         rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
         self.markPacket(buffer: &rtpBuffer)
-        self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
+        let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
         
         // AU-headers-length field: contains the size in bits of a AU-header
         // 13+3 = 16 bits -> 13bits for AU-size and 3bits for AU-Index / AU-Index-delta
@@ -35,12 +35,12 @@ public class AacPacket: BasePacket {
         
         self.updateSeq(buffer: &rtpBuffer)
         var frame = RtpFrame()
-        frame.timeStamp = UInt64(ts)
+        frame.timeStamp = rtpTs
         frame.length = UInt32(rtpBuffer.count)
         frame.buffer = rtpBuffer
         frame.channelIdentifier = self.channelIdentifier
         frame.rtpPort = self.rtpPort
         frame.rtcpPort = self.rtcpPort
-        callback?.onAudioFrameCreated(rtpFrame: &frame)
+        callback?.onAudioFrameCreated(rtpFrame: frame)
     }
 }

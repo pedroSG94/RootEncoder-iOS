@@ -34,9 +34,10 @@ public class BasePacket {
         return buffer
     }
     
-    public func updateTimeStamp(buffer: inout Array<UInt8>, timeStamp: UInt64) {
+    public func updateTimeStamp(buffer: inout Array<UInt8>, timeStamp: UInt64) -> UInt64 {
         let ts: UInt64 = timeStamp * self.clock! / 1000000000
         setLong(buffer: &buffer, n: ts, begin: 4, end: 8)
+        return ts
     }
     
     public func setLong(buffer: inout Array<UInt8>, n: UInt64, begin: Int32, end: Int32) {
