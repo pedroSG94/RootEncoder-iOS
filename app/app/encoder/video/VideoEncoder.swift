@@ -11,21 +11,12 @@ import AVFoundation
 import VideoToolbox
 import CoreFoundation
 
-extension OSStatus {
-    var error: NSError? {
-        guard self != noErr else { return nil }
-        
-        let message = SecCopyErrorMessageString(self, nil) as String? ?? "Unknown error"
-        return NSError(domain: NSOSStatusErrorDomain, code: Int(self), userInfo: [NSLocalizedDescriptionKey: message])
-    }
-}
-
 public class VideoEncoder {
     
-    private var width: Int = 1920
-    private var height: Int = 1080
+    private var width: Int32 = 640
+    private var height: Int32 = 480
     private var fps: Int = 30
-    private var bitrate: Int = 1000 * 1000
+    private var bitrate: Int = 1200 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
@@ -34,59 +25,44 @@ public class VideoEncoder {
     private var session: VTCompressionSession?
     private let callback: GetH264Data
     
-    
-    private var attributes: [NSString: AnyObject] {
-        var attributes: [NSString: AnyObject] = [
-            kCVPixelBufferIOSurfacePropertiesKey: [:] as AnyObject,
-            kCVPixelBufferOpenGLESCompatibilityKey: kCFBooleanTrue
-        ]
-        attributes[kCVPixelBufferWidthKey] = NSNumber(value: width)
-        attributes[kCVPixelBufferHeightKey] = NSNumber(value: height)
-        return attributes
-    }
-    
-    private var properties: [NSString: NSObject] {
-        let properties: [NSString: NSObject] = [
-            kVTCompressionPropertyKey_RealTime: kCFBooleanTrue,
-            kVTCompressionPropertyKey_AverageBitRate: Int(bitrate) as NSObject,
-            kVTCompressionPropertyKey_ExpectedFrameRate: NSNumber(value: fps),
-            kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration: NSNumber(value: iFrameInterval),
-        ]
-        return properties
-    }
-    
     public init(callback: GetH264Data) {
         self.callback = callback
     }
     
     public func prepareVideo() -> Bool {
-        let result = VTCompressionSessionCreate(allocator: kCFAllocatorDefault, width: Int32(width), height: Int32(height), codecType: kCMVideoCodecType_H264, encoderSpecification: nil, imageBufferAttributes: attributes as CFDictionary?, compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(), compressionSessionOut: &session
-        )
-        if (result != noErr) {
-            print("fail to create encoder")
+        let err = VTCompressionSessionCreate(allocator: nil, width: width, height: height, codecType: kCMVideoCodecType_H264, encoderSpecification: nil, imageBufferAttributes: nil, compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(), compressionSessionOut: &session)
+        
+        if err == errSecSuccess{
+            guard let sess = self.session else { return false }
+            let bitRate = self.bitrate
+            let frameInterval: Int32 = 60
+            let limti = [Double(bitRate) * 1.5 / 8, 1]
+            VTSessionSetProperties(sess, propertyDictionary: [
+                kVTCompressionPropertyKey_ProfileLevel: kVTProfileLevel_H264_Baseline_AutoLevel,
+                kVTCompressionPropertyKey_AverageBitRate: bitRate,
+                kVTCompressionPropertyKey_MaxKeyFrameInterval: frameInterval,
+                kVTCompressionPropertyKey_DataRateLimits: limti,
+                kVTCompressionPropertyKey_RealTime: true,
+                kVTCompressionPropertyKey_Quality: 0.25,
+            ] as CFDictionary)
+            VTCompressionSessionPrepareToEncodeFrames(sess)
+            self.initTs = Date().millisecondsSince1970
+            print("prepare video success")
+            running = true
+            return true
+        }else{
             return false
         }
-        let pro = VTSessionSetProperties(session!, propertyDictionary: properties as CFDictionary)
-        if (pro != noErr) {
-            print("fail to set properties encoder")
-            return false
-        }
-        let prepare = VTCompressionSessionPrepareToEncodeFrames(session!)
-        if (prepare != noErr) {
-            print("fail to prepare encoder")
-            return false
-        }
-        self.initTs = Date().millisecondsSince1970
-        print("prepare video success")
-        running = true
-        return true
     }
     
     public func encodeFrame(buffer: CMSampleBuffer) {
         if (running) {
-            guard let session: VTCompressionSession = session else { return }
-            var flags: VTEncodeInfoFlags = []
-            VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.imageBuffer!, presentationTimeStamp: buffer.presentationTimeStamp, duration: buffer.duration, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flags)
+            guard let session = self.session else { return }
+            guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
+            let time = CMSampleBufferGetPresentationTimeStamp(buffer)
+
+            var flag:VTEncodeInfoFlags = VTEncodeInfoFlags()
+            VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flag)
         }
     }
     
@@ -97,8 +73,14 @@ public class VideoEncoder {
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
-        guard let sampleBuffer = sampleBuffer else { return }
-        guard let refcon: UnsafeMutableRawPointer = outputCallbackRefCon else { return }
+        guard let sampleBuffer = sampleBuffer else {
+            print("nil bufer")
+            return
+        }
+        guard let refcon: UnsafeMutableRawPointer = outputCallbackRefCon else {
+            print("nil pointer")
+            return
+        }
         if (status != noErr) {
             print("encoding failed")
             return
@@ -160,10 +142,7 @@ public class VideoEncoder {
                 callback.getSpsAndPps(sps: spsData, pps: ppsData)
                 isSpsAndPpsSend = true
             }
-            //rawH264.append(contentsOf: spsData)
-            //rawH264.append(contentsOf: startCode)
-            //rawH264.append(contentsOf: ppsData)
-            //rawH264.append(contentsOf: startCode)
+
             idrSlice = 101
         }
         rawH264.append(idrSlice)

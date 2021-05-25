@@ -30,8 +30,9 @@ public class RtspClient {
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         self.sps = sps
         self.pps = pps
-        let spsString = Data(sps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
-        let ppsString = Data(pps).base64EncodedString(options: NSData.Base64EncodingOptions(rawValue: 0))
+        let spsString = Data(sps).base64EncodedString()
+        let ppsString = Data(pps).base64EncodedString()
+        
         commandsManager.setVideoConfig(sps: spsString, pps: ppsString, vps: nil)
     }
     

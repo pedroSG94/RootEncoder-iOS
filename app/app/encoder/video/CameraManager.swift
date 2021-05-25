@@ -19,8 +19,8 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
     
-    private var width = 1920
-    private var height = 1080
+    private var width = 640
+    private var height = 480
     private var attributes: [NSString: NSObject] {
             var attributes: [NSString: NSObject] = [
                 kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
@@ -63,6 +63,8 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     public func createSession() {
         prevLayer?.frame.size = cameraView.frame.size
         session = AVCaptureSession()
+        let preset: AVCaptureSession.Preset = .vga640x480
+        session?.sessionPreset = preset
         device = AVCaptureDevice.default(for: AVMediaType.video)
 
         do{
@@ -76,6 +78,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             session?.addInput(input)
         }
 
+        session?.commitConfiguration()
         prevLayer = AVCaptureVideoPreviewLayer(session: session!)
         prevLayer?.frame.size = cameraView.frame.size
         prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
@@ -84,11 +87,11 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         cameraView.layer.addSublayer(prevLayer!)
         
         output = AVCaptureVideoDataOutput()
-        
+
         let thread = DispatchQueue.global()
         output?.setSampleBufferDelegate(self, queue: thread)
         output?.alwaysDiscardsLateVideoFrames = true
-        output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
+        output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)]
         
         session?.addOutput(output!)
         session?.startRunning()
