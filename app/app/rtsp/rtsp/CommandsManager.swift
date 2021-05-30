@@ -8,8 +8,6 @@ public class CommandsManager {
     private var cSeq = 0
     private var sessionId: String? = nil
     private var authorization: String? = nil
-    private var trackAudio = 0
-    private var trackVideo = 1
     private var timeStamp: Int64?
     //Audio
     private var sampleRate = 44100
@@ -57,7 +55,7 @@ public class CommandsManager {
     }
     
     public func createSetup(track: Int) -> String {
-        let ports = track == trackVideo ? videoClientPorts : audioClientPorts
+        let ports = track == RtpConstants.videoTrack ? videoClientPorts : audioClientPorts
         let params = mProtocol == .TCP ? "TCP;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
         return "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())"
     }
@@ -78,11 +76,11 @@ public class CommandsManager {
     }
     
     public func getAudioTrack() -> Int {
-       return trackAudio
+        return RtpConstants.audioTrack
     }
     
     public func getVideoTrack() -> Int {
-        return trackVideo
+        return RtpConstants.videoTrack
     }
     
     private func createBody() -> String {
@@ -93,11 +91,11 @@ public class CommandsManager {
     }
     
     private func createAudioBody(body: Body) -> String {
-        return body.createAACBody(trackAudio: trackAudio, sampleRate: sampleRate, isStereo: isStereo)
+        return body.createAACBody(trackAudio: RtpConstants.audioTrack, sampleRate: sampleRate, isStereo: isStereo)
     }
     
     private func createVideoBody(body: Body) -> String {
-        return vps == nil ? body.createH264Body(trackVideo: trackVideo, sps: sps, pps: pps) : body.createH265Body(trackVideo: trackVideo, sps: sps, pps: pps, vps: vps!)
+        return vps == nil ? body.createH264Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps) : body.createH265Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps, vps: vps!)
     }
     
     public func setAuth(user: String, password: String) {

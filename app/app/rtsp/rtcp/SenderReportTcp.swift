@@ -10,6 +10,7 @@ import Foundation
 
 public class SenderReportTcp {
     
+    private var header = Array<UInt8>(arrayLiteral: [UInt8]("$".utf8)[0], 0x00, 0x00, 0x1C)
     private var socket: Socket?
     
     private let interval = 3000 //3s
@@ -79,7 +80,7 @@ public class SenderReportTcp {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             self.setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: audioBuffer, type: "audio")
+            sendReport(buffer: audioBuffer, type: "audio", rtpFrame: rtpFrame)
         }
     }
     
@@ -94,12 +95,15 @@ public class SenderReportTcp {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             self.setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: videoBuffer, type: "video")
+            sendReport(buffer: videoBuffer, type: "video", rtpFrame: rtpFrame)
         }
     }
     
-    public func sendReport(buffer: Array<UInt8>, type: String) {
-        socket?.write(buffer: buffer)
+    public func sendReport(buffer: Array<UInt8>, type: String, rtpFrame: RtpFrame) {
+        var report = buffer
+        header[1] = UInt8(2 * rtpFrame.channelIdentifier! + 1)
+        report.insert(contentsOf: header, at: 0)
+        socket?.write(buffer: report)
         print("send \(type) report")
     }
     

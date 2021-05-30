@@ -32,7 +32,6 @@ public class RtspClient {
         self.pps = pps
         let spsString = Data(sps).base64EncodedString()
         let ppsString = Data(pps).base64EncodedString()
-        
         commandsManager.setVideoConfig(sps: spsString, pps: ppsString, vps: nil)
     }
     
@@ -81,16 +80,16 @@ public class RtspClient {
                 } else if status != 200 {
                     connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(status)")
                 }
-                //Setup audio
-                socket?.write(data: commandsManager.createSetup(track: commandsManager.getAudioTrack()))
-                let audioSetupResponse = socket?.readBlock(blockTime: 1000)
-                commandsManager.getResponse(response: audioSetupResponse!, isAudio: true, connectCheckerRtsp: self.connectCheckerRtsp)
                 if !isOnlyAudio {
                     //Setup video
                     socket?.write(data: commandsManager.createSetup(track: commandsManager.getVideoTrack()))
                     let videoSetupResponse = socket?.readBlock(blockTime: 1000)
                     commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
                 }
+                //Setup audio
+                socket?.write(data: commandsManager.createSetup(track: commandsManager.getAudioTrack()))
+                let audioSetupResponse = socket?.readBlock(blockTime: 1000)
+                commandsManager.getResponse(response: audioSetupResponse!, isAudio: true, connectCheckerRtsp: self.connectCheckerRtsp)
                 //Record
                 socket?.write(data: commandsManager.createRecord())
                 let recordResponse = socket?.readBlock(blockTime: 1000)
@@ -98,11 +97,16 @@ public class RtspClient {
                 self.streaming = true
                 rtpSender?.setAudioInfo(sampleRate: commandsManager.getSampleRate())
                 self.connectCheckerRtsp?.onConnectionSuccessRtsp()
+                socket?.success = true
             } else {
                 self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                 return
             }
         }
+    }
+    
+    public func isStreaming() -> Bool {
+        return streaming
     }
     
     public func disconnect() {

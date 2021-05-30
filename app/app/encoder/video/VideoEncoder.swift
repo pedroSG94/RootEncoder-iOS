@@ -11,12 +11,22 @@ import AVFoundation
 import VideoToolbox
 import CoreFoundation
 
+extension UInt32 {
+    func toBytes() -> [UInt8] {
+        let b1 = UInt8(self & 0x1F)
+        let b2 = UInt8(self >> 8)
+        let b3 = UInt8(self >> 16)
+        let b4 = UInt8(self >> 24)
+        return [UInt8](arrayLiteral: b1, b2, b3, b4)
+    }
+}
+
 public class VideoEncoder {
     
     private var width: Int32 = 640
     private var height: Int32 = 480
-    private var fps: Int = 30
-    private var bitrate: Int = 1200 * 1000
+    private var fps: Int = 60
+    private var bitrate: Int = 100 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
@@ -36,12 +46,10 @@ public class VideoEncoder {
             guard let sess = self.session else { return false }
             let bitRate = self.bitrate
             let frameInterval: Int32 = 60
-            let limti = [Double(bitRate) * 1.5 / 8, 1]
             VTSessionSetProperties(sess, propertyDictionary: [
                 kVTCompressionPropertyKey_ProfileLevel: kVTProfileLevel_H264_Baseline_AutoLevel,
                 kVTCompressionPropertyKey_AverageBitRate: bitRate,
                 kVTCompressionPropertyKey_MaxKeyFrameInterval: frameInterval,
-                kVTCompressionPropertyKey_DataRateLimits: limti,
                 kVTCompressionPropertyKey_RealTime: true,
                 kVTCompressionPropertyKey_Quality: 0.25,
             ] as CFDictionary)
@@ -142,7 +150,6 @@ public class VideoEncoder {
                 callback.getSpsAndPps(sps: spsData, pps: ppsData)
                 isSpsAndPpsSend = true
             }
-
             idrSlice = 101
         }
         rawH264.append(idrSlice)

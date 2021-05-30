@@ -39,28 +39,28 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func onConnectionSuccessRtsp() {
-        print("success")
+        //showMessage(message: "connection success")
     }
     
     func onConnectionFailedRtsp(reason: String) {
-        print("failed: \(reason)")
+        showMessage(message: "connection failed: \(reason)")
         stopStream()
     }
     
     func onNewBitrateRtsp(bitrate: UInt64) {
-        print("new bitrate")
+        print("new bitrate: \(bitrate)")
     }
     
     func onDisconnectRtsp() {
-        print("disconnect")
+        showMessage(message: "disconnected")
     }
     
     func onAuthErrorRtsp() {
-        print("auth error")
+        showMessage(message: "auth error")
     }
     
     func onAuthSuccessRtsp() {
-        print("auth success")
+        showMessage(message: "auth success")
     }
     
     func getAacData(frame: Frame) {
@@ -143,6 +143,14 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
             } else {
                 
             }
+        }
+    }
+    
+    private func showMessage(message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }

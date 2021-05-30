@@ -11,6 +11,8 @@ import Foundation
 import AVFoundation
 
 public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    private let thread = DispatchQueue.global()
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var input: AVCaptureDeviceInput?
@@ -125,6 +127,8 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        callback.getYUVData(from: sampleBuffer)
+        self.thread.async {
+            self.callback.getYUVData(from: sampleBuffer)
+        }
     }
 }

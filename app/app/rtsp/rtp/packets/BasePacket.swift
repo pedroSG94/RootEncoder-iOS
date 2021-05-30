@@ -2,7 +2,7 @@ import Foundation
 
 public class BasePacket {
     public let maxPacketSize: Int = RtpConstants.MTU - 28
-    public var channelIdentifier: UInt8?
+    public var channelIdentifier: Int?
     public var rtpPort: UInt32?
     public var rtcpPort: UInt32?
     

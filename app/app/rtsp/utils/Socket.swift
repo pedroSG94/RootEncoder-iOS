@@ -8,7 +8,9 @@ public class Socket: NSObject, StreamDelegate {
     var inputStream: InputStream?
     var outputStream: OutputStream?
     private var callback: ConnectCheckerRtsp
-    
+    private lazy var outputBuffer: CircularBuffer = .init(capacity: Int(UInt16.max))
+    public var success = false
+
     public init(host: String, port: Int, callback: ConnectCheckerRtsp) {
         self.host = host
         self.port = port
@@ -16,6 +18,7 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func connect() {
+        success = false
         var readStream:  Unmanaged<CFReadStream>?
         var writeStream: Unmanaged<CFWriteStream>?
 
@@ -41,6 +44,7 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func disconnect() {
+        success = false
         inputStream?.close()
         outputStream?.close()
         inputStream?.remove(from: RunLoop.current, forMode: RunLoop.Mode.default)
@@ -52,11 +56,14 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(buffer: [UInt8]) {
-        outputQueue.async {
-            let result = self.outputStream?.write(buffer, maxLength: buffer.count) ?? -1
-            if (result <= 1) {
-                print("write error")
-                self.callback.onConnectionFailedRtsp(reason: "write packet failed")
+        outputQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+            let data = Data(buffer)
+            self.outputBuffer.append(data, locked: nil)
+            if let outputStream = self.outputStream, outputStream.hasSpaceAvailable {
+                self.doOutput(outputStream)
             }
         }
     }
@@ -106,7 +113,7 @@ public class Socket: NSObject, StreamDelegate {
         }
         return result
     }
-    
+        
     public func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
         if aStream === inputStream {
             switch eventCode {
@@ -121,9 +128,16 @@ public class Socket: NSObject, StreamDelegate {
                 break
             case Stream.Event.hasBytesAvailable:
                 print("buffer input")
+                if (success) {
+                    let result = read()
+                    if (result == "EOF") {
+                        callback.onConnectionFailedRtsp(reason: "connection reset by peer")
+                    }
+                }
                 break
             case Stream.Event.endEncountered:
                 print("end input")
+                callback.onConnectionFailedRtsp(reason: "connection reset by peer")
                 break
             default:
                 print("other input")
@@ -139,6 +153,7 @@ public class Socket: NSObject, StreamDelegate {
                 break
             case Stream.Event.hasSpaceAvailable:
                 print("space output")
+                self.doOutput(aStream as! OutputStream)
                 break
             case Stream.Event.hasBytesAvailable:
                 print("buffer output")
@@ -152,4 +167,14 @@ public class Socket: NSObject, StreamDelegate {
             }
         }
     }
+    
+    private func doOutput(_ outputStream: OutputStream) {
+            guard let bytes = outputBuffer.bytes, 0 < outputBuffer.maxLength else {
+                return
+            }
+            let length = outputStream.write(bytes, maxLength: outputBuffer.maxLength)
+            if 0 < length {
+                outputBuffer.skip(length)
+            }
+        }
 }

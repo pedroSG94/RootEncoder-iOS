@@ -7,7 +7,7 @@ public class AacPacket: BasePacket {
     
     init(sampleRate: Int, audioPacketCallback: AudioPacketCallback) {
         super.init(clock: UInt64(sampleRate))
-        self.channelIdentifier = 0x00
+        self.channelIdentifier = RtpConstants.audioTrack
         self.callback = audioPacketCallback
     }
     

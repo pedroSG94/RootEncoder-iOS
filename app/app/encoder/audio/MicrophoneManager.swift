@@ -41,7 +41,7 @@ public class MicrophoneManager {
         self.audioEngine.prepare()
         do {
             try self.audioEngine.start()
-        } catch {
+        } catch let error {
             print(error)
         }
     }

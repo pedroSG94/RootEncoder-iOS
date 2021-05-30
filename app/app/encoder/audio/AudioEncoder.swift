@@ -67,22 +67,27 @@ public class AudioEncoder {
     }
     
     private func convert(from sourceBuffer: AVAudioBuffer, to destinationBuffer: AVAudioBuffer, error outError: NSErrorPointer) {
-        // input each buffer only once
-        var newBufferAvailable = true
+        if (running) {
+            // input each buffer only once
+            var newBufferAvailable = true
 
-        let inputBlock : AVAudioConverterInputBlock = {
-            inNumPackets, outStatus in
-            if newBufferAvailable {
-                outStatus.pointee = .haveData
-                newBufferAvailable = false
-                return sourceBuffer
-            } else {
-                outStatus.pointee = .noDataNow
-                return nil
+            let inputBlock : AVAudioConverterInputBlock = {
+                inNumPackets, outStatus in
+                if newBufferAvailable {
+                    outStatus.pointee = .haveData
+                    newBufferAvailable = false
+                    return sourceBuffer
+                } else {
+                    outStatus.pointee = .noDataNow
+                    return nil
+                }
+            }
+            do {
+                converter?.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
+            } catch let error {
+                print(error)
             }
         }
-
-        _ = converter!.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
     }
     
     private func getAACFormat(sampleRate: Double, channels: UInt32) -> AVAudioFormat? {

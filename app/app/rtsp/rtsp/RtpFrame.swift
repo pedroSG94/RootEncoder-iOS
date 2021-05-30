@@ -6,5 +6,5 @@ public struct RtpFrame {
     var timeStamp: UInt64?
     var rtpPort: UInt32?
     var rtcpPort: UInt32?
-    var channelIdentifier: UInt8?
+    var channelIdentifier: Int?
 }

@@ -9,7 +9,7 @@ public class H264Packet: BasePacket {
     public init(sps: Array<UInt8>, pps: Array<UInt8>, videoPacketCallback: VideoPacketCallback) {
         super.init(clock: UInt64(RtpConstants.clockVideoFrequency))
         self.callback = videoPacketCallback
-        self.channelIdentifier = 0x02
+        self.channelIdentifier = RtpConstants.videoTrack
         setSpsPps(sps: sps, pps: pps)
     }
     
@@ -23,9 +23,8 @@ public class H264Packet: BasePacket {
         frame.rtcpPort = self.rtcpPort
         
         var header = buffer[0...4]
-        let naluLength = Int(data.length!) + 1
+        let naluLength = Int(data.length!)
         let type: UInt8 = header[4] & 0x1F
-        print("type: \(type)")
         if type == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
@@ -41,18 +40,11 @@ public class H264Packet: BasePacket {
         }
         if sendKeyFrame {
             // Small NAL unit => Single NAL unit
-            if (naluLength <= self.maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
-                let cont = naluLength - 1
-                var length = 0
-                if (cont < buffer.count) {
-                    length = cont
-                } else {
-                    length = buffer.count
-                }
-                var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength)
+            if (naluLength <= self.maxPacketSize - RtpConstants.rtpHeaderLength - 1) {
+                var rtpBuffer = self.getBuffer(size: naluLength + RtpConstants.rtpHeaderLength + 1)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[4]
                 
-                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...length - 1]
+                rtpBuffer[RtpConstants.rtpHeaderLength + 1...rtpBuffer.count - 1] = buffer[0...naluLength - 1]
                 
                 let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                 self.markPacket(buffer: &rtpBuffer)
@@ -72,7 +64,7 @@ public class H264Packet: BasePacket {
                 header[0] = ((header[4] & 0x60) & 0xFF) // FU indicator NRI
                 header[0] += 28
                 
-                var sum = 1
+                var sum = 0
                 while sum < naluLength {
                     var cont = 0
                     if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
@@ -92,7 +84,7 @@ public class H264Packet: BasePacket {
 
                     let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                     
-                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[sum - 1...sum - 1 + length - 1]
+                    rtpBuffer[RtpConstants.rtpHeaderLength + 2...rtpBuffer.count - 1] = buffer[sum...sum + length - 1]
 
                     sum += length
                     if sum >= naluLength {
@@ -118,12 +110,12 @@ public class H264Packet: BasePacket {
         stapA = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 5)
         
         // STAP-A NAL header is 24
-        stapA![0] = UInt8(24)
+        stapA![0] = 0x18
         // Write NALU 1 size into the array (NALU 1 is the SPS).
-        stapA![1] = UInt8(spsBuffer.count) >> UInt8(8)
+        stapA![1] = UInt8(spsBuffer.count) >> 0x08
         stapA![2] = UInt8(ppsBuffer.count) & 0xFF
         // Write NALU 2 size into the array (NALU 2 is the PPS).
-        stapA![spsBuffer.count + 3] = UInt8(ppsBuffer.count) >> UInt8(8)
+        stapA![spsBuffer.count + 3] = UInt8(ppsBuffer.count) >> 0x08
         stapA![spsBuffer.count + 4] = UInt8(ppsBuffer.count) & 0xFF
         
         // Write NALU 1 into the array, then write NALU 2 into the array.
