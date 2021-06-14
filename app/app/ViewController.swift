@@ -68,7 +68,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func getPcmData(from buffer: AVAudioPCMBuffer) {
-        audioEncoder?.encodeFrame(from: buffer)
+        //audioEncoder?.encodeFrame(from: buffer)
     }
     
     func getH264Data(frame: Frame) {
@@ -76,7 +76,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
-        print("connecting...")
+        print("connecting... \(sps) - \(pps)")
         client?.setVideoInfo(sps: sps, pps: pps, vps: nil)
         client?.connect(url: "rtsp://192.168.1.133:8554/live/pedro")
     }

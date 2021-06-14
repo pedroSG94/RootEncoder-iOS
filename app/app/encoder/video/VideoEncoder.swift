@@ -104,32 +104,20 @@ public class VideoEncoder {
         }
 
         let encoder: VideoEncoder = Unmanaged<VideoEncoder>.fromOpaque(refcon).takeUnretainedValue()
-        var frame = Frame()
-        let keyFrame = encoder.isKeyFrame(sampleBuffer: sampleBuffer)
-        let data = encoder.getValidRawBuffer(sampleBuffer: sampleBuffer)
-        guard let buffer: Array<UInt8> = data else { return }
-        frame.buffer = buffer
-        let end = Date().millisecondsSince1970
-        let elapsedNanoSeconds = (end - encoder.initTs) * 1000
-        frame.timeStamp = UInt64(elapsedNanoSeconds)
-        frame.length = UInt32(frame.buffer!.count)
-        frame.flag = keyFrame ? 5 : 1
-        encoder.callback.getH264Data(frame: frame)
+        encoder.getValidRawBuffer(sampleBuffer: sampleBuffer)
     }
     
-    //In iOS only h264 body is provided. So we need add header information in buffers
-    private func getValidRawBuffer(sampleBuffer: CMSampleBuffer) -> [UInt8]? {
+    //In iOS h264 is in AVC format and could contain multiple frames. So we need split frames and conver to annexb
+    private func getValidRawBuffer(sampleBuffer: CMSampleBuffer) {
         let startCode = [UInt8](arrayLiteral: 0x00, 0x00, 0x00, 0x01)
         let keyFrame = isKeyFrame(sampleBuffer: sampleBuffer)
-        var rawH264 = Array<UInt8>()
-        var idrSlice: UInt8 = 65
-        rawH264.append(contentsOf: startCode)
+        
         if (keyFrame) {
             //write sps and pps
-            guard let description = CMSampleBufferGetFormatDescription(sampleBuffer) else { return nil }
+            guard let description = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
             var parametersCount: Int = 0
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil, parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
-            if (parametersCount != 2) { return nil }
+            if (parametersCount != 2) { return }
             var sps: UnsafePointer<UInt8>?
             var spsSize: Int = 0
             CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &sps, parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
@@ -145,19 +133,38 @@ public class VideoEncoder {
             for i in 0...ppsSize - 1 {
                 ppsData.append(pps![i])
             }
-            
             if (!isSpsAndPpsSend) {
                 callback.getSpsAndPps(sps: spsData, pps: ppsData)
                 isSpsAndPpsSend = true
             }
-            idrSlice = 101
         }
-        rawH264.append(idrSlice)
+        
         let body = try! sampleBuffer.dataBuffer?.dataBytes()
         let bytes = [UInt8](body!)
-        rawH264.append(contentsOf: bytes)
-        return rawH264
+        var offset = 0
+        var unitLength: UInt32 = 0
+        while (offset < bytes.count) {
+            var lengthBytes = Array<UInt8>()
+            lengthBytes.append(contentsOf: bytes[offset...(offset + 3)])
+            unitLength = lengthBytes.withUnsafeBytes { $0.load(as: UInt32.self) }
+            offset += 4
+            //Big-Endian to Little-Endian
+            unitLength = CFSwapInt32(unitLength)
+            var rawH264 = Array<UInt8>()
+            rawH264.append(contentsOf: startCode)
+            rawH264.append(contentsOf: bytes[offset...(offset + Int(unitLength) - 1)])
+            offset += Int(unitLength)
+            var frame = Frame()
+            frame.buffer = rawH264
+            let end = Date().millisecondsSince1970
+            let elapsedNanoSeconds = (end - initTs) * 1000
+            frame.timeStamp = UInt64(elapsedNanoSeconds)
+            frame.length = UInt32(frame.buffer!.count)
+            
+            callback.getH264Data(frame: frame)
+        }
     }
+    
     
     private func isKeyFrame(sampleBuffer: CMSampleBuffer) -> Bool {
         guard

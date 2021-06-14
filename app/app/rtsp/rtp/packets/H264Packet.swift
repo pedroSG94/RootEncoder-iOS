@@ -25,6 +25,7 @@ public class H264Packet: BasePacket {
         var header = buffer[0...4]
         let naluLength = Int(data.length!)
         let type: UInt8 = header[4] & 0x1F
+        print("type: \(type)")
         if type == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
