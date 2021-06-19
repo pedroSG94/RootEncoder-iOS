@@ -8,7 +8,7 @@ public class BasePacket {
     
     private var clock: UInt64?
     private var seq: UInt64 = 0
-    private var ssrc: UInt64?
+    var ssrc: UInt64?
     
     public init(clock: UInt64) {
         self.clock = clock
@@ -27,7 +27,7 @@ public class BasePacket {
     
     public func getBuffer(size: Int) -> Array<UInt8> {
         var buffer = Array<UInt8>(repeating: 0, count: size)
-        buffer[0] = UInt8(strtoul("10000000", nil, 2))
+        buffer[0] = UInt8(0x80)
         buffer[1] = UInt8(RtpConstants.payloadType)
         setLongSSRC(buffer: &buffer, ssrc: ssrc!)
         requestBuffer(buffer: &buffer)

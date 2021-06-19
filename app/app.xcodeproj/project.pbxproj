@@ -18,7 +18,6 @@
 		044138572501A02500732969 /* appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138562501A02500732969 /* appUITests.swift */; };
 		044138662501A05000732969 /* MicrophoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138652501A05000732969 /* MicrophoneManager.swift */; };
 		044138712501A14B00732969 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386C2501A14B00732969 /* Utils.swift */; };
-		044138722501A14B00732969 /* SyncQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386D2501A14B00732969 /* SyncQueue.swift */; };
 		044138732501A14B00732969 /* ConnectCheckerRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */; };
 		044138742501A14B00732969 /* RtpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386F2501A14B00732969 /* RtpConstants.swift */; };
 		044138752501A14B00732969 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138702501A14B00732969 /* Socket.swift */; };
@@ -80,7 +79,6 @@
 		044138582501A02500732969 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		044138652501A05000732969 /* MicrophoneManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneManager.swift; sourceTree = "<group>"; };
 		0441386C2501A14B00732969 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		0441386D2501A14B00732969 /* SyncQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncQueue.swift; sourceTree = "<group>"; };
 		0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtsp.swift; sourceTree = "<group>"; };
 		0441386F2501A14B00732969 /* RtpConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpConstants.swift; sourceTree = "<group>"; };
 		044138702501A14B00732969 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
@@ -227,7 +225,6 @@
 				0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */,
 				0441386F2501A14B00732969 /* RtpConstants.swift */,
 				044138702501A14B00732969 /* Socket.swift */,
-				0441386D2501A14B00732969 /* SyncQueue.swift */,
 				0441386C2501A14B00732969 /* Utils.swift */,
 			);
 			path = utils;
@@ -438,7 +435,6 @@
 				043AB0FD2504524000725086 /* Conversor.swift in Sources */,
 				EB289B6F265174D100FB9B48 /* GetCameraData.swift in Sources */,
 				044138392501A02300732969 /* ViewController.swift in Sources */,
-				044138722501A14B00732969 /* SyncQueue.swift in Sources */,
 				044138752501A14B00732969 /* Socket.swift in Sources */,
 				044138892501A20500732969 /* BasePacket.swift in Sources */,
 				044138662501A05000732969 /* MicrophoneManager.swift in Sources */,

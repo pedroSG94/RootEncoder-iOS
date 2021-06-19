@@ -1,180 +1,86 @@
 import Foundation
+import Network
 
 public class Socket: NSObject, StreamDelegate {
-    private var host: String
-    private var port: Int
-    private var inputQueue = DispatchQueue(label: "input", qos: .userInitiated)
-    private var outputQueue = DispatchQueue(label: "output", qos: .userInitiated)
-    var inputStream: InputStream?
-    var outputStream: OutputStream?
     private var callback: ConnectCheckerRtsp
-    private lazy var outputBuffer: CircularBuffer = .init(capacity: Int(UInt16.max))
-    public var success = false
+    private var connection: NWConnection? = nil
 
     public init(host: String, port: Int, callback: ConnectCheckerRtsp) {
-        self.host = host
-        self.port = port
         self.callback = callback
+        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: .tcp)
     }
     
     public func connect() {
-        success = false
-        var readStream:  Unmanaged<CFReadStream>?
-        var writeStream: Unmanaged<CFWriteStream>?
-
-        CFStreamCreatePairWithSocketToHost(nil, self.host as CFString, UInt32(self.port), &readStream, &writeStream)
-
-        self.inputStream = readStream!.takeRetainedValue()
-        if let inputStream = inputStream {
-            CFReadStreamSetDispatchQueue(inputStream, inputQueue)
+        let sync = DispatchGroup()
+        sync.enter()
+        connection?.stateUpdateHandler = { (newState) in
+            switch (newState) {
+            case .ready:
+                print("connection success")
+                sync.leave()
+                break
+            case .setup:
+                print("setup")
+                break
+            case .waiting(_):
+                print("waiting")
+                break
+            case .preparing:
+                print("preparing")
+                 break
+            case .cancelled:
+                print("cacelled")
+                self.callback.onConnectionFailedRtsp(reason: "connection cancelled")
+            case .failed(_):
+                print("failed")
+                self.callback.onConnectionFailedRtsp(reason: "connection failed")
+                break
+            @unknown default:
+                print(newState)
+                break
+            }
         }
-        self.outputStream = writeStream!.takeRetainedValue()
-        if let outputStream = outputStream {
-            CFWriteStreamSetDispatchQueue(outputStream, outputQueue)
-        }
-
-        self.inputStream?.delegate = self
-        self.outputStream?.delegate = self
-
-        self.inputStream?.schedule(in: RunLoop.current, forMode: RunLoop.Mode.default)
-        self.outputStream?.schedule(in: RunLoop.current, forMode: RunLoop.Mode.default)
-
-        self.inputStream?.open()
-        self.outputStream?.open()
+        connection?.start(queue: .main)
+        sync.wait()
     }
     
     public func disconnect() {
-        success = false
-        inputStream?.close()
-        outputStream?.close()
-        inputStream?.remove(from: RunLoop.current, forMode: RunLoop.Mode.default)
-        outputStream?.remove(from: RunLoop.current, forMode: RunLoop.Mode.default)
-        inputStream?.delegate = nil
-        outputStream?.delegate = nil
-        inputStream = nil
-        outputStream = nil
+        connection?.forceCancel()
+        connection = nil
     }
     
     public func write(buffer: [UInt8]) {
-        outputQueue.async { [weak self] in
-            guard let self = self else {
-                return
+        let data = Data(buffer)
+        let sync = DispatchGroup()
+        sync.enter()
+        connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { NWError in
+            if (NWError != nil) {
+                print("error: \(NWError)")
+                self.callback.onConnectionFailedRtsp(reason: "write packet error")
             }
-            let data = Data(buffer)
-            self.outputBuffer.append(data, locked: nil)
-            if let outputStream = self.outputStream, outputStream.hasSpaceAvailable {
-                self.doOutput(outputStream)
-            }
-        }
+            sync.leave()
+        })))
+        sync.wait()
     }
     
     public func write(data: String) {
-        print("write: \(data)")
+        print("\(data)")
         let buffer = [UInt8](data.utf8)
         self.write(buffer: buffer)
     }
     
-    public func readBlock(blockTime: Int64) -> String {
-        let actualTime = Date().millisecondsSince1970
-        var time = actualTime
-        while (inputStream?.hasBytesAvailable == false || (time - actualTime) >= blockTime) {
-            time = Date().millisecondsSince1970
-            let sleepMillis = 10
-            usleep(UInt32(sleepMillis * 1000))
-        }
-        let response = self.read()
-        //print("read: \(response)")
-        return response
-    }
-    
     public func read() -> String {
         var result = ""
-        let bufferSize = 1024
-        var buffer = Array<UInt8>(repeating: 0, count: 1024)
-        var read: Int
-        while (inputStream?.hasBytesAvailable)! {
-            read = (inputStream?.read(&buffer, maxLength: bufferSize))!
-            if read < 0 {
-                //Stream error occured
-                print("error: \(read)")
-            } else if read == 0 {
-                //EOF
-                let output = String(bytes: buffer, encoding: .ascii)
-                if nil != output {
-                    result = result + output!
-                }
-                print("EOF")
-                break
+        let sync = DispatchGroup()
+        sync.enter()
+        connection?.receiveMessage { (data, context, isComplete, error) in
+            if (data != nil) {
+                let message = String(data: data!, encoding: String.Encoding.utf8)!
+                result = message
             }
-            let output = String(bytes: buffer, encoding: .utf8)
-            if nil != output {
-                result = result + output!
-            }
+            sync.leave()
         }
+        sync.wait()
         return result
     }
-        
-    public func stream(_ aStream: Stream, handle eventCode: Stream.Event) {
-        if aStream === inputStream {
-            switch eventCode {
-            case Stream.Event.errorOccurred:
-                print("error input")
-                break
-            case Stream.Event.openCompleted:
-                print("open input")
-                break
-            case Stream.Event.hasSpaceAvailable:
-                print("scape input")
-                break
-            case Stream.Event.hasBytesAvailable:
-                print("buffer input")
-                if (success) {
-                    let result = read()
-                    if (result == "EOF") {
-                        callback.onConnectionFailedRtsp(reason: "connection reset by peer")
-                    }
-                }
-                break
-            case Stream.Event.endEncountered:
-                print("end input")
-                callback.onConnectionFailedRtsp(reason: "connection reset by peer")
-                break
-            default:
-                print("other input")
-                break
-            }
-        } else if aStream == outputStream {
-            switch eventCode {
-            case Stream.Event.errorOccurred:
-                print("error output")
-                break
-            case Stream.Event.openCompleted:
-                print("open output")
-                break
-            case Stream.Event.hasSpaceAvailable:
-                print("space output")
-                self.doOutput(aStream as! OutputStream)
-                break
-            case Stream.Event.hasBytesAvailable:
-                print("buffer output")
-                break
-            case Stream.Event.endEncountered:
-                print("end output")
-                break
-            default:
-                print("other output")
-                break
-            }
-        }
-    }
-    
-    private func doOutput(_ outputStream: OutputStream) {
-            guard let bytes = outputBuffer.bytes, 0 < outputBuffer.maxLength else {
-                return
-            }
-            let length = outputStream.write(bytes, maxLength: outputBuffer.maxLength)
-            if 0 < length {
-                outputBuffer.skip(length)
-            }
-        }
 }

@@ -36,71 +36,74 @@ public class RtspClient {
     }
     
     public func connect(url: String) {
-        if !streaming {
-            let urlResults = url.groups(for: "^rtsps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
-            if urlResults.count > 0 {
-                let groups = urlResults[0]
-                self.tlsEnabled = groups[0].hasPrefix("rtsps")
-                let host = groups[1]
-                let defaultPort = groups.count == 3
-                let port = defaultPort ? 554 : Int(groups[2])!
-                let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
-                self.commandsManager.setUrl(host: host, port: port, path: path)
-                socket = Socket(host: host, port: port, callback: connectCheckerRtsp!)
-                socket?.connect()
-                rtpSender = RtpSender(socket: socket!)
-                rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
-                //Options
-                socket?.write(data: commandsManager.createOptions())
-                let optionsResponse = socket?.readBlock(blockTime: 1000)
-                commandsManager.getResponse(response: optionsResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                //Announce
-                socket?.write(data: commandsManager.createAnnounce())
-                let announceResponse = socket?.readBlock(blockTime: 1000)
-                commandsManager.getResponse(response: announceResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                let status = commandsManager.getResonseStatus(response: announceResponse!)
-                if status == 403 {
-                    connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
-                } else if status == 401 {
-                    if (commandsManager.canAuth()) {
-                        //Announce with auth
-                        socket?.write(data: commandsManager.createAuth(authResponse: announceResponse!))
-                        let authResponse = socket?.readBlock(blockTime: 1000)
-                        let authStatus = commandsManager.getResonseStatus(response: authResponse!)
-                        if authStatus == 401 {
-                            connectCheckerRtsp?.onAuthErrorRtsp()
-                        } else if authStatus == 200 {
-                            connectCheckerRtsp?.onAuthSuccessRtsp()
+        let thread = DispatchQueue(label: "RtspClient")
+        thread.async {
+            if !self.streaming {
+                let urlResults = url.groups(for: "^rtsps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
+                if urlResults.count > 0 {
+                    let groups = urlResults[0]
+                    self.tlsEnabled = groups[0].hasPrefix("rtsps")
+                    let host = groups[1]
+                    let defaultPort = groups.count == 3
+                    let port = defaultPort ? 554 : Int(groups[2])!
+                    let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
+                    self.commandsManager.setUrl(host: host, port: port, path: path)
+                    self.socket = Socket(host: host, port: port, callback: self.connectCheckerRtsp!)
+                    self.socket?.connect()
+                    self.rtpSender = RtpSender(socket: self.socket!)
+                    self.rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
+                    //Options
+                    self.socket?.write(data: self.commandsManager.createOptions())
+                    let optionsResponse = self.socket?.read()
+                    self.commandsManager.getResponse(response: optionsResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    //Announce
+                    self.socket?.write(data: self.commandsManager.createAnnounce())
+                    let announceResponse = self.socket?.read()
+                    self.commandsManager.getResponse(response: announceResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    let status = self.commandsManager.getResonseStatus(response: announceResponse!)
+                    print("s: \(status)")
+                    if status == 403 {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
+                    } else if status == 401 {
+                        if (self.commandsManager.canAuth()) {
+                            //Announce with auth
+                            self.socket?.write(data: self.commandsManager.createAuth(authResponse: announceResponse!))
+                            let authResponse = self.socket?.read()
+                            let authStatus = self.commandsManager.getResonseStatus(response: authResponse!)
+                            if authStatus == 401 {
+                                self.connectCheckerRtsp?.onAuthErrorRtsp()
+                            } else if authStatus == 200 {
+                                self.connectCheckerRtsp?.onAuthSuccessRtsp()
+                            } else {
+                                self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(authStatus)")
+                            }
                         } else {
-                            connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(authStatus)")
+                            self.connectCheckerRtsp?.onAuthErrorRtsp()
                         }
-                    } else {
-                        connectCheckerRtsp?.onAuthErrorRtsp()
+                    } else if status != 200 {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(status)")
                     }
-                } else if status != 200 {
-                    connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(status)")
+                    if !self.isOnlyAudio {
+                        //Setup video
+                        self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
+                        let videoSetupResponse = self.socket?.read()
+                        self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    }
+                    //Setup audio
+                    self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
+                    let audioSetupResponse = self.socket?.read()
+                    self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true, connectCheckerRtsp: self.connectCheckerRtsp)
+                    //Record
+                    self.socket?.write(data: self.commandsManager.createRecord())
+                    let recordResponse = self.socket?.read()
+                    self.commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    self.streaming = true
+                    self.rtpSender?.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
+                    self.connectCheckerRtsp?.onConnectionSuccessRtsp()
+                } else {
+                    self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
+                    return
                 }
-                if !isOnlyAudio {
-                    //Setup video
-                    socket?.write(data: commandsManager.createSetup(track: commandsManager.getVideoTrack()))
-                    let videoSetupResponse = socket?.readBlock(blockTime: 1000)
-                    commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                }
-                //Setup audio
-                socket?.write(data: commandsManager.createSetup(track: commandsManager.getAudioTrack()))
-                let audioSetupResponse = socket?.readBlock(blockTime: 1000)
-                commandsManager.getResponse(response: audioSetupResponse!, isAudio: true, connectCheckerRtsp: self.connectCheckerRtsp)
-                //Record
-                socket?.write(data: commandsManager.createRecord())
-                let recordResponse = socket?.readBlock(blockTime: 1000)
-                commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                self.streaming = true
-                rtpSender?.setAudioInfo(sampleRate: commandsManager.getSampleRate())
-                self.connectCheckerRtsp?.onConnectionSuccessRtsp()
-                socket?.success = true
-            } else {
-                self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
-                return
             }
         }
     }
@@ -120,7 +123,9 @@ public class RtspClient {
     }
     
     public func sendVideo(frame: Frame) {
-        rtpSender?.sendVideo(frame: frame)
+        if (streaming) {
+            rtpSender?.sendVideo(frame: frame)
+        }
     }
     
     public func sendAudio(frame: Frame) {

@@ -10,7 +10,7 @@ import Foundation
 
 public class RtpSocketTcp {
     
-    private var header = Array<UInt8>(arrayLiteral: [UInt8]("$".utf8)[0], 0x00, 0x00, 0x00)
+    private var header = Array<UInt8>(arrayLiteral: 36, 0x00, 0x00, 0x00)
     private var socket: Socket?
     
     init(socket: Socket) {
