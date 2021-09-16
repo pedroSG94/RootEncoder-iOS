@@ -31,19 +31,20 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
         
-        client?.setAudioInfo(sampleRate: 44100, isStereo: true)
+        client?.setAudioInfo(sampleRate: 44100, isStereo: false)
         audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
         videoEncoder?.prepareVideo()
+
         microphone?.start()
         cameraManager?.createSession()
     }
     
     func onConnectionSuccessRtsp() {
-        //showMessage(message: "connection success")
+        print("connection success")
     }
     
     func onConnectionFailedRtsp(reason: String) {
-        showMessage(message: "connection failed: \(reason)")
+        print("connection failed: \(reason)")
         stopStream()
     }
     
@@ -52,23 +53,23 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     func onDisconnectRtsp() {
-        showMessage(message: "disconnected")
+        print("disconnected")
     }
     
     func onAuthErrorRtsp() {
-        showMessage(message: "auth error")
+        print("auth error")
     }
     
     func onAuthSuccessRtsp() {
-        showMessage(message: "auth success")
+        print("auth success")
     }
     
     func getAacData(frame: Frame) {
         client?.sendAudio(frame: frame)
     }
     
-    func getPcmData(from buffer: AVAudioPCMBuffer) {
-        //audioEncoder?.encodeFrame(from: buffer)
+    func getPcmData(buffer: AVAudioPCMBuffer) {
+        audioEncoder?.encodeFrame(buffer: buffer)
     }
     
     func getH264Data(frame: Frame) {
@@ -77,7 +78,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
         client?.setVideoInfo(sps: sps, pps: pps, vps: nil)
-        client?.connect(url: "rtsp://192.168.1.133:8554/live/pedro")
+        client?.connect(url: "rtsp://192.168.1.132:80/live/pedro")
     }
     
     func getYUVData(from buffer: CMSampleBuffer) {
@@ -118,8 +119,10 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     func validatePermissions() {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
+            print("microphone permission granted")
             break
         case .denied:
+            print("microphone permission denied")
             break
         case .undetermined:
             break
@@ -142,14 +145,6 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
             } else {
                 
             }
-        }
-    }
-    
-    private func showMessage(message: String) {
-        DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler:nil))
-            self.present(alert, animated: true, completion: nil)
         }
     }
 }

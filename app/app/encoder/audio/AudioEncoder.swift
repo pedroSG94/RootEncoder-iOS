@@ -16,41 +16,46 @@ public class AudioEncoder {
     private var callback: GetAacData?
     private var running = false
     private var initTs: Int64 = 0
+    private let thread = DispatchQueue(label: "AudioEncoder")
     
     public init(inputFormat: AVAudioFormat, callback: GetAacData) {
         self.inputFormat = inputFormat
         self.callback = callback
     }
     
-    public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) {
-        outputFormat = self.getAACFormat(sampleRate: sampleRate, channels: channels)
+    public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
+        outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels)
         converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
         converter!.bitRate = bitrate
         print("prepare audio success")
         initTs = Date().millisecondsSince1970
         running = true
+        return true
     }
     
-    public func encodeFrame(from buffer: AVAudioBuffer) {
+    public func encodeFrame(buffer: AVAudioPCMBuffer) {
         if (running) {
-            var error: NSError? = nil
-            let aacBuffer = convertToAAC(from: buffer, error: &error)!
-            if error != nil {
-                print("Encode error: \(error.debugDescription)")
-            } else {
-                let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
-                for i in 0..<aacBuffer.packetCount {
-                    let info = aacBuffer.packetDescriptions![Int(i)]
-                    var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
-                    mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
-                    let end = Date().millisecondsSince1970
-                    let elapsedNanoSeconds = (end - self.initTs) * 1000
-            
-                    var frame = Frame()
-                    frame.buffer = mBuffer
-                    frame.length = UInt32(mBuffer.count)
-                    frame.timeStamp = UInt64(elapsedNanoSeconds)
-                    self.callback?.getAacData(frame: frame)
+            let b = buffer
+            thread.async {
+                var error: NSError? = nil
+                let aacBuffer = self.convertToAAC(buffer: b, error: &error)!
+                if error != nil {
+                    print("Encode error: \(error.debugDescription)")
+                } else {
+                    let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
+                    for i in 0..<aacBuffer.packetCount {
+                        let info = aacBuffer.packetDescriptions![Int(i)]
+                        var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
+                        mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
+                        let end = Date().millisecondsSince1970
+                        let elapsedNanoSeconds = (end - self.initTs) * 1000
+
+                        var frame = Frame()
+                        frame.buffer = mBuffer
+                        frame.length = UInt32(mBuffer.count)
+                        frame.timeStamp = UInt64(elapsedNanoSeconds)
+                        self.callback?.getAacData(frame: frame)
+                    }
                 }
             }
         }
@@ -60,17 +65,17 @@ public class AudioEncoder {
         running = false
     }
     
-    private func convertToAAC(from buffer: AVAudioBuffer, error outError: inout NSError?) -> AVAudioCompressedBuffer? {
-        let outBuffer = AVAudioCompressedBuffer(format: outputFormat!, packetCapacity: 8, maximumPacketSize: 768)
-        self.convert(from: buffer, to: outBuffer, error: &outError)
+    private func convertToAAC(buffer: AVAudioPCMBuffer, error: inout NSError?) -> AVAudioCompressedBuffer? {
+        let outBuffer = AVAudioCompressedBuffer(format: outputFormat!, packetCapacity: 8, maximumPacketSize: Int(buffer.frameLength))
+        self.convert(sourceBuffer: buffer, destinationBuffer: outBuffer, error: &error)
         return outBuffer
     }
     
-    private func convert(from sourceBuffer: AVAudioBuffer, to destinationBuffer: AVAudioBuffer, error outError: NSErrorPointer) {
+    private func convert(sourceBuffer: AVAudioPCMBuffer, destinationBuffer: AVAudioBuffer, error: NSErrorPointer) {
         if (running) {
+            sourceBuffer.frameLength = sourceBuffer.frameCapacity
             // input each buffer only once
             var newBufferAvailable = true
-
             let inputBlock : AVAudioConverterInputBlock = {
                 inNumPackets, outStatus in
                 if newBufferAvailable {
@@ -82,11 +87,7 @@ public class AudioEncoder {
                     return nil
                 }
             }
-            do {
-                converter?.convert(to: destinationBuffer, error: outError, withInputFrom: inputBlock)
-            } catch let error {
-                print(error)
-            }
+            converter?.convert(to: destinationBuffer, error: error, withInputFrom: inputBlock)
         }
     }
     

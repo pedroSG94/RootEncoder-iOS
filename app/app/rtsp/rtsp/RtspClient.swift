@@ -51,7 +51,6 @@ public class RtspClient {
                     self.socket = Socket(host: host, port: port, callback: self.connectCheckerRtsp!)
                     self.socket?.connect()
                     self.rtpSender = RtpSender(socket: self.socket!)
-                    self.rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
                     //Options
                     self.socket?.write(data: self.commandsManager.createOptions())
                     let optionsResponse = self.socket?.read()
@@ -85,6 +84,7 @@ public class RtspClient {
                     }
                     if !self.isOnlyAudio {
                         //Setup video
+                        self.rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
                         self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                         let videoSetupResponse = self.socket?.read()
                         self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
@@ -99,6 +99,7 @@ public class RtspClient {
                     self.commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
                     self.streaming = true
                     self.rtpSender?.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
+                    self.rtpSender?.start()
                     self.connectCheckerRtsp?.onConnectionSuccessRtsp()
                 } else {
                     self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
@@ -114,11 +115,12 @@ public class RtspClient {
     
     public func disconnect() {
         if streaming {
+            rtpSender?.stop()
             socket?.write(data: commandsManager.createTeardown())
             socket?.disconnect()
             commandsManager.reset()
-            self.streaming = false
-            self.connectCheckerRtsp?.onDisconnectRtsp()
+            streaming = false
+            connectCheckerRtsp?.onDisconnectRtsp()
         }
     }
     

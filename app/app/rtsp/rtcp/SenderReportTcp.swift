@@ -79,7 +79,7 @@ public class SenderReportTcp {
         if (millis - audioTime >= interval) {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            self.setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
             sendReport(buffer: audioBuffer, type: "audio", rtpFrame: rtpFrame)
         }
     }
@@ -94,7 +94,7 @@ public class SenderReportTcp {
         if (millis - videoTime >= interval) {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            self.setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
             sendReport(buffer: videoBuffer, type: "video", rtpFrame: rtpFrame)
         }
     }

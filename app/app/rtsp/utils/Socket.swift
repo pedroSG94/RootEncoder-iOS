@@ -36,7 +36,7 @@ public class Socket: NSObject, StreamDelegate {
                 self.callback.onConnectionFailedRtsp(reason: "connection failed")
                 break
             @unknown default:
-                print(newState)
+                print("new state: \(newState)")
                 break
             }
         }
@@ -51,16 +51,12 @@ public class Socket: NSObject, StreamDelegate {
     
     public func write(buffer: [UInt8]) {
         let data = Data(buffer)
-        let sync = DispatchGroup()
-        sync.enter()
-        connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { NWError in
-            if (NWError != nil) {
-                print("error: \(NWError)")
+        connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
+            if (error != nil) {
+                print("error: \(error)")
                 self.callback.onConnectionFailedRtsp(reason: "write packet error")
             }
-            sync.leave()
         })))
-        sync.wait()
     }
     
     public func write(data: String) {
@@ -73,14 +69,37 @@ public class Socket: NSObject, StreamDelegate {
         var result = ""
         let sync = DispatchGroup()
         sync.enter()
-        connection?.receiveMessage { (data, context, isComplete, error) in
-            if (data != nil) {
-                let message = String(data: data!, encoding: String.Encoding.utf8)!
-                result = message
-            }
-            sync.leave()
+        if #available(iOS 14.0, *) {
+            connection?.receiveDiscontiguous(minimumIncompleteLength: 1, maximumLength: 65536, completion: { data, context, isComplete, error in
+                if let data = data {
+                    let message = String(data: Data(data), encoding: String.Encoding.utf8)!
+                    print(message)
+                    result = message
+                }
+                if let error = error {
+                    self.callback.onConnectionFailedRtsp(reason: "fail to read \(error)")
+                }
+                if isComplete {
+                    self.callback.onConnectionFailedRtsp(reason: "fail to read EOF")
+
+                }
+                sync.leave()
+            })
+        } else {
+            // Fallback on earlier versions
         }
         sync.wait()
         return result
+    }
+}
+
+extension Data {
+
+    init(copying dd: DispatchData) {
+        var result = Data(count: dd.count)
+        result.withUnsafeMutableBytes { buf in
+            _ = dd.copyBytes(to: buf)
+        }
+        self = result
     }
 }

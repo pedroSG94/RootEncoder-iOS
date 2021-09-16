@@ -6,7 +6,10 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
     private var videoPacketizer: H264Packet?
     private let tcpSocket: RtpSocketTcp?
     private let tcpReport: SenderReportTcp?
-    
+    private let thread = DispatchQueue(label: "RtpSender")
+    private var running = false
+    private let queue = ConcurrentQueue()
+
     public init(socket: Socket) {
         tcpSocket = RtpSocketTcp(socket: socket)
         tcpReport = SenderReportTcp(socket: socket)
@@ -29,12 +32,34 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
     }
     
     public func onVideoFrameCreated(rtpFrame: RtpFrame) {
-        tcpSocket?.sendTcpFrame(rtpFrame: rtpFrame)
-        tcpReport?.updateVideo(rtpFrame: rtpFrame)
+        queue.add(frame: rtpFrame)
     }
     
     public func onAudioFrameCreated(rtpFrame: RtpFrame) {
-        tcpSocket?.sendTcpFrame(rtpFrame: rtpFrame)
-        tcpReport?.updateAudio(rtpFrame: rtpFrame)
+        queue.add(frame: rtpFrame)
+    }
+
+    public func start() {
+        running = true
+        thread.async {
+            while (self.running) {
+                let frame = self.queue.poll()
+                if (frame == nil) {
+                    usleep(100)
+                    continue
+                } else {
+                    if (frame!.channelIdentifier == RtpConstants.audioTrack) {
+                      // self.tcpReport?.updateAudio(rtpFrame: frame!)
+                    } else {
+                       // self.tcpReport?.updateVideo(rtpFrame: frame!)
+                    }
+                    self.tcpSocket?.sendTcpFrame(rtpFrame: frame!)
+                }
+            }
+        }
+    }
+
+    public func stop() {
+        running = false
     }
 }

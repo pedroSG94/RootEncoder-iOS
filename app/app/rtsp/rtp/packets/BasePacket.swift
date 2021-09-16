@@ -9,9 +9,11 @@ public class BasePacket {
     private var clock: UInt64?
     private var seq: UInt64 = 0
     var ssrc: UInt64?
+    private var payloadType = 0
     
-    public init(clock: UInt64) {
+    public init(clock: UInt64, payloadType: Int) {
         self.clock = clock
+        self.payloadType = payloadType
         self.ssrc = UInt64(UInt64(Int.random(in: 0..<Int.max)))
     }
     
@@ -28,7 +30,7 @@ public class BasePacket {
     public func getBuffer(size: Int) -> Array<UInt8> {
         var buffer = Array<UInt8>(repeating: 0, count: size)
         buffer[0] = UInt8(0x80)
-        buffer[1] = UInt8(RtpConstants.payloadType)
+        buffer[1] = UInt8(payloadType)
         setLongSSRC(buffer: &buffer, ssrc: ssrc!)
         requestBuffer(buffer: &buffer)
         return buffer

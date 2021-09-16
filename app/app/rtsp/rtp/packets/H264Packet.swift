@@ -7,7 +7,7 @@ public class H264Packet: BasePacket {
     private var stapA: Array<UInt8>?
     
     public init(sps: Array<UInt8>, pps: Array<UInt8>, videoPacketCallback: VideoPacketCallback) {
-        super.init(clock: UInt64(RtpConstants.clockVideoFrequency))
+        super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.audioTrack)
         self.callback = videoPacketCallback
         self.channelIdentifier = RtpConstants.videoTrack
         setSpsPps(sps: sps, pps: pps)
@@ -27,7 +27,7 @@ public class H264Packet: BasePacket {
 
         let naluLength = Int(buffer.count)
         let type: UInt8 = header[4] & 0x1F
-     
+
         if type == RtpConstants.IDR {
             var rtpBuffer = self.getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
@@ -36,7 +36,7 @@ public class H264Packet: BasePacket {
             self.updateSeq(buffer: &rtpBuffer)
             
             frame.timeStamp = rtpTs
-            frame.length = UInt32(rtpBuffer.count)
+            frame.length = rtpBuffer.count
             frame.buffer = rtpBuffer
             callback?.onVideoFrameCreated(rtpFrame: frame)
             self.sendKeyFrame = true
@@ -54,7 +54,7 @@ public class H264Packet: BasePacket {
                 self.updateSeq(buffer: &rtpBuffer)
                 
                 frame.timeStamp = rtpTs
-                frame.length = UInt32(rtpBuffer.count)
+                frame.length = rtpBuffer.count
                 frame.buffer = rtpBuffer
                 callback?.onVideoFrameCreated(rtpFrame: frame)
             }
@@ -91,7 +91,7 @@ public class H264Packet: BasePacket {
                     self.updateSeq(buffer: &rtpBuffer)
 
                     frame.timeStamp = rtpTs
-                    frame.length = UInt32(rtpBuffer.count)
+                    frame.length = rtpBuffer.count
                     frame.buffer = rtpBuffer
                     callback?.onVideoFrameCreated(rtpFrame: frame)
                     // Switch start bit

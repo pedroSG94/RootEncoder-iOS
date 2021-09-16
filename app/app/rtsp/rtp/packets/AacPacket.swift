@@ -6,9 +6,9 @@ public class AacPacket: BasePacket {
     private var callback: AudioPacketCallback?
     
     init(sampleRate: Int, audioPacketCallback: AudioPacketCallback) {
-        super.init(clock: UInt64(sampleRate))
-        self.channelIdentifier = RtpConstants.audioTrack
-        self.callback = audioPacketCallback
+        super.init(clock: UInt64(sampleRate), payloadType: RtpConstants.payloadType + RtpConstants.audioTrack)
+        channelIdentifier = RtpConstants.audioTrack
+        callback = audioPacketCallback
     }
     
     public func createAndSendPacket(data: Frame) {
@@ -16,10 +16,10 @@ public class AacPacket: BasePacket {
         let ts = data.timeStamp!
         let length = Int(data.length!)
         let dts = ts * 1000
-        var rtpBuffer = self.getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
+        var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
         rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
-        self.markPacket(buffer: &rtpBuffer)
-        let rtpTs = self.updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
+        markPacket(buffer: &rtpBuffer)
+        let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
         
         // AU-headers-length field: contains the size in bits of a AU-header
         // 13+3 = 16 bits -> 13bits for AU-size and 3bits for AU-Index / AU-Index-delta
@@ -33,14 +33,14 @@ public class AacPacket: BasePacket {
         rtpBuffer[RtpConstants.rtpHeaderLength + 3] &= 0xF8
         rtpBuffer[RtpConstants.rtpHeaderLength + 3] |= 0x00
         
-        self.updateSeq(buffer: &rtpBuffer)
+        updateSeq(buffer: &rtpBuffer)
         var frame = RtpFrame()
         frame.timeStamp = rtpTs
-        frame.length = UInt32(rtpBuffer.count)
+        frame.length = rtpBuffer.count
         frame.buffer = rtpBuffer
-        frame.channelIdentifier = self.channelIdentifier
-        frame.rtpPort = self.rtpPort
-        frame.rtcpPort = self.rtcpPort
+        frame.channelIdentifier = channelIdentifier
+        frame.rtpPort = rtpPort
+        frame.rtcpPort = rtcpPort
         callback?.onAudioFrameCreated(rtpFrame: frame)
     }
 }
