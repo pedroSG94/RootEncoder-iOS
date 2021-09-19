@@ -6,38 +6,41 @@ public class BasePacket {
     public var rtpPort: UInt32?
     public var rtcpPort: UInt32?
     
-    private var clock: UInt64?
+    private var clock: UInt64
     private var seq: UInt64 = 0
-    var ssrc: UInt64?
+    var ssrc: UInt64 = 0
     private var payloadType = 0
     
     public init(clock: UInt64, payloadType: Int) {
         self.clock = clock
         self.payloadType = payloadType
-        self.ssrc = UInt64(UInt64(Int.random(in: 0..<Int.max)))
     }
-    
+
+    public func setSSRC(ssrc: UInt64) {
+        self.ssrc = ssrc
+    }
+
     public func setPorts(rtpPort: UInt32, rtcpPort: UInt32) {
         self.rtpPort = rtpPort
         self.rtcpPort = rtcpPort
     }
     
     public func reset() {
-        self.seq = 0
-        self.ssrc = UInt64(Int.random(in: Int.min..<Int.max))
+        seq = 0
+        ssrc = 0
     }
     
     public func getBuffer(size: Int) -> Array<UInt8> {
         var buffer = Array<UInt8>(repeating: 0, count: size)
         buffer[0] = UInt8(0x80)
         buffer[1] = UInt8(payloadType)
-        setLongSSRC(buffer: &buffer, ssrc: ssrc!)
+        setLongSSRC(buffer: &buffer, ssrc: ssrc)
         requestBuffer(buffer: &buffer)
         return buffer
     }
     
     public func updateTimeStamp(buffer: inout Array<UInt8>, timeStamp: UInt64) -> UInt64 {
-        let ts: UInt64 = timeStamp * self.clock! / 1000000000
+        let ts: UInt64 = timeStamp * clock / 1000000000
         setLong(buffer: &buffer, n: ts, begin: 4, end: 8)
         return ts
     }
@@ -52,7 +55,7 @@ public class BasePacket {
     }
     
     public func updateSeq(buffer: inout Array<UInt8>) {
-        self.seq += 1
+        seq += 1
         setLong(buffer: &buffer, n: seq, begin: 2, end: 4)
     }
     

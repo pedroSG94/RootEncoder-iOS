@@ -40,6 +40,11 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
     }
 
     public func start() {
+        let ssrcVideo = UInt64(Int.random(in: 0..<Int.max))
+        let ssrcAudio = UInt64(Int.random(in: 0..<Int.max))
+        videoPacketizer?.setSSRC(ssrc: ssrcVideo)
+        audioPacketizer?.setSSRC(ssrc: ssrcAudio)
+        tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         running = true
         thread.async {
             while (self.running) {
@@ -48,12 +53,12 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
                     usleep(100)
                     continue
                 } else {
-                    if (frame!.channelIdentifier == RtpConstants.audioTrack) {
-                      // self.tcpReport?.updateAudio(rtpFrame: frame!)
-                    } else {
-                       // self.tcpReport?.updateVideo(rtpFrame: frame!)
-                    }
                     self.tcpSocket?.sendTcpFrame(rtpFrame: frame!)
+                    if (frame!.channelIdentifier == RtpConstants.audioTrack) {
+                        self.tcpReport?.updateAudio(rtpFrame: frame!)
+                    } else {
+                        self.tcpReport?.updateVideo(rtpFrame: frame!)
+                    }
                 }
             }
         }

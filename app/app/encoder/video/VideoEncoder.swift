@@ -25,8 +25,8 @@ public class VideoEncoder {
     
     private var width: Int32 = 640
     private var height: Int32 = 480
-    private var fps: Int = 60
-    private var bitrate: Int = 100 * 1000
+    private var fps: Int = 30
+    private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
@@ -43,8 +43,8 @@ public class VideoEncoder {
         let err = VTCompressionSessionCreate(allocator: nil, width: width, height: height, codecType: kCMVideoCodecType_H264, encoderSpecification: nil, imageBufferAttributes: nil, compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(), compressionSessionOut: &session)
         
         if err == errSecSuccess{
-            guard let sess = self.session else { return false }
-            let bitRate = self.bitrate
+            guard let sess = session else { return false }
+            let bitRate = bitrate
             let frameInterval: Int32 = 60
             VTSessionSetProperties(sess, propertyDictionary: [
                 kVTCompressionPropertyKey_ProfileLevel: kVTProfileLevel_H264_Baseline_AutoLevel,
@@ -54,7 +54,7 @@ public class VideoEncoder {
                 kVTCompressionPropertyKey_Quality: 0.25,
             ] as CFDictionary)
             VTCompressionSessionPrepareToEncodeFrames(sess)
-            self.initTs = Date().millisecondsSince1970
+            initTs = Date().millisecondsSince1970
             print("prepare video success")
             running = true
             return true
@@ -65,7 +65,7 @@ public class VideoEncoder {
     
     public func encodeFrame(buffer: CMSampleBuffer) {
         if (running) {
-            guard let session = self.session else { return }
+            guard let session = session else { return }
             guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
             let time = CMSampleBufferGetPresentationTimeStamp(buffer)
 

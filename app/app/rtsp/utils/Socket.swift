@@ -48,15 +48,24 @@ public class Socket: NSObject, StreamDelegate {
         connection?.forceCancel()
         connection = nil
     }
-    
+
     public func write(buffer: [UInt8]) {
         let data = Data(buffer)
+        write(data: data)
+    }
+
+    public func write(data: Data) {
         connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
             if (error != nil) {
                 print("error: \(error)")
                 self.callback.onConnectionFailedRtsp(reason: "write packet error")
             }
         })))
+    }
+
+    public func write(buffer: [UInt8], size: Int) {
+        let data = Data(bytes: buffer, count: size)
+        write(data: data)
     }
     
     public func write(data: String) {

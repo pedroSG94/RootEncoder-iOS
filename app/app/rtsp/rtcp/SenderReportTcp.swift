@@ -16,8 +16,8 @@ public class SenderReportTcp {
     private let interval = 3000 //3s
     private let PACKET_LENGTH: UInt64 = 28
     
-    private var videoBuffer = Array<UInt8>(repeating: 0, count: 28)
-    private var audioBuffer = Array<UInt8>(repeating: 0, count: 28)
+    private var videoBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
+    private var audioBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
     
     private var videoTime: UInt64 = 0
     private var audioTime: UInt64 = 0
@@ -36,12 +36,12 @@ public class SenderReportTcp {
         /*                                     | |---------------------                                */
         /*                                     | ||                                                    */
         /*                                     | ||                                                    */
-        videoBuffer[0] = UInt8(strtoul("10000000", nil, 2))
-        audioBuffer[0] = UInt8(strtoul("10000000", nil, 2))
+        videoBuffer[0] = 0x80
+        audioBuffer[0] = 0x80
 
         /* Packet Type PT */
-        videoBuffer[1] = 200
-        audioBuffer[1] = 200
+        videoBuffer[1] = 0xC8
+        audioBuffer[1] = 0xC8
 
         /* Byte 2,3          ->  Length                             */
         let nVideo: UInt64 = PACKET_LENGTH / 4 - 1
@@ -49,24 +49,19 @@ public class SenderReportTcp {
         let nAudio: UInt64 = PACKET_LENGTH / 4 - 1
         setLong(buffer: &audioBuffer, n: nAudio, begin: 2, end: 4)
         /* Byte 4,5,6,7      ->  SSRC                            */
-        let ssrcVideo = UInt64(Int.random(in: 0..<Int.max))
-        setLong(buffer: &videoBuffer, n: ssrcVideo, begin: 4, end: 8)
-        let ssrcAudio = UInt64(Int.random(in: 0..<Int.max))
-        setLong(buffer: &audioBuffer, n: ssrcAudio, begin: 4, end: 8)
         /* Byte 8,9,10,11    ->  NTP timestamp hb                 */
         /* Byte 12,13,14,15  ->  NTP timestamp lb                 */
         /* Byte 16,17,18,19  ->  RTP timestamp                     */
         /* Byte 20,21,22,23  ->  packet count                      */
         /* Byte 24,25,26,27  ->  octet count                     */
-        videoBuffer.insert(UInt8(28), at: 0)
-        videoBuffer.insert(0, at: 0)
-        videoBuffer.insert(1, at: 0)
-        videoBuffer.insert([UInt8]("$".utf8)[0], at: 0)
-        
-        audioBuffer.insert(UInt8(28), at: 0)
-        audioBuffer.insert(0, at: 0)
-        audioBuffer.insert(1, at: 0)
-        audioBuffer.insert([UInt8]("$".utf8)[0], at: 0)
+
+        //36, 1, 0, 28, 128, 200, 0, 6
+        //-128, -56, 0, 6, 66, 77, -13, -22
+    }
+
+    public func setSSRC(ssrcVideo: UInt64, ssrcAudio: UInt64) {
+        setLong(buffer: &videoBuffer, n: ssrcVideo, begin: 4, end: 8)
+        setLong(buffer: &audioBuffer, n: ssrcAudio, begin: 4, end: 8)
     }
     
     public func updateAudio(rtpFrame: RtpFrame) {
@@ -80,7 +75,7 @@ public class SenderReportTcp {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: audioBuffer, type: "audio", rtpFrame: rtpFrame)
+            sendReport(buffer: audioBuffer, rtpFrame: rtpFrame, packets: audioPacketCount, octet: audioOctetCount)
         }
     }
     
@@ -95,16 +90,17 @@ public class SenderReportTcp {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: videoBuffer, type: "video", rtpFrame: rtpFrame)
+            sendReport(buffer: videoBuffer, rtpFrame: rtpFrame, packets: videoPacketCount, octet: videoOctetCount)
         }
     }
     
-    public func sendReport(buffer: Array<UInt8>, type: String, rtpFrame: RtpFrame) {
+    public func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) {
         var report = buffer
         header[1] = UInt8(2 * rtpFrame.channelIdentifier! + 1)
         report.insert(contentsOf: header, at: 0)
-        socket?.write(buffer: report)
-        print("send \(type) report")
+        socket?.write(buffer: report, size: Int(PACKET_LENGTH) + header.count)
+        let type = (rtpFrame.channelIdentifier == RtpConstants.audioTrack) ? "Audio" : "Video"
+        print("send \(type) report, packets: \(packets), octet: \(octet)")
     }
     
     private func setLong(buffer: inout Array<UInt8>, n: UInt64, begin: Int32, end: Int32) {
