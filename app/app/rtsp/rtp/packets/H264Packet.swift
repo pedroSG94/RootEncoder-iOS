@@ -7,7 +7,7 @@ public class H264Packet: BasePacket {
     private var stapA: Array<UInt8>?
     
     public init(sps: Array<UInt8>, pps: Array<UInt8>, videoPacketCallback: VideoPacketCallback) {
-        super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.audioTrack)
+        super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.videoTrack)
         callback = videoPacketCallback
         channelIdentifier = RtpConstants.videoTrack
         setSpsPps(sps: sps, pps: pps)
@@ -98,6 +98,8 @@ public class H264Packet: BasePacket {
                     header[1] = header[1] & 0x7F
                 }
             }
+        } else {
+            print("waiting for keyframe")
         }
     }
     
@@ -107,10 +109,10 @@ public class H264Packet: BasePacket {
         stapA = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 5)
         
         // STAP-A NAL header is 24
-        stapA![0] = 0x18
+        stapA![0] = 24
         // Write NALU 1 size into the array (NALU 1 is the SPS).
         stapA![1] = UInt8(spsBuffer.count) >> 0x08
-        stapA![2] = UInt8(ppsBuffer.count) & 0xFF
+        stapA![2] = UInt8(spsBuffer.count) & 0xFF
         // Write NALU 2 size into the array (NALU 2 is the PPS).
         stapA![spsBuffer.count + 3] = UInt8(ppsBuffer.count) >> 0x08
         stapA![spsBuffer.count + 4] = UInt8(ppsBuffer.count) & 0xFF
@@ -118,6 +120,8 @@ public class H264Packet: BasePacket {
         // Write NALU 1 into the array, then write NALU 2 into the array.
         stapA![3...spsBuffer.count - 1 + 3] = spsBuffer[0...spsBuffer.count - 1]
         stapA![5 + spsBuffer.count...5 + spsBuffer.count + ppsBuffer.count - 1] = ppsBuffer[0...ppsBuffer.count - 1]
+
+//        stapA = Array<UInt8>(arrayLiteral: 24, 0, 13, 103, 66, 128, 10, 218, 2, 128, 246, 128, 109, 10, 19, 80, 0, 4, 104, 206, 6, 242)
     }
     
     override public func reset() {

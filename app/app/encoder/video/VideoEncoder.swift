@@ -25,7 +25,7 @@ public class VideoEncoder {
     
     private var width: Int32 = 640
     private var height: Int32 = 480
-    private var fps: Int = 30
+    private var fps: Int = 60
     private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
