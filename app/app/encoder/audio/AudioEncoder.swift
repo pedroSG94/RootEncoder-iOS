@@ -12,20 +12,18 @@ public class AudioEncoder {
     
     private var converter: AVAudioConverter? = nil
     private var outputFormat: AVAudioFormat?
-    private var inputFormat: AVAudioFormat?
     private var callback: GetAacData?
     private var running = false
     private var initTs: Int64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
     
-    public init(inputFormat: AVAudioFormat, callback: GetAacData) {
-        self.inputFormat = inputFormat
+    public init(callback: GetAacData) {
         self.callback = callback
     }
     
-    public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
+    public func prepareAudio(inputFormat: AVAudioFormat, sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
         outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels)
-        converter = AVAudioConverter(from: inputFormat!, to: outputFormat!)
+        converter = AVAudioConverter(from: inputFormat, to: outputFormat!)
         converter!.bitRate = bitrate
         print("prepare audio success")
         initTs = Date().millisecondsSince1970

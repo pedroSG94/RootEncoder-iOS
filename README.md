@@ -4,7 +4,7 @@ Library to stream in rtmp and rtsp for IOS. All code in Swift
 
 ## State
 
-Actually any bug report will be ignore because it is not stable/usable.
+Actually any bug report will be ignored because it is not stable/usable.
 Any feature request or suggestion is welcome.
 
 RTSP TCP audio and video streaming working.
@@ -21,7 +21,7 @@ I will start developing rtsp with minimals features.
 
 ### Incoming features
 
-- Fix UI (it actually suck and it is not usable, I will change to to swiftUI)
+- Fix UI (it actually suck and it is not usable, I will change it to swiftUI)
 - RTSP UDP
 - RTSP auth
 - RTSP H265

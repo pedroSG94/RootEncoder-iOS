@@ -20,7 +20,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var prevLayer: AVCaptureVideoPreviewLayer?
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
-    
+
     private var width = 640
     private var height = 480
     private var attributes: [NSString: NSObject] {
@@ -62,7 +62,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         session?.removeInput(input!)
     }
     
-    public func createSession() {
+    public func start() {
         prevLayer?.frame.size = cameraView.frame.size
         session = AVCaptureSession()
         let preset: AVCaptureSession.Preset = .vga640x480
@@ -84,10 +84,10 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         prevLayer = AVCaptureVideoPreviewLayer(session: session!)
         prevLayer?.frame.size = cameraView.frame.size
         prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        
+
         prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
         cameraView.layer.addSublayer(prevLayer!)
-        
+
         output = AVCaptureVideoDataOutput()
 
         let thread = DispatchQueue.global()
@@ -99,9 +99,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         session?.startRunning()
     }
     
-    public func viewTransation() {
-        self.prevLayer?.connection?.videoOrientation = self.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
-        self.prevLayer?.frame.size = self.cameraView.frame.size
+    public func viewTransition() {
+//        prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+//        prevLayer?.frame.size = cameraView.frame.size
     }
     
     public func cameraWithPosition(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
@@ -127,7 +127,8 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        self.thread.async {
+        thread.async {
+            //TODO render OpenGlView/MetalView using CMSampleBuffer to draw preview and filters
             self.callback.getYUVData(from: sampleBuffer)
         }
     }

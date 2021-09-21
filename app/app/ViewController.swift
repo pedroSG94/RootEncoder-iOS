@@ -9,34 +9,26 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAacData, GetH264Data,  ConnectCheckerRtsp {
+class ViewController: UIViewController, ConnectCheckerRtsp {
     
     
     @IBOutlet weak var tvEndpoint: UITextField!
     @IBOutlet weak var bStartStream: UIButton!
-    @IBOutlet weak var cameraview: UIView!
+    @IBOutlet weak var cameraView: UIView!
     
-    private var client: RtspClient?
-    private var microphone: MicrophoneManager?
-    private var cameraManager: CameraManager?
-    private var audioEncoder: AudioEncoder?
-    private var videoEncoder: VideoEncoder?
-    private var endpoint: String? = nil
+    private var rtspCamera: RtspCamera!
     
-    @IBAction func onClickstartStream(_ sender: UIButton) {
-        endpoint = tvEndpoint.text!
-        client = RtspClient(connectCheckerRtsp: self)
-        cameraManager = CameraManager(cameraView: cameraview, callback: self)
-        microphone = MicrophoneManager(callback: self)
-        videoEncoder = VideoEncoder(callback: self)
-        audioEncoder = AudioEncoder(inputFormat: microphone!.getInputFormat(), callback: self)
-        
-        client?.setAudioInfo(sampleRate: 44100, isStereo: false)
-        audioEncoder?.prepareAudio(sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
-        videoEncoder?.prepareVideo()
-
-        microphone?.start()
-        cameraManager?.createSession()
+    @IBAction func onClickStartStream(_ sender: UIButton) {
+        let endpoint = tvEndpoint.text!
+        if (!rtspCamera.isStreaming()) {
+            if (rtspCamera.prepareAudio() && rtspCamera.prepareVideo()) {
+                rtspCamera.startStream(endpoint: endpoint)
+                bStartStream.setTitle("Stop stream", for: .normal)
+            }
+        } else {
+            rtspCamera.stopStream()
+            bStartStream.setTitle("Start stream", for: .normal)
+        }
     }
     
     func onConnectionSuccessRtsp() {
@@ -45,7 +37,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     func onConnectionFailedRtsp(reason: String) {
         print("connection failed: \(reason)")
-        stopStream()
+        rtspCamera.stopStream()
     }
     
     func onNewBitrateRtsp(bitrate: UInt64) {
@@ -64,30 +56,10 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
         print("auth success")
     }
     
-    func getAacData(frame: Frame) {
-        client?.sendAudio(frame: frame)
-    }
-    
-    func getPcmData(buffer: AVAudioPCMBuffer) {
-        audioEncoder?.encodeFrame(buffer: buffer)
-    }
-    
-    func getH264Data(frame: Frame) {
-        client?.sendVideo(frame: frame)
-    }
-    
-    func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
-        client?.setVideoInfo(sps: sps, pps: pps, vps: nil)
-        client?.connect(url: "rtsp://192.168.1.132:80/live/pedro")
-    }
-    
-    func getYUVData(from buffer: CMSampleBuffer) {
-        videoEncoder?.encodeFrame(buffer: buffer)
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         validatePermissions()
+        rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
     }
     
     override func viewDidLoad() {
@@ -97,7 +69,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         coordinator.animate(alongsideTransition: { (context) -> Void in
-            self.cameraManager?.viewTransation()
+            self.rtspCamera.viewTransition()
         }, completion: { (context) -> Void in
 
         })
@@ -105,15 +77,7 @@ class ViewController: UIViewController, GetMicrophoneData, GetCameraData, GetAac
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        stopStream()
-    }
-    
-    private func stopStream() {
-        microphone?.stop()
-        cameraManager?.stop()
-        audioEncoder?.stop()
-        videoEncoder?.stop()
-        client?.disconnect()
+        rtspCamera.stopStream()
     }
     
     func validatePermissions() {
