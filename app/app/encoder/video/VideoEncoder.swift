@@ -78,6 +78,7 @@ public class VideoEncoder {
         running = false
         guard let session: VTCompressionSession = session else { return }
         VTCompressionSessionInvalidate(session)
+        isSpsAndPpsSend = false
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in

@@ -26,6 +26,7 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func prepareAudio() -> Bool {
+        microphone.createMicrophone()
         client?.setAudioInfo(sampleRate: 44100, isStereo: false)
         return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
     }
