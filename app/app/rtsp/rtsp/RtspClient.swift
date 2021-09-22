@@ -48,7 +48,7 @@ public class RtspClient {
                     let port = defaultPort ? 554 : Int(groups[2])!
                     let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
                     self.commandsManager.setUrl(host: host, port: port, path: path)
-                    self.socket = Socket(host: host, port: port, callback: self.connectCheckerRtsp!)
+                    self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self.connectCheckerRtsp!)
                     self.socket?.connect()
                     self.rtpSender = RtpSender(socket: self.socket!)
                     //Options

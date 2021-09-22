@@ -55,10 +55,6 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         streaming
     }
 
-    public func viewTransition() {
-        cameraManager.viewTransition()
-    }
-
     public func getPcmData(buffer: AVAudioPCMBuffer) {
         audioEncoder.encodeFrame(buffer: buffer)
     }

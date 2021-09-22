@@ -5,9 +5,10 @@ public class Socket: NSObject, StreamDelegate {
     private var callback: ConnectCheckerRtsp
     private var connection: NWConnection? = nil
 
-    public init(host: String, port: Int, callback: ConnectCheckerRtsp) {
+    public init(tlsEnabled: Bool, host: String, port: Int, callback: ConnectCheckerRtsp) {
         self.callback = callback
-        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: .tcp)
+        let type: NWParameters = tlsEnabled ? .tls : .tcp
+        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: type)
     }
     
     public func connect() {

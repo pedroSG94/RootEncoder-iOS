@@ -63,7 +63,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func start() {
-        prevLayer?.frame.size = cameraView.frame.size
         session = AVCaptureSession()
         let preset: AVCaptureSession.Preset = .vga640x480
         session?.sessionPreset = preset
@@ -80,28 +79,22 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             session?.addInput(input)
         }
 
-        session?.commitConfiguration()
-        prevLayer = AVCaptureVideoPreviewLayer(session: session!)
-        prevLayer?.frame.size = cameraView.frame.size
-        prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-
-        prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
-        cameraView.layer.addSublayer(prevLayer!)
-
         output = AVCaptureVideoDataOutput()
-
         let thread = DispatchQueue.global()
         output?.setSampleBufferDelegate(self, queue: thread)
         output?.alwaysDiscardsLateVideoFrames = true
         output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)]
-        
+
         session?.addOutput(output!)
+
+        prevLayer = AVCaptureVideoPreviewLayer(session: session!)
+        prevLayer?.frame.size = cameraView.frame.size
+        prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+        cameraView.layer.addSublayer(prevLayer!)
+
+        session?.commitConfiguration()
         session?.startRunning()
-    }
-    
-    public func viewTransition() {
-//        prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
-//        prevLayer?.frame.size = cameraView.frame.size
     }
     
     public func cameraWithPosition(position: AVCaptureDevice.Position) -> AVCaptureDevice? {

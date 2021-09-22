@@ -10,8 +10,7 @@ import UIKit
 import AVFoundation
 
 class ViewController: UIViewController, ConnectCheckerRtsp {
-    
-    
+
     @IBOutlet weak var tvEndpoint: UITextField!
     @IBOutlet weak var bStartStream: UIButton!
     @IBOutlet weak var cameraView: UIView!
@@ -68,11 +67,6 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        coordinator.animate(alongsideTransition: { (context) -> Void in
-            self.rtspCamera.viewTransition()
-        }, completion: { (context) -> Void in
-
-        })
         super.viewWillTransition(to: size, with: coordinator)
     }
     
