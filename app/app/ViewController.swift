@@ -30,6 +30,10 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
         }
     }
     
+    @IBAction func onClickSwitchCamera(_ sender: UIButton) {
+        rtspCamera.switchCamera()
+    }
+
     func onConnectionSuccessRtsp() {
         print("connection success")
     }
@@ -59,6 +63,7 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
         super.viewDidAppear(animated)
         validatePermissions()
         rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+        rtspCamera.startPreview()
     }
     
     override func viewDidLoad() {
@@ -69,9 +74,14 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
-        rtspCamera.stopStream()
+        if (rtspCamera.isStreaming()) {
+            rtspCamera.stopStream()
+        }
+        if (rtspCamera.isOnPreview()) {
+            rtspCamera.stopPreview()
+        }
     }
     
     func validatePermissions() {

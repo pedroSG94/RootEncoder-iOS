@@ -21,52 +21,64 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView!
 
-    private var width = 640
-    private var height = 480
-    private var attributes: [NSString: NSObject] {
-            var attributes: [NSString: NSObject] = [
-                kCVPixelBufferPixelFormatTypeKey: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
-                kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue,
-                kCVPixelBufferOpenGLESCompatibilityKey: kCFBooleanTrue
-            ]
-            attributes[kCVPixelBufferWidthKey] = NSNumber(value: width)
-            attributes[kCVPixelBufferHeightKey] = NSNumber(value: height)
-            return attributes
-        }
-    
-    private var _pixelBufferPool: CVPixelBufferPool?
-        private var pixelBufferPool: CVPixelBufferPool! {
-            get {
-                if _pixelBufferPool == nil {
-                    var pixelBufferPool: CVPixelBufferPool?
-                    CVPixelBufferPoolCreate(nil, nil, attributes as CFDictionary?, &pixelBufferPool)
-                    _pixelBufferPool = pixelBufferPool
-                }
-                return _pixelBufferPool!
-            }
-            set {
-                _pixelBufferPool = newValue
-            }
-        }
-    
+    private var facing = CameraHelper.Facing.BACK
+    private var resolution: CameraHelper.Resolution = .vga640x480
+    private(set) var running = false
+    private(set) var onPreview = false
     private var callback: GetCameraData
     
     public init(cameraView: UIView, callback: GetCameraData) {
         self.cameraView = cameraView
         self.callback = callback
     }
-    
+
+    public func stopSend() {
+        onPreview = true
+    }
+
     public func stop() {
         session?.stopRunning()
         session?.removeOutput(output!)
         session?.removeInput(input!)
+        running = false
+        onPreview = false
+    }
+
+    public func prepare(resolution: CameraHelper.Resolution) {
+        self.resolution = resolution
+    }
+
+    public func start(onPreview: Bool = false) {
+        start(facing: facing, resolution: resolution, onPreview: onPreview)
+    }
+
+    public func start(onPreview: Bool = false, resolution: CameraHelper.Resolution) {
+        start(facing: facing, resolution: resolution, onPreview: onPreview)
+    }
+
+    public func switchCamera() {
+        if (facing == .FRONT) {
+            facing = .BACK
+        } else if (facing == .BACK) {
+            facing = .FRONT
+        }
+        if (running) {
+            stop()
+            start(facing: facing, resolution: resolution, onPreview: onPreview)
+        }
     }
     
-    public func start() {
+    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, onPreview: Bool) {
+        self.onPreview = onPreview
+        if (running && resolution != self.resolution) {
+            stop()
+        }
         session = AVCaptureSession()
-        let preset: AVCaptureSession.Preset = .vga640x480
+        let preset: AVCaptureSession.Preset = resolution.value
         session?.sessionPreset = preset
-        device = AVCaptureDevice.default(for: AVMediaType.video)
+        let position = facing == CameraHelper.Facing.BACK ? AVCaptureDevice.Position.back : AVCaptureDevice.Position.front
+        let devices = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: position)
+        device = devices.devices[0]
 
         do{
             input = try AVCaptureDeviceInput(device: device!)
@@ -95,6 +107,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         session?.commitConfiguration()
         session?.startRunning()
+        running = true
     }
     
     public func cameraWithPosition(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
@@ -122,7 +135,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         thread.async {
             //TODO render OpenGlView/MetalView using CMSampleBuffer to draw preview and filters
-            self.callback.getYUVData(from: sampleBuffer)
+            if (!self.onPreview) {
+                self.callback.getYUVData(from: sampleBuffer)
+            }
         }
     }
 }

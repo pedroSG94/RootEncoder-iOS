@@ -23,8 +23,7 @@ extension UInt32 {
 
 public class VideoEncoder {
     
-    private var width: Int32 = 640
-    private var height: Int32 = 480
+    private var resolution: CameraHelper.Resolution = .vga640x480
     private var fps: Int = 60
     private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
@@ -38,10 +37,20 @@ public class VideoEncoder {
     public init(callback: GetH264Data) {
         self.callback = callback
     }
-    
+
     public func prepareVideo() -> Bool {
-        let err = VTCompressionSessionCreate(allocator: nil, width: width, height: height, codecType: kCMVideoCodecType_H264, encoderSpecification: nil, imageBufferAttributes: nil, compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(), compressionSessionOut: &session)
-        
+        prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
+    }
+
+    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
+        let err = VTCompressionSessionCreate(allocator: nil, width: Int32(resolution.width), height: Int32(resolution.height),
+                codecType: kCMVideoCodecType_H264, encoderSpecification: nil, imageBufferAttributes: nil,
+                compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(),
+                compressionSessionOut: &session)
+        self.resolution = resolution
+        self.fps = fps
+        self.bitrate = bitrate
+        self.iFrameInterval = iFrameInterval
         if err == errSecSuccess{
             guard let sess = session else { return false }
             let bitRate = bitrate

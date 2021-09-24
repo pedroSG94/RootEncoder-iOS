@@ -35,13 +35,23 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5nS-Sw-t2Z">
-                                        <rect key="frame" x="264" y="542" width="497" height="100"/>
+                                        <rect key="frame" x="8" y="542" width="497" height="100"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="38"/>
                                         <state key="normal" title="Start Stream"/>
                                         <connections>
                                             <action selector="onClickStartStream:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZX5-pi-zp5"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BH5-0o-4ak">
+                                        <rect key="frame" x="527" y="542" width="497" height="100"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                        <state key="normal" title="Switch camera"/>
+                                        <connections>
+                                            <action selector="onClickSwitchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mCE-BV-XW2"/>
                                         </connections>
                                     </button>
                                 </subviews>

@@ -16,6 +16,7 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private(set) var videoEncoder: VideoEncoder!
     private var endpoint: String = ""
     private var streaming = false
+    private var onPreview = false
 
     public init(view: UIView, connectChecker: ConnectCheckerRtsp) {
         client = RtspClient(connectCheckerRtsp: connectChecker)
@@ -25,26 +26,37 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         audioEncoder = AudioEncoder(callback: self)
     }
 
-    public func prepareAudio() -> Bool {
+    public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         microphone.createMicrophone()
-        client?.setAudioInfo(sampleRate: 44100, isStereo: false)
-        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: 44100, channels: 2, bitrate: 64 * 1000)
+        client?.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
+                channels: isStereo ? 2 : 1, bitrate: bitrate)
+    }
+
+    public func prepareAudio() -> Bool {
+        prepareAudio(bitrate: 64 * 1024, sampleRate: 32000, isStereo: true)
+    }
+
+    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
+        cameraManager.prepare(resolution: resolution)
+        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
     }
 
     public func prepareVideo() -> Bool {
-        videoEncoder.prepareVideo()
+        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
     }
 
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
         microphone.start()
         cameraManager.start()
+        onPreview = true
         streaming = true
     }
 
     public func stopStream() {
         microphone.stop()
-        cameraManager.stop()
+        cameraManager.stopSend()
         audioEncoder.stop()
         videoEncoder.stop()
         client.disconnect()
@@ -54,6 +66,29 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func isStreaming() -> Bool {
         streaming
+    }
+
+    public func isOnPreview() -> Bool {
+        onPreview
+    }
+
+    public func switchCamera() {
+        cameraManager.switchCamera()
+    }
+
+    public func startPreview(resolution: CameraHelper.Resolution) {
+        cameraManager.start(onPreview: true, resolution: resolution)
+        onPreview = true
+    }
+
+    public func startPreview() {
+        cameraManager.start(onPreview: true)
+        onPreview = true
+    }
+
+    public func stopPreview() {
+        cameraManager.stop()
+        onPreview = false
     }
 
     public func getPcmData(buffer: AVAudioPCMBuffer) {
