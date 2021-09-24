@@ -1,5 +1,5 @@
 //
-// Created by Pedro  on 21/9/21.
+// Created by Pedro  on 25/9/21.
 // Copyright (c) 2021 pedroSG94. All rights reserved.
 //
 
@@ -7,28 +7,28 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
+public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
 
-    private(set) var client: RtspClient!
-    private(set) var microphone: MicrophoneManager!
-    private(set) var cameraManager: CameraManager!
-    private(set) var audioEncoder: AudioEncoder!
-    private(set) var videoEncoder: VideoEncoder!
-    private var endpoint: String = ""
+    private var microphone: MicrophoneManager!
+    private var cameraManager: CameraManager!
+    private var audioEncoder: AudioEncoder!
+    private var videoEncoder: VideoEncoder!
+    private(set) var endpoint: String = ""
     private var streaming = false
     private var onPreview = false
 
-    public init(view: UIView, connectChecker: ConnectCheckerRtsp) {
-        client = RtspClient(connectCheckerRtsp: connectChecker)
+    public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(callback: self)
     }
 
+    public func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {}
+
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         microphone.createMicrophone()
-        client?.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+        prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
         return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
                 channels: isStereo ? 2 : 1, bitrate: bitrate)
     }
@@ -54,12 +54,14 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         streaming = true
     }
 
+    public func stopStreamRtp() {}
+
     public func stopStream() {
         microphone.stop()
         cameraManager.stopSend()
         audioEncoder.stop()
         videoEncoder.stop()
-        client.disconnect()
+        stopStreamRtp()
         endpoint = ""
         streaming = false
     }
@@ -91,6 +93,12 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         onPreview = false
     }
 
+    public func getAacDataRtp(frame: Frame) {}
+
+    public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>) {}
+
+    public func getH264DataRtp(frame: Frame) {}
+
     public func getPcmData(buffer: AVAudioPCMBuffer) {
         audioEncoder.encodeFrame(buffer: buffer)
     }
@@ -100,15 +108,14 @@ public class RtspCamera: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getAacData(frame: Frame) {
-        client.sendAudio(frame: frame)
+        getAacDataRtp(frame: frame)
     }
 
     public func getH264Data(frame: Frame) {
-        client.sendVideo(frame: frame)
+        getH264DataRtp(frame: frame)
     }
 
     public func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
-        client.setVideoInfo(sps: sps, pps: pps, vps: nil)
-        client.connect(url: endpoint)
+        onSpsPpsVpsRtp(sps: sps, pps: pps)
     }
 }
