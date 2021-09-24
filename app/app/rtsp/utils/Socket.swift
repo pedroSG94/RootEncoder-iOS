@@ -2,13 +2,30 @@ import Foundation
 import Network
 
 public class Socket: NSObject, StreamDelegate {
-    private var callback: ConnectCheckerRtsp
+    var callback: ConnectCheckerRtsp
+    var host: String?
     private var connection: NWConnection? = nil
 
+    /**
+        TCP or TCP/TLS socket
+     */
     public init(tlsEnabled: Bool, host: String, port: Int, callback: ConnectCheckerRtsp) {
         self.callback = callback
-        let type: NWParameters = tlsEnabled ? .tls : .tcp
-        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: type)
+        self.host = host
+        let parameters: NWParameters = tlsEnabled ? .tls : .tcp
+        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
+    }
+
+    /**
+        UDP socket
+    */
+    public init(host: String, localPort: Int, port: Int, callback: ConnectCheckerRtsp) {
+        self.callback = callback
+        self.host = host
+        let localEndpoint = NWEndpoint.hostPort(host: "0.0.0.0", port: NWEndpoint.Port("\(localPort)")!)
+        let parameters = NWParameters.udp
+        parameters.requiredLocalEndpoint = localEndpoint
+        connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
     }
     
     public func connect() {

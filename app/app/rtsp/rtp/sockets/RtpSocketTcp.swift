@@ -8,8 +8,8 @@
 
 import Foundation
 
-public class RtpSocketTcp {
-    
+public class RtpSocketTcp: BaseRtpSocket {
+
     private var header = Array<UInt8>(arrayLiteral: 36, 0x00, 0x00, 0x00)
     private var socket: Socket?
     
@@ -17,7 +17,7 @@ public class RtpSocketTcp {
         self.socket = socket
     }
     
-    public func sendTcpFrame(rtpFrame: RtpFrame) {
+    public override func sendFrame(rtpFrame: RtpFrame) {
         var buffer = rtpFrame.buffer
         header[1] = UInt8(2 * rtpFrame.channelIdentifier!)
         header[2] = UInt8(rtpFrame.length! >> 8)

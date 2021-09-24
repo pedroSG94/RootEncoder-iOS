@@ -7,8 +7,7 @@ public class RtspClient {
     private var streaming = false
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
-    private var isOnlyAudio = false
-    private var rtpSender: RtpSender?
+    private var rtpSender = RtpSender()
     private var sps: Array<UInt8>? = nil, pps: Array<UInt8>? = nil
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
@@ -18,9 +17,13 @@ public class RtspClient {
     public func setAuth(user: String, password: String) {
         commandsManager.setAuth(user: user, password: password)
     }
-    
+
+    public func setProtocol(mProtocol: Protocol) {
+        commandsManager.mProtocol = mProtocol
+    }
+
     public func setOnlyAudio(onlyAudio: Bool) {
-        self.isOnlyAudio = onlyAudio
+        commandsManager.isOnlyAudio = onlyAudio
     }
     
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
@@ -50,7 +53,6 @@ public class RtspClient {
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self.connectCheckerRtsp!)
                     self.socket?.connect()
-                    self.rtpSender = RtpSender(socket: self.socket!)
                     //Options
                     self.socket?.write(data: self.commandsManager.createOptions())
                     let optionsResponse = self.socket?.read()
@@ -82,9 +84,9 @@ public class RtspClient {
                     } else if status != 200 {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(status)")
                     }
-                    if !self.isOnlyAudio {
+                    if !self.commandsManager.isOnlyAudio {
                         //Setup video
-                        self.rtpSender?.setVideoInfo(sps: self.sps!, pps: self.pps!)
+                        self.rtpSender.setVideoInfo(sps: self.sps!, pps: self.pps!)
                         self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                         let videoSetupResponse = self.socket?.read()
                         self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
@@ -98,8 +100,12 @@ public class RtspClient {
                     let recordResponse = self.socket?.read()
                     self.commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
                     self.streaming = true
-                    self.rtpSender?.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
-                    self.rtpSender?.start()
+                    self.rtpSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
+
+                    self.rtpSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
+                            videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
+                            videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
+                    self.rtpSender.start()
                     self.connectCheckerRtsp?.onConnectionSuccessRtsp()
                 } else {
                     self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
@@ -115,7 +121,7 @@ public class RtspClient {
     
     public func disconnect() {
         if streaming {
-            rtpSender?.stop()
+            rtpSender.stop()
             socket?.write(data: commandsManager.createTeardown())
             socket?.disconnect()
             commandsManager.reset()
@@ -125,14 +131,14 @@ public class RtspClient {
     }
     
     public func sendVideo(frame: Frame) {
-        if (streaming) {
-            rtpSender?.sendVideo(frame: frame)
+        if (streaming && !commandsManager.isOnlyAudio) {
+            rtpSender.sendVideo(frame: frame)
         }
     }
     
     public func sendAudio(frame: Frame) {
         if (streaming) {
-            rtpSender?.sendAudio(frame: frame)
+            rtpSender.sendAudio(frame: frame)
         }
     }
 }

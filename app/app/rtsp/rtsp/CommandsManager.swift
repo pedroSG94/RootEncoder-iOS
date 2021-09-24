@@ -4,11 +4,12 @@ public class CommandsManager {
     private var host: String?
     private var port: Int?
     private var path: String?
-    private var mProtocol: Protocol = .TCP
+    var mProtocol: Protocol = .TCP
     private var cSeq = 0
     private var sessionId: String? = nil
     private var authorization: String? = nil
     private var timeStamp: Int64?
+    var isOnlyAudio = false
     //Audio
     private var sampleRate = 44100
     private var isStereo = true
@@ -20,10 +21,10 @@ public class CommandsManager {
     private var user: String? = nil
     private var password: String? = nil
     //UDP
-    private let audioClientPorts = [5000, 5001]
-    private let videoClientPorts = [5002, 5003]
-    private var audioServerPorts = [5004, 5005]
-    private var videoServerPorts = [5006, 5007]
+    var audioClientPorts = [5000, 5001]
+    var videoClientPorts = [5002, 5003]
+    var audioServerPorts = [5004, 5005]
+    var videoServerPorts = [5006, 5007]
     
     public init() {
         let time = Date().millisecondsSince1970
@@ -123,17 +124,17 @@ public class CommandsManager {
     public func getResponse(response: String, isAudio: Bool, connectCheckerRtsp: ConnectCheckerRtsp?) {
         let sessionResults = response.groups(for: "Session: (\\w+)")
         if sessionResults.count > 0 {
-            self.sessionId = sessionResults[0][1]
+            sessionId = sessionResults[0][1]
         }
         
         let serverPortsResults = response.groups(for: "server_port=([0-9]+)-([0-9]+)")
         if serverPortsResults.count > 0 {
             if isAudio {
-                self.audioServerPorts[0] = Int(serverPortsResults[0][1])!
-                self.audioServerPorts[1] = Int(serverPortsResults[0][2])!
+                audioServerPorts[0] = Int(serverPortsResults[0][1])!
+                audioServerPorts[1] = Int(serverPortsResults[0][2])!
             } else {
-                self.videoServerPorts[0] = Int(serverPortsResults[0][1])!
-                self.videoServerPorts[1] = Int(serverPortsResults[0][2])!
+                videoServerPorts[0] = Int(serverPortsResults[0][1])!
+                videoServerPorts[1] = Int(serverPortsResults[0][2])!
             }
         }
         let status = getResonseStatus(response: response)

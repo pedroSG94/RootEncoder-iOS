@@ -1,6 +1,6 @@
 import Foundation
 
-enum Protocol {
+public enum Protocol {
     case TCP
     case UDP
 }
