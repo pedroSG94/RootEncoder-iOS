@@ -96,7 +96,8 @@ public class VideoEncoder {
         isSpsAndPpsSend = false
     }
     
-    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
+    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?,
+                                                               status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
         guard let sampleBuffer = sampleBuffer else {
             print("nil bufer")
             return
@@ -135,129 +136,102 @@ public class VideoEncoder {
             guard let description = CMSampleBufferGetFormatDescription(sampleBuffer) else { return }
             var parametersCount: Int = 0
             if (codec == .H264) {
-                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil, parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil,
+                        parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
             } else if (codec == .H265) {
-                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil, parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: nil,
+                        parameterSetSizeOut: nil, parameterSetCountOut: &parametersCount, nalUnitHeaderLengthOut: nil)
             }
             if (codec == .H264 && parametersCount != 2 || codec == .H265 && parametersCount < 3) {
                 print("unexpected video parameters \(parametersCount)")
                 return
             }
 
+            var vps: UnsafePointer<UInt8>?
+            var vpsSize: Int = 0
+            if (codec == .H265) {
+                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &vps,
+                        parameterSetSizeOut: &vpsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+            }
             var sps: UnsafePointer<UInt8>?
             var spsSize: Int = 0
             if (codec == .H264) {
-                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &sps, parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &sps,
+                        parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
             } else if (codec == .H265) {
-                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 1, parameterSetPointerOut: &sps, parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 1, parameterSetPointerOut: &sps,
+                        parameterSetSizeOut: &spsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
             }
             var pps: UnsafePointer<UInt8>?
             var ppsSize: Int = 0
             if (codec == .H264) {
-                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 1, parameterSetPointerOut: &pps, parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetH264ParameterSetAtIndex(description, parameterSetIndex: 1, parameterSetPointerOut: &pps,
+                        parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
             } else if (codec == .H265) {
-                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 2, parameterSetPointerOut: &pps, parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
-            }
-            var vps: UnsafePointer<UInt8>?
-            var vpsSize: Int = 0
-            if (codec == .H265) {
-                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 0, parameterSetPointerOut: &vps, parameterSetSizeOut: &vpsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
+                CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(description, parameterSetIndex: 2, parameterSetPointerOut: &pps,
+                        parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
             }
 
-            var spsData = Array<UInt8>()
-            for i in 0...spsSize - 1 {
-                spsData.append(sps![i])
-            }
-            var ppsData = Array<UInt8>()
-            for i in 0...ppsSize - 1 {
-                ppsData.append(pps![i])
-            }
-            var vpsData: Array<UInt8>? = nil
+            var vpsData: NSData? = nil
             if (codec == .H265) {
-                vpsData = Array<UInt8>()
-                for i in 0...vpsSize - 1 {
-                    vpsData?.append(vps![i])
-                }
+                vpsData = NSData(bytes: vps, length: vpsSize)
             }
+            let spsData = NSData(bytes: sps, length: spsSize)
+            let ppsData = NSData(bytes: pps, length: ppsSize)
 
             if (!isSpsAndPpsSend) {
-                callback.getSpsAndPps(sps: spsData, pps: ppsData, vps: vpsData)
+                callback.getSpsAndPps(sps: [UInt8](spsData), pps: [UInt8](ppsData),
+                        vps: vpsData != nil ? [UInt8](vpsData!) : nil)
                 isSpsAndPpsSend = true
             }
         }
-        if (codec == .H264) {
-            convertH264(sampleBuffer: sampleBuffer)
-        } else if (codec == .H265) {
-            convertH265(sampleBuffer: sampleBuffer)
-        }
+        convertBuffer(sampleBuffer: sampleBuffer)
     }
 
     /*
-     H264 AVC to H264 annexB
+     H264/H265 AVC to annexB.
     */
-    private func convertH264(sampleBuffer: CMSampleBuffer) {
-        let startCode = [UInt8](arrayLiteral: 0x00, 0x00, 0x00, 0x01)
-
-        let body = try! sampleBuffer.dataBuffer?.dataBytes()
-        let bytes = [UInt8](body!)
-        var offset = 0
-        var unitLength: UInt32 = 0
-        while (offset < bytes.count) {
-            var lengthBytes = Array<UInt8>()
-            lengthBytes.append(contentsOf: bytes[offset...(offset + 3)])
-            unitLength = lengthBytes.withUnsafeBytes {
-                $0.load(as: UInt32.self)
-            }
-            offset += 4
-            //Big-Endian to Little-Endian
-            unitLength = CFSwapInt32(unitLength)
-            var rawH264 = Array<UInt8>()
-            rawH264.append(contentsOf: startCode)
-            rawH264.append(contentsOf: bytes[offset...(offset + Int(unitLength) - 1)])
-            offset += Int(unitLength)
-            var frame = Frame()
-            frame.buffer = rawH264
-            let end = Date().millisecondsSince1970
-            let elapsedNanoSeconds = (end - initTs) * 1000
-            frame.timeStamp = UInt64(elapsedNanoSeconds)
-            frame.length = UInt32(frame.buffer!.count)
-
-            callback.getH264Data(frame: frame)
+    private func convertBuffer(sampleBuffer: CMSampleBuffer) {
+        // handle frame data
+        guard let dataBuffer = CMSampleBufferGetDataBuffer(sampleBuffer) else {
+            return
         }
-    }
 
-    /*
-     H265 AVC to H265 annexB. TODO not working yet
-    */
-    private func convertH265(sampleBuffer: CMSampleBuffer) {
         let startCode = [UInt8](arrayLiteral: 0x00, 0x00, 0x00, 0x01)
 
-        let body = try! sampleBuffer.dataBuffer?.dataBytes()
-        let bytes = [UInt8](body!)
-        var offset = 0
-        var unitLength: UInt32 = 0
-        while (offset < bytes.count) {
-            var lengthBytes = Array<UInt8>()
-            lengthBytes.append(contentsOf: bytes[offset...(offset + 3)])
-            unitLength = lengthBytes.withUnsafeBytes {
-                $0.load(as: UInt32.self)
+        var lengthAtOffset: Int = 0
+        var totalLength: Int = 0
+        var dataPointer: UnsafeMutablePointer<Int8>?
+        if CMBlockBufferGetDataPointer(dataBuffer, atOffset: 0, lengthAtOffsetOut: &lengthAtOffset,
+                totalLengthOut: &totalLength, dataPointerOut: &dataPointer) == noErr {
+            var bufferOffset: Int = 0
+            let avcHeaderLength = 4
+
+            while bufferOffset < (totalLength - avcHeaderLength) {
+                var naluLength: UInt32 = 0
+                // first four character is NALUnit length
+                memcpy(&naluLength, dataPointer?.advanced(by: bufferOffset), avcHeaderLength)
+
+                // big endian to host endian. in iOS it's little endian
+                naluLength = CFSwapInt32BigToHost(naluLength)
+
+                let data: NSData = NSData(bytes: dataPointer?.advanced(by: bufferOffset + avcHeaderLength),
+                        length: Int(naluLength))
+                // move forward to the next NAL Unit
+                bufferOffset += Int(avcHeaderLength)
+                bufferOffset += Int(naluLength)
+
+                var rawH264 = [UInt8](data)
+                rawH264.insert(contentsOf: startCode, at: 0)
+                var frame = Frame()
+                frame.buffer = rawH264
+                let end = Date().millisecondsSince1970
+                let elapsedNanoSeconds = (end - initTs) * 1000
+                frame.timeStamp = UInt64(elapsedNanoSeconds)
+                frame.length = UInt32(frame.buffer!.count)
+
+                callback.getH264Data(frame: frame)
             }
-            offset += 4
-            //Big-Endian to Little-Endian
-            unitLength = CFSwapInt32(unitLength)
-            var rawH264 = Array<UInt8>()
-            rawH264.append(contentsOf: startCode)
-            rawH264.append(contentsOf: bytes[offset...(offset + Int(unitLength) - 1)])
-            offset += Int(unitLength)
-
-            var frame = Frame()
-            frame.buffer = rawH264
-            let end = Date().millisecondsSince1970
-            let elapsedNanoSeconds = (end - initTs) * 1000
-            frame.timeStamp = UInt64(elapsedNanoSeconds)
-            frame.length = UInt32(frame.buffer!.count)
-
-            callback.getH264Data(frame: frame)
         }
     }
 

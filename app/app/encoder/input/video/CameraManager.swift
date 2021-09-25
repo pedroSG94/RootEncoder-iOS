@@ -69,6 +69,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, onPreview: Bool) {
+        self.facing = facing
         self.onPreview = onPreview
         if (running) {
             if (resolution != self.resolution) {

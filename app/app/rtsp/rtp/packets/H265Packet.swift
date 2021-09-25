@@ -25,8 +25,8 @@ public class H265Packet: BasePacket {
         var frame = RtpFrame()
         frame.channelIdentifier = channelIdentifier
 
-        var header = Array<UInt8>(repeating: 0, count: 5)
-        buffer = buffer.get(destiny: &header, index: 0, length: 5)
+        var header = Array<UInt8>(repeating: 0, count: 6)
+        buffer = buffer.get(destiny: &header, index: 0, length: 6)
 
         let naluLength = Int(buffer.count)
         let type: UInt8 = header[4] >> (1 & 0x3F)
@@ -91,7 +91,7 @@ public class H265Packet: BasePacket {
 
                     let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
 
-                    buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 2, length: length)
+                    buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 3, length: length)
 
                     sum += length
                     if sum >= naluLength {

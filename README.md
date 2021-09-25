@@ -7,26 +7,27 @@ Library to stream in rtmp and rtsp for IOS. All code in Swift
 Actually any bug report will be ignored because it is not stable/usable.
 Any feature request or suggestion is welcome.
 
-RTSP TCP audio and video streaming working.
-I need to fix multiple things but it is working. UI is not usable for know
+I need to fix multiple things but it is working.
 
 This project is under develop and it is not usable.
 This will take so much time so don't expect anything about it.
 
-I will start developing rtsp with minimals features.
+## Features
 
-### Working features
-
-- Streaming video and audio RTSP TCP
+- [x] Switch camera while streaming
+- [x] RTSP TCP/UDP
+- [x] RTSPS
+- [x] RTSP auth (basic and digest)
 
 ### Incoming features
 
-- Fix UI (it actually suck and it is not usable, I will change it to swiftUI)
-- RTSP UDP
-- RTSP auth
-- RTSP H265
+I will develop this features:
+
+- RTSP H265 (close to finish. Encoder never produce a IDR nal type, I need to check it)
+- Local video record
 - Upload to cocoa or similar
-
-### Future features
-
-- I have plan to develop all features of Android equivalent project if possible (rtmp, record, filters, etc)
+- RTMP (included RTMPS and auth)
+- Real time filters
+- Stream from device display (DisplayRtsp/DisplayRtmp)
+- Stream from file (FromFileRtsp/FromFileRtmp)
+- Minors features: video bitrate on fly, adaptative bitrate, multiple streams, etc.

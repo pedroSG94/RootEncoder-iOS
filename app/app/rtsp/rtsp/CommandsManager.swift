@@ -38,38 +38,57 @@ public class CommandsManager {
     private func addHeader() -> String {
         let session = sessionId != nil ? "Session: \(sessionId!)\r\n" : ""
         let auth = authorization != nil ? "Authorization: \(authorization!)\r\n" : ""
-        let result = "CSeq: \(cSeq)\r\n\(session)\(auth)\r\n"
+        let result = "CSeq: \(cSeq)\r\n\(session)\(auth)"
         cSeq += 1
         return result
     }
     
     public func createOptions() -> String {
-        return "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())"
+        return "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
     }
     
     public func createRecord() -> String {
-        return "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())"
+        return "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())\r\n"
     }
     
     public func createTeardown() -> String {
-        return "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())"
+        return "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
     }
     
     public func createSetup(track: Int) -> String {
         let ports = track == RtpConstants.videoTrack ? videoClientPorts : audioClientPorts
         let params = mProtocol == .TCP ? "TCP;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
-        return "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())"
+        return "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
     }
     
     public func createAnnounce() -> String {
         let body = createBody()
-        let result = "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nCSeq: \(cSeq)\r\nContent-Length: \(body.utf8.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
+        let result = "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())Content-Length: \(body.utf8.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
         cSeq += 1
         return result
     }
-    
-    public func createAuth(authResponse: String) -> String {
-        return ""
+
+    public func createAnnounceWithAuth(authResponse: String) -> String {
+        authorization = createAuth(authResponse: authResponse)
+        return createAnnounce()
+    }
+
+    private func createAuth(authResponse: String) -> String {
+        let authPattern = authResponse.groups(for: "realm=\"(.+)\",\\s+nonce=\"(\\w+)\"")
+        if authPattern.count > 0 {
+            print("using digest auth")
+            let realm = authPattern[0][1]
+            let nonce = authPattern[0][2]
+            let hash1 = "\(user!):\(realm):\(password!)".md5
+            let hash2 = "ANNOUNCE:rtsp://\(host!):\(port!)\(path!)".md5
+            let hash3 = "\(hash1):\(nonce):\(hash2)".md5
+            return "Digest username=\"\(user!)\", realm=\"\(realm)\", nonce=\"\(nonce)\", uri=\"rtsp://\(host!):\(port!)\(path!)\", response=\"\(hash3)\""
+        } else {
+            print("using basic auth")
+            let data = "\(user!):\(password!)"
+            let base64Data = data.data(using: .utf8)!.base64EncodedString()
+            return "Basic \(base64Data)"
+        }
     }
     
     public func canAuth() -> Bool {
@@ -121,7 +140,7 @@ public class CommandsManager {
         self.vps = vps
     }
     
-    public func getResponse(response: String, isAudio: Bool, connectCheckerRtsp: ConnectCheckerRtsp?) {
+    public func getResponse(response: String, isAudio: Bool) -> Int {
         let sessionResults = response.groups(for: "Session: (\\w+)")
         if sessionResults.count > 0 {
             sessionId = sessionResults[0][1]
@@ -137,13 +156,11 @@ public class CommandsManager {
                 videoServerPorts[1] = Int(serverPortsResults[0][2])!
             }
         }
-        let status = getResonseStatus(response: response)
-        if status != 200 {
-            connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, \(response)")
-        }
+        let status = getResponseStatus(response: response)
+        return status
     }
     
-    public func getResonseStatus(response: String) -> Int {
+    private func getResponseStatus(response: String) -> Int {
         let statusResults = response.groups(for: "RTSP/\\d.\\d (\\d+) (\\w+)")
         if statusResults.count > 0 {
             let status = Int(statusResults[0][1])!

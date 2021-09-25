@@ -58,21 +58,23 @@ public class RtspClient {
                     //Options
                     self.socket?.write(data: self.commandsManager.createOptions())
                     let optionsResponse = self.socket?.read()
-                    self.commandsManager.getResponse(response: optionsResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    let optionsStatus = self.commandsManager.getResponse(response: optionsResponse!, isAudio: false)
+                    if (optionsStatus != 200) {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, options \(optionsStatus)")
+                        return
+                    }
                     //Announce
                     self.socket?.write(data: self.commandsManager.createAnnounce())
                     let announceResponse = self.socket?.read()
-                    self.commandsManager.getResponse(response: announceResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
-                    let status = self.commandsManager.getResonseStatus(response: announceResponse!)
-                    print("s: \(status)")
-                    if status == 403 {
+                    let announceStatus = self.commandsManager.getResponse(response: announceResponse!, isAudio: false)
+                    if announceStatus == 403 {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
-                    } else if status == 401 {
+                    } else if announceStatus == 401 {
                         if (self.commandsManager.canAuth()) {
                             //Announce with auth
-                            self.socket?.write(data: self.commandsManager.createAuth(authResponse: announceResponse!))
+                            self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse!))
                             let authResponse = self.socket?.read()
-                            let authStatus = self.commandsManager.getResonseStatus(response: authResponse!)
+                            let authStatus = self.commandsManager.getResponse(response: authResponse!, isAudio: false)
                             if authStatus == 401 {
                                 self.connectCheckerRtsp?.onAuthErrorRtsp()
                             } else if authStatus == 200 {
@@ -82,25 +84,38 @@ public class RtspClient {
                             }
                         } else {
                             self.connectCheckerRtsp?.onAuthErrorRtsp()
+                            return
                         }
-                    } else if status != 200 {
-                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(status)")
+                    } else if announceStatus != 200 {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(announceStatus)")
                     }
                     if !self.commandsManager.isOnlyAudio {
                         //Setup video
                         self.rtpSender.setVideoInfo(sps: self.sps!, pps: self.pps!, vps: self.vps)
                         self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                         let videoSetupResponse = self.socket?.read()
-                        self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                        let setupAudioStatus = self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false)
+                        if (setupAudioStatus != 200) {
+                            self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
+                            return
+                        }
                     }
                     //Setup audio
                     self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
                     let audioSetupResponse = self.socket?.read()
-                    self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true, connectCheckerRtsp: self.connectCheckerRtsp)
+                    let setupVideoStatus = self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true)
+                    if (setupVideoStatus != 200) {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
+                        return
+                    }
                     //Record
                     self.socket?.write(data: self.commandsManager.createRecord())
                     let recordResponse = self.socket?.read()
-                    self.commandsManager.getResponse(response: recordResponse!, isAudio: false, connectCheckerRtsp: self.connectCheckerRtsp)
+                    let recordStatus = self.commandsManager.getResponse(response: recordResponse!, isAudio: false)
+                    if (recordStatus != 200) {
+                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
+                        return
+                    }
                     self.streaming = true
                     self.rtpSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
 

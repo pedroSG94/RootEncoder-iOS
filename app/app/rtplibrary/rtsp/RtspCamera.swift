@@ -16,6 +16,14 @@ public class RtspCamera: CameraBase {
         super.init(view: view)
     }
 
+    public func setAuth(user: String, password: String) {
+        client.setAuth(user: user, password: password)
+    }
+
+    public func setCodec(codec: CodecUtil) {
+        videoEncoder.setCodec(codec: codec)
+    }
+
     public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
         super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
         client.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)

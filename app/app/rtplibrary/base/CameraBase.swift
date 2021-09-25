@@ -12,7 +12,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private var microphone: MicrophoneManager!
     private var cameraManager: CameraManager!
     private var audioEncoder: AudioEncoder!
-    private var videoEncoder: VideoEncoder!
+    internal var videoEncoder: VideoEncoder!
     private(set) var endpoint: String = ""
     private var streaming = false
     private var onPreview = false
@@ -44,10 +44,6 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func prepareVideo() -> Bool {
         prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
-    }
-
-    public func setCodec(codec: CodecUtil) {
-        videoEncoder.setCodec(codec: codec)
     }
 
     public func startStream(endpoint: String) {
@@ -82,19 +78,25 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         cameraManager.switchCamera()
     }
 
-    public func startPreview(resolution: CameraHelper.Resolution) {
-        cameraManager.start(onPreview: true, resolution: resolution)
-        onPreview = true
+    public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK) {
+        if (!isOnPreview()) {
+            cameraManager.start(facing: facing, resolution: resolution, onPreview: true)
+            onPreview = true
+        }
     }
 
     public func startPreview() {
-        cameraManager.start(onPreview: true)
-        onPreview = true
+        if (!isOnPreview()) {
+            cameraManager.start(onPreview: true)
+            onPreview = true
+        }
     }
 
     public func stopPreview() {
-        cameraManager.stop()
-        onPreview = false
+        if (!isStreaming() && isOnPreview()) {
+            cameraManager.stop()
+            onPreview = false
+        }
     }
 
     public func getAacDataRtp(frame: Frame) {}
