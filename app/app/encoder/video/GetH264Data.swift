@@ -11,5 +11,5 @@ import Foundation
 public protocol GetH264Data {
     func getH264Data(frame: Frame)
     
-    func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>)
+    func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?)
 }

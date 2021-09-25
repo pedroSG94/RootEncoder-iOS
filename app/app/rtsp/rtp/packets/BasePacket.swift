@@ -3,8 +3,6 @@ import Foundation
 public class BasePacket {
     public let maxPacketSize: Int = RtpConstants.MTU - 28
     public var channelIdentifier: Int?
-    public var rtpPort: UInt32?
-    public var rtcpPort: UInt32?
     
     private var clock: UInt64
     private var seq: UInt64 = 0
@@ -16,13 +14,10 @@ public class BasePacket {
         self.payloadType = payloadType
     }
 
+    public func createAndSendPacket(data: Frame) { }
+
     public func setSSRC(ssrc: UInt64) {
         self.ssrc = ssrc
-    }
-
-    public func setPorts(rtpPort: UInt32, rtcpPort: UInt32) {
-        self.rtpPort = rtpPort
-        self.rtcpPort = rtcpPort
     }
     
     public func reset() {

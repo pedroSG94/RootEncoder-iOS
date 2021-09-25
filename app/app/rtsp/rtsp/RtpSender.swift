@@ -3,7 +3,7 @@ import Foundation
 public class RtpSender: AudioPacketCallback, VideoPacketCallback {
     
     private var audioPacketizer: AacPacket?
-    private var videoPacketizer: H264Packet?
+    private var videoPacketizer: BasePacket?
     private var tcpSocket: BaseRtpSocket?
     private var tcpReport: BaseSenderReport?
     private let thread = DispatchQueue(label: "RtpSender")
@@ -28,8 +28,13 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
         }
     }
 
-    public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>) {
-        videoPacketizer = H264Packet(sps: sps, pps: pps, videoPacketCallback: self)
+    public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        if (vps == nil) {
+            videoPacketizer = H264Packet(sps: sps, pps: pps, videoPacketCallback: self)
+        } else {
+            videoPacketizer = H265Packet(sps: sps, pps: pps, videoPacketCallback: self)
+        }
+
     }
     
     public func setAudioInfo(sampleRate: Int) {

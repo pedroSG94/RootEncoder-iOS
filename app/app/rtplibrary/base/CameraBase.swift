@@ -46,6 +46,10 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
     }
 
+    public func setCodec(codec: CodecUtil) {
+        videoEncoder.setCodec(codec: codec)
+    }
+
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
         microphone.start()
@@ -95,7 +99,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func getAacDataRtp(frame: Frame) {}
 
-    public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>) {}
+    public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
 
     public func getH264DataRtp(frame: Frame) {}
 
@@ -115,7 +119,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         getH264DataRtp(frame: frame)
     }
 
-    public func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>) {
-        onSpsPpsVpsRtp(sps: sps, pps: pps)
+    public func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        onSpsPpsVpsRtp(sps: sps, pps: pps, vps: vps)
     }
 }

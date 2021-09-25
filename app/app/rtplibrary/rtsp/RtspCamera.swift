@@ -33,8 +33,8 @@ public class RtspCamera: CameraBase {
         client.sendVideo(frame: frame)
     }
 
-    public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>) {
-        client.setVideoInfo(sps: sps, pps: pps, vps: nil)
+    public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        client.setVideoInfo(sps: sps, pps: pps, vps: vps)
         client.connect(url: endpoint)
     }
 }

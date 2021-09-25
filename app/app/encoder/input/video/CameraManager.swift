@@ -70,8 +70,12 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     
     public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, onPreview: Bool) {
         self.onPreview = onPreview
-        if (running && resolution.value != self.resolution.value) {
-            stop()
+        if (running) {
+            if (resolution != self.resolution) {
+                stop()
+            } else {
+                return
+            }
         }
         session = AVCaptureSession()
         let preset: AVCaptureSession.Preset = resolution.value

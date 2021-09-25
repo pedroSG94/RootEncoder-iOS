@@ -11,7 +11,7 @@ public class AacPacket: BasePacket {
         callback = audioPacketCallback
     }
     
-    public func createAndSendPacket(data: Frame) {
+    public override func createAndSendPacket(data: Frame) {
         let buffer = data.buffer!
         let ts = data.timeStamp!
         let length = Int(data.length!)
@@ -39,8 +39,7 @@ public class AacPacket: BasePacket {
         frame.length = rtpBuffer.count
         frame.buffer = rtpBuffer
         frame.channelIdentifier = channelIdentifier
-        frame.rtpPort = rtpPort
-        frame.rtcpPort = rtcpPort
+
         callback?.onAudioFrameCreated(rtpFrame: frame)
     }
 }
