@@ -1,0 +1,10 @@
+## Appcode
+
+*.iml
+/.idea
+/build
+.DS_Store
+
+##Xcode
+
+xcuserdata/

@@ -15,43 +15,44 @@
 		044138412501A02500732969 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0441383F2501A02500732969 /* LaunchScreen.storyboard */; };
 		0441384C2501A02500732969 /* appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441384B2501A02500732969 /* appTests.swift */; };
 		044138572501A02500732969 /* appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138562501A02500732969 /* appUITests.swift */; };
-		044138712501A14B00732969 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386C2501A14B00732969 /* Utils.swift */; };
-		044138732501A14B00732969 /* ConnectCheckerRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */; };
-		044138742501A14B00732969 /* RtpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441386F2501A14B00732969 /* RtpConstants.swift */; };
-		044138752501A14B00732969 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138702501A14B00732969 /* Socket.swift */; };
-		0441387B2501A1A600732969 /* CommandsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138762501A1A600732969 /* CommandsManager.swift */; };
-		0441387C2501A1A600732969 /* Body.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138772501A1A600732969 /* Body.swift */; };
-		0441387D2501A1A600732969 /* RtpFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138782501A1A600732969 /* RtpFrame.swift */; };
-		0441387E2501A1A600732969 /* RtpSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138792501A1A600732969 /* RtpSender.swift */; };
-		0441387F2501A1A600732969 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441387A2501A1A600732969 /* Protocol.swift */; };
-		044138872501A20500732969 /* H264Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138822501A20500732969 /* H264Packet.swift */; };
-		044138882501A20500732969 /* VideoPacketCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138832501A20500732969 /* VideoPacketCallback.swift */; };
-		044138892501A20500732969 /* BasePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138842501A20500732969 /* BasePacket.swift */; };
-		0441388A2501A20500732969 /* AacPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138852501A20500732969 /* AacPacket.swift */; };
-		0441388B2501A20500732969 /* AudioPacketCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138862501A20500732969 /* AudioPacketCallback.swift */; };
-		0441388F2501A34500732969 /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441388E2501A34500732969 /* RtspClient.swift */; };
-		04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04E0D204250641AB007F1631 /* AudioEncoder.swift */; };
-		659B7075DD7443816CA3D0F3 /* GetMicrophoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79026741971D86FDE779 /* GetMicrophoneData.swift */; };
-		659B713E27256658C9847A23 /* Conversor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B778E7E779B80A8F17190 /* Conversor.swift */; };
-		659B714523A8C973CE87E827 /* BaseRtpSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B769F2772A9DD790FC73E /* BaseRtpSocket.swift */; };
-		659B71B661BC522251F5B1C7 /* RtspCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B708EC41F74175C2A690F /* RtspCamera.swift */; };
-		659B73FC051029F996614DF9 /* CodecUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B715C89EBC9FDFD536AB2 /* CodecUtil.swift */; };
-		659B741206BC2DBAB118E21C /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B75DD13A689230EFA9C59 /* CameraManager.swift */; };
-		659B74231012197B107D1284 /* H265Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B76C90D0D6D9AB90B89C4 /* H265Packet.swift */; };
-		659B7424C6A73B412CF6FA0C /* BaseSenderReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B73DE3833D7AB02AD8DAB /* BaseSenderReport.swift */; };
-		659B748C98E92FF38634AFCC /* GetCameraData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B715CFBD7F75322145EEC /* GetCameraData.swift */; };
-		659B75C18A0243303C53E4F6 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7FC87B45915CD415860F /* Frame.swift */; };
-		659B75D42F1C8B38A196D459 /* CameraHelperFacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B77C09001C08CF0F05BC3 /* CameraHelperFacing.swift */; };
-		659B7C01128FC484B9364057 /* MicrophoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7CF2C60F25E16D91D1E2 /* MicrophoneManager.swift */; };
-		659B7CE98728BEC14A94F406 /* ConcurrentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B750C5EE0B6EB09C5B9B0 /* ConcurrentQueue.swift */; };
-		659B7D07D0D17B6A53D942AD /* RtpSocketUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B76F0771D09EA12629273 /* RtpSocketUdp.swift */; };
-		659B7F88672359EA3C38700B /* SenderReportUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79771AF185BE7AD3BD34 /* SenderReportUdp.swift */; };
-		659B7FE64EE2970B4C9DE96E /* CameraBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B77D72D9C8BF3FF68F682 /* CameraBase.swift */; };
-		EB289B712651765C00FB9B48 /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB289B702651765C00FB9B48 /* VideoEncoder.swift */; };
-		EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */; };
-		EBBF0732250D621900E18C5A /* GetAacData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBF0731250D621900E18C5A /* GetAacData.swift */; };
-		EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */; };
-		EBEF57932651A863007B9930 /* GetH264Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBEF57922651A863007B9930 /* GetH264Data.swift */; };
+		659B72E3438033E5B5C097AD /* CommandsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7449A1CD1B6F59A335A8 /* CommandsManager.swift */; };
+		659B73BF320E14A5662BBE0E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 659B7C7C942D059E7C4F1424 /* .gitignore */; };
+		659B73C0DD1B71834C2178D2 /* GetH264Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B75E89C79FACA5A9E30AF /* GetH264Data.swift */; };
+		659B740CB9D44FD664E9FEF3 /* H265Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7BF7949061E5109452A3 /* H265Packet.swift */; };
+		659B745E086481559BF34E5F /* CodecUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7875B8F7749A95F07A7A /* CodecUtil.swift */; };
+		659B749D44AD2AF62FD153A2 /* RtpSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B78069DF1B3C66E093EC4 /* RtpSender.swift */; };
+		659B74DE319DFAC761C1F886 /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79F9B2A8263FE123FECA /* VideoEncoder.swift */; };
+		659B75294AD0515DC57BE98F /* H264Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7B0C1CB65A5A86C19988 /* H264Packet.swift */; };
+		659B75A6D27114213576EFB1 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B72F38D1549DAFD9D91D7 /* RtpSocketTcp.swift */; };
+		659B75AFA4FC1CFB3BC0C2B0 /* CameraHelperFacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B77D1BD16FDCD819132FC /* CameraHelperFacing.swift */; };
+		659B75CC6E1BF3086BBE2A0A /* BasePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B742F6764FB433E48EFBA /* BasePacket.swift */; };
+		659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */; };
+		659B76900AADBD6329B64479 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B743ABD02EB1635EF6A5C /* CameraManager.swift */; };
+		659B77274201550B8CB5B24E /* BaseSenderReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B776838C4DC3F43F38E79 /* BaseSenderReport.swift */; };
+		659B7744AD9A56C8BF84146A /* MicrophoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79ED6A496DE540E0878F /* MicrophoneManager.swift */; };
+		659B779063CF1AAB8599CF06 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B71DE7624E6E01E1CF26F /* Frame.swift */; };
+		659B77EDAC78EA7A440AD552 /* ConcurrentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B720C6D1C539EB352CDDF /* ConcurrentQueue.swift */; };
+		659B782D34C29E2E70A7B8AB /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B794E0ACD4DA8A3A75F24 /* Utils.swift */; };
+		659B785858D79BCE3BB5C672 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E3A8E10D3511CAE8BB3 /* Socket.swift */; };
+		659B7917A1F543F6F8E6B1F7 /* SenderReportUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7806C59ACBF229B9201F /* SenderReportUdp.swift */; };
+		659B79DDD2C3E969475E013C /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F2D0847B69CFE75175F /* RtspClient.swift */; };
+		659B7A15C4A30FEB5E901043 /* RtpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7954901D23B67A805AE1 /* RtpConstants.swift */; };
+		659B7A1E9E3623B24581C5B5 /* AacPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B719A2698D1C8B30997EC /* AacPacket.swift */; };
+		659B7BE0F07F003842F8473F /* Body.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B724319CFA2EDEC2C71FC /* Body.swift */; };
+		659B7C965F752AC885FF488E /* GetAacData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7309E911B59D14B7F9B8 /* GetAacData.swift */; };
+		659B7CA76C96970003D5FEEA /* RtpFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B756C8A224ACB881E46FB /* RtpFrame.swift */; };
+		659B7CAA33D51C06B32CE475 /* AudioEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7CCFC1F0FE8F81909CB5 /* AudioEncoder.swift */; };
+		659B7D750BA1A73AECCE769A /* CameraBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7C58545D135D28652641 /* CameraBase.swift */; };
+		659B7DE9CCD3E12AC0922F91 /* GetMicrophoneData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B791D307ED811890D6398 /* GetMicrophoneData.swift */; };
+		659B7E15CB70B08298F646DE /* GetCameraData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F444153FBF262A18AA9 /* GetCameraData.swift */; };
+		659B7E1A270D6BFFF9FBCC4C /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7064F3C5CB5A052CCEFA /* Protocol.swift */; };
+		659B7EA903B30550A8AF4B97 /* Conversor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7BE55B7EC6D6ECCBA9E2 /* Conversor.swift */; };
+		659B7EEA19627BF1B9665B48 /* RtspCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B70BD104A35AAB011E801 /* RtspCamera.swift */; };
+		659B7EF7DFEDDA9719DBF3EB /* AudioPacketCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B70F4E8BF0CB58F6569E8 /* AudioPacketCallback.swift */; };
+		659B7F37BB9E02093415399A /* BaseRtpSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B709864CEA907DD72DD5B /* BaseRtpSocket.swift */; };
+		659B7F3D0B4ED8B34622B463 /* VideoPacketCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B75E53CB99DBA280FFDA8 /* VideoPacketCallback.swift */; };
+		659B7FCC077881C01353842D /* RtpSocketUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7402EC5ED8DF4AC551EE /* RtpSocketUdp.swift */; };
+		659B7FF1C3ED79A47589B9FB /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7797B610F59BAB8E6436 /* SenderReportTcp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,43 +87,44 @@
 		044138522501A02500732969 /* appUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = appUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		044138562501A02500732969 /* appUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appUITests.swift; sourceTree = "<group>"; };
 		044138582501A02500732969 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0441386C2501A14B00732969 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtsp.swift; sourceTree = "<group>"; };
-		0441386F2501A14B00732969 /* RtpConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpConstants.swift; sourceTree = "<group>"; };
-		044138702501A14B00732969 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
-		044138762501A1A600732969 /* CommandsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsManager.swift; sourceTree = "<group>"; };
-		044138772501A1A600732969 /* Body.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Body.swift; sourceTree = "<group>"; };
-		044138782501A1A600732969 /* RtpFrame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpFrame.swift; sourceTree = "<group>"; };
-		044138792501A1A600732969 /* RtpSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSender.swift; sourceTree = "<group>"; };
-		0441387A2501A1A600732969 /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
-		044138822501A20500732969 /* H264Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H264Packet.swift; sourceTree = "<group>"; };
-		044138832501A20500732969 /* VideoPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPacketCallback.swift; sourceTree = "<group>"; };
-		044138842501A20500732969 /* BasePacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasePacket.swift; sourceTree = "<group>"; };
-		044138852501A20500732969 /* AacPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AacPacket.swift; sourceTree = "<group>"; };
-		044138862501A20500732969 /* AudioPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPacketCallback.swift; sourceTree = "<group>"; };
-		0441388E2501A34500732969 /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
-		04E0D204250641AB007F1631 /* AudioEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
-		659B708EC41F74175C2A690F /* RtspCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspCamera.swift; sourceTree = "<group>"; };
-		659B715C89EBC9FDFD536AB2 /* CodecUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodecUtil.swift; sourceTree = "<group>"; };
-		659B715CFBD7F75322145EEC /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
-		659B73DE3833D7AB02AD8DAB /* BaseSenderReport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseSenderReport.swift; sourceTree = "<group>"; };
-		659B750C5EE0B6EB09C5B9B0 /* ConcurrentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurrentQueue.swift; sourceTree = "<group>"; };
-		659B75DD13A689230EFA9C59 /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
-		659B769F2772A9DD790FC73E /* BaseRtpSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseRtpSocket.swift; sourceTree = "<group>"; };
-		659B76C90D0D6D9AB90B89C4 /* H265Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H265Packet.swift; sourceTree = "<group>"; };
-		659B76F0771D09EA12629273 /* RtpSocketUdp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSocketUdp.swift; sourceTree = "<group>"; };
-		659B778E7E779B80A8F17190 /* Conversor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversor.swift; sourceTree = "<group>"; };
-		659B77C09001C08CF0F05BC3 /* CameraHelperFacing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraHelperFacing.swift; sourceTree = "<group>"; };
-		659B77D72D9C8BF3FF68F682 /* CameraBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraBase.swift; sourceTree = "<group>"; };
-		659B79026741971D86FDE779 /* GetMicrophoneData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetMicrophoneData.swift; sourceTree = "<group>"; };
-		659B79771AF185BE7AD3BD34 /* SenderReportUdp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderReportUdp.swift; sourceTree = "<group>"; };
-		659B7CF2C60F25E16D91D1E2 /* MicrophoneManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophoneManager.swift; sourceTree = "<group>"; };
-		659B7FC87B45915CD415860F /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
-		EB289B702651765C00FB9B48 /* VideoEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
-		EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
-		EBBF0731250D621900E18C5A /* GetAacData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
-		EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SenderReportTcp.swift; sourceTree = "<group>"; };
-		EBEF57922651A863007B9930 /* GetH264Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetH264Data.swift; sourceTree = "<group>"; };
+		659B7064F3C5CB5A052CCEFA /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		659B709864CEA907DD72DD5B /* BaseRtpSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseRtpSocket.swift; sourceTree = "<group>"; };
+		659B70BD104A35AAB011E801 /* RtspCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspCamera.swift; sourceTree = "<group>"; };
+		659B70F4E8BF0CB58F6569E8 /* AudioPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPacketCallback.swift; sourceTree = "<group>"; };
+		659B719A2698D1C8B30997EC /* AacPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AacPacket.swift; sourceTree = "<group>"; };
+		659B71DE7624E6E01E1CF26F /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
+		659B720C6D1C539EB352CDDF /* ConcurrentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurrentQueue.swift; sourceTree = "<group>"; };
+		659B724319CFA2EDEC2C71FC /* Body.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Body.swift; sourceTree = "<group>"; };
+		659B72F38D1549DAFD9D91D7 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
+		659B7309E911B59D14B7F9B8 /* GetAacData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
+		659B7402EC5ED8DF4AC551EE /* RtpSocketUdp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSocketUdp.swift; sourceTree = "<group>"; };
+		659B742F6764FB433E48EFBA /* BasePacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasePacket.swift; sourceTree = "<group>"; };
+		659B743ABD02EB1635EF6A5C /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		659B7449A1CD1B6F59A335A8 /* CommandsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsManager.swift; sourceTree = "<group>"; };
+		659B756C8A224ACB881E46FB /* RtpFrame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpFrame.swift; sourceTree = "<group>"; };
+		659B75E53CB99DBA280FFDA8 /* VideoPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPacketCallback.swift; sourceTree = "<group>"; };
+		659B75E89C79FACA5A9E30AF /* GetH264Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetH264Data.swift; sourceTree = "<group>"; };
+		659B776838C4DC3F43F38E79 /* BaseSenderReport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseSenderReport.swift; sourceTree = "<group>"; };
+		659B7797B610F59BAB8E6436 /* SenderReportTcp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderReportTcp.swift; sourceTree = "<group>"; };
+		659B77D1BD16FDCD819132FC /* CameraHelperFacing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraHelperFacing.swift; sourceTree = "<group>"; };
+		659B78069DF1B3C66E093EC4 /* RtpSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSender.swift; sourceTree = "<group>"; };
+		659B7806C59ACBF229B9201F /* SenderReportUdp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderReportUdp.swift; sourceTree = "<group>"; };
+		659B7875B8F7749A95F07A7A /* CodecUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodecUtil.swift; sourceTree = "<group>"; };
+		659B791D307ED811890D6398 /* GetMicrophoneData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetMicrophoneData.swift; sourceTree = "<group>"; };
+		659B794E0ACD4DA8A3A75F24 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		659B7954901D23B67A805AE1 /* RtpConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpConstants.swift; sourceTree = "<group>"; };
+		659B79ED6A496DE540E0878F /* MicrophoneManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophoneManager.swift; sourceTree = "<group>"; };
+		659B79F9B2A8263FE123FECA /* VideoEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
+		659B7B0C1CB65A5A86C19988 /* H264Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H264Packet.swift; sourceTree = "<group>"; };
+		659B7BE55B7EC6D6ECCBA9E2 /* Conversor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversor.swift; sourceTree = "<group>"; };
+		659B7BF7949061E5109452A3 /* H265Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H265Packet.swift; sourceTree = "<group>"; };
+		659B7C58545D135D28652641 /* CameraBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraBase.swift; sourceTree = "<group>"; };
+		659B7C7C942D059E7C4F1424 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = file.gitignore; path = .gitignore; sourceTree = "<group>"; };
+		659B7CCFC1F0FE8F81909CB5 /* AudioEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioEncoder.swift; sourceTree = "<group>"; };
+		659B7E3A8E10D3511CAE8BB3 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtsp.swift; sourceTree = "<group>"; };
+		659B7F2D0847B69CFE75175F /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
+		659B7F444153FBF262A18AA9 /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,11 @@
 				0441384A2501A02500732969 /* appTests */,
 				044138552501A02500732969 /* appUITests */,
 				044138322501A02300732969 /* Products */,
+				659B75D681E6847DBF0E1368 /* encoder */,
+				659B703A0302B3AB5808DB8F /* rtsp */,
+				659B7A447E01962F17C47233 /* rtplibrary */,
+				659B707A2DD7314EAA0D8ECB /* rtmp */,
+				659B7C7C942D059E7C4F1424 /* .gitignore */,
 			);
 			sourceTree = "<group>";
 		};
@@ -173,8 +180,6 @@
 		044138332501A02300732969 /* app */ = {
 			isa = PBXGroup;
 			children = (
-				044138672501A08400732969 /* rtsp */,
-				044138642501A03A00732969 /* encoder */,
 				044138342501A02300732969 /* AppDelegate.swift */,
 				044138362501A02300732969 /* SceneDelegate.swift */,
 				044138382501A02300732969 /* ViewController.swift */,
@@ -182,7 +187,6 @@
 				0441383D2501A02500732969 /* Assets.xcassets */,
 				0441383F2501A02500732969 /* LaunchScreen.storyboard */,
 				044138422501A02500732969 /* Info.plist */,
-				659B717C2A2B7BFFAB07EEA2 /* rtplibrary */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -205,174 +209,213 @@
 			path = appUITests;
 			sourceTree = "<group>";
 		};
-		044138642501A03A00732969 /* encoder */ = {
+		659B703A0302B3AB5808DB8F /* rtsp */ = {
 			isa = PBXGroup;
 			children = (
-				EB5F356326FE6F5F00472E5E /* utils */,
-				EBE7CB53250E84BB0015E620 /* video */,
-				EBBF0730250D5A5000E18C5A /* audio */,
-				659B7B3C16055BD7831E39CF /* input */,
-			);
-			path = encoder;
-			sourceTree = "<group>";
-		};
-		044138672501A08400732969 /* rtsp */ = {
-			isa = PBXGroup;
-			children = (
-				0441386B2501A0CD00732969 /* rtcp */,
-				0441386A2501A0C300732969 /* rtp */,
-				044138692501A0B700732969 /* utils */,
-				044138682501A0AB00732969 /* rtsp */,
+				659B7FE6CD6E2B1B17A77F31 /* rtcp */,
+				659B7969CE7340EE2602FFBD /* rtp */,
+				659B72AE0618C57854176D4A /* utils */,
+				659B71BDA3B2418B50E35375 /* rtsp */,
 			);
 			path = rtsp;
 			sourceTree = "<group>";
 		};
-		044138682501A0AB00732969 /* rtsp */ = {
+		659B705B90883861B72B422C /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				0441388E2501A34500732969 /* RtspClient.swift */,
-				044138772501A1A600732969 /* Body.swift */,
-				044138762501A1A600732969 /* CommandsManager.swift */,
-				0441387A2501A1A600732969 /* Protocol.swift */,
-				044138782501A1A600732969 /* RtpFrame.swift */,
-				044138792501A1A600732969 /* RtpSender.swift */,
-			);
-			path = rtsp;
-			sourceTree = "<group>";
-		};
-		044138692501A0B700732969 /* utils */ = {
-			isa = PBXGroup;
-			children = (
-				0441386E2501A14B00732969 /* ConnectCheckerRtsp.swift */,
-				0441386F2501A14B00732969 /* RtpConstants.swift */,
-				044138702501A14B00732969 /* Socket.swift */,
-				0441386C2501A14B00732969 /* Utils.swift */,
-				659B750C5EE0B6EB09C5B9B0 /* ConcurrentQueue.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
 		};
-		0441386A2501A0C300732969 /* rtp */ = {
+		659B707A2DD7314EAA0D8ECB /* rtmp */ = {
 			isa = PBXGroup;
 			children = (
-				044138812501A1D100732969 /* sockets */,
-				044138802501A1B400732969 /* packets */,
+				659B7F521835325377F48060 /* amf */,
+				659B73BF32F7DB032220BA2D /* flv */,
+				659B7CC5F8BBFDDFE11B4990 /* rtmp */,
+				659B705B90883861B72B422C /* utils */,
 			);
-			path = rtp;
+			path = rtmp;
 			sourceTree = "<group>";
 		};
-		0441386B2501A0CD00732969 /* rtcp */ = {
+		659B70CD3BDCBD5D80872FF4 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				EBC92B62250BE32600E24EEE /* SenderReportTcp.swift */,
-				659B79771AF185BE7AD3BD34 /* SenderReportUdp.swift */,
-				659B73DE3833D7AB02AD8DAB /* BaseSenderReport.swift */,
+				659B7CCFC1F0FE8F81909CB5 /* AudioEncoder.swift */,
+				659B7309E911B59D14B7F9B8 /* GetAacData.swift */,
 			);
-			path = rtcp;
+			path = audio;
 			sourceTree = "<group>";
 		};
-		044138802501A1B400732969 /* packets */ = {
+		659B71BDA3B2418B50E35375 /* rtsp */ = {
 			isa = PBXGroup;
 			children = (
-				044138852501A20500732969 /* AacPacket.swift */,
-				044138862501A20500732969 /* AudioPacketCallback.swift */,
-				044138842501A20500732969 /* BasePacket.swift */,
-				044138822501A20500732969 /* H264Packet.swift */,
-				044138832501A20500732969 /* VideoPacketCallback.swift */,
-				659B76C90D0D6D9AB90B89C4 /* H265Packet.swift */,
+				659B7F2D0847B69CFE75175F /* RtspClient.swift */,
+				659B724319CFA2EDEC2C71FC /* Body.swift */,
+				659B7449A1CD1B6F59A335A8 /* CommandsManager.swift */,
+				659B7064F3C5CB5A052CCEFA /* Protocol.swift */,
+				659B756C8A224ACB881E46FB /* RtpFrame.swift */,
+				659B78069DF1B3C66E093EC4 /* RtpSender.swift */,
+			);
+			path = rtsp;
+			sourceTree = "<group>";
+		};
+		659B72AE0618C57854176D4A /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */,
+				659B7954901D23B67A805AE1 /* RtpConstants.swift */,
+				659B7E3A8E10D3511CAE8BB3 /* Socket.swift */,
+				659B794E0ACD4DA8A3A75F24 /* Utils.swift */,
+				659B720C6D1C539EB352CDDF /* ConcurrentQueue.swift */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		659B7374BA6B4AD5954195E6 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				659B79F9B2A8263FE123FECA /* VideoEncoder.swift */,
+				659B75E89C79FACA5A9E30AF /* GetH264Data.swift */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		659B73BF32F7DB032220BA2D /* flv */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = flv;
+			sourceTree = "<group>";
+		};
+		659B750F0B3BC366F057D6CD /* packets */ = {
+			isa = PBXGroup;
+			children = (
+				659B719A2698D1C8B30997EC /* AacPacket.swift */,
+				659B70F4E8BF0CB58F6569E8 /* AudioPacketCallback.swift */,
+				659B742F6764FB433E48EFBA /* BasePacket.swift */,
+				659B7B0C1CB65A5A86C19988 /* H264Packet.swift */,
+				659B75E53CB99DBA280FFDA8 /* VideoPacketCallback.swift */,
+				659B7BF7949061E5109452A3 /* H265Packet.swift */,
 			);
 			path = packets;
 			sourceTree = "<group>";
 		};
-		044138812501A1D100732969 /* sockets */ = {
+		659B75567AAB9341CE2B0BE5 /* input */ = {
 			isa = PBXGroup;
 			children = (
-				EB626240250A3E0800E877C6 /* RtpSocketTcp.swift */,
-				659B769F2772A9DD790FC73E /* BaseRtpSocket.swift */,
-				659B76F0771D09EA12629273 /* RtpSocketUdp.swift */,
-			);
-			path = sockets;
-			sourceTree = "<group>";
-		};
-		659B70E1A038DFC527603A33 /* video */ = {
-			isa = PBXGroup;
-			children = (
-				659B715CFBD7F75322145EEC /* GetCameraData.swift */,
-				659B75DD13A689230EFA9C59 /* CameraManager.swift */,
-			);
-			path = video;
-			sourceTree = "<group>";
-		};
-		659B717C2A2B7BFFAB07EEA2 /* rtplibrary */ = {
-			isa = PBXGroup;
-			children = (
-				659B71E54AFD61336DF8161F /* base */,
-				659B721235BA5D98A2738E49 /* rtsp */,
-			);
-			path = rtplibrary;
-			sourceTree = "<group>";
-		};
-		659B71E54AFD61336DF8161F /* base */ = {
-			isa = PBXGroup;
-			children = (
-				659B77D72D9C8BF3FF68F682 /* CameraBase.swift */,
-			);
-			path = base;
-			sourceTree = "<group>";
-		};
-		659B721235BA5D98A2738E49 /* rtsp */ = {
-			isa = PBXGroup;
-			children = (
-				659B708EC41F74175C2A690F /* RtspCamera.swift */,
-			);
-			path = rtsp;
-			sourceTree = "<group>";
-		};
-		659B79D652E88AF2F837CFC3 /* audio */ = {
-			isa = PBXGroup;
-			children = (
-				659B79026741971D86FDE779 /* GetMicrophoneData.swift */,
-				659B7CF2C60F25E16D91D1E2 /* MicrophoneManager.swift */,
-			);
-			path = audio;
-			sourceTree = "<group>";
-		};
-		659B7B3C16055BD7831E39CF /* input */ = {
-			isa = PBXGroup;
-			children = (
-				659B79D652E88AF2F837CFC3 /* audio */,
-				659B70E1A038DFC527603A33 /* video */,
+				659B7D5FCEDF18854EC495BD /* audio */,
+				659B7C3308CDE3ADC89465B3 /* video */,
 			);
 			path = input;
 			sourceTree = "<group>";
 		};
-		EB5F356326FE6F5F00472E5E /* utils */ = {
+		659B75C1AE80B3A514B55F5F /* sockets */ = {
 			isa = PBXGroup;
 			children = (
-				659B77C09001C08CF0F05BC3 /* CameraHelperFacing.swift */,
-				659B7FC87B45915CD415860F /* Frame.swift */,
-				659B778E7E779B80A8F17190 /* Conversor.swift */,
-				659B715C89EBC9FDFD536AB2 /* CodecUtil.swift */,
+				659B72F38D1549DAFD9D91D7 /* RtpSocketTcp.swift */,
+				659B709864CEA907DD72DD5B /* BaseRtpSocket.swift */,
+				659B7402EC5ED8DF4AC551EE /* RtpSocketUdp.swift */,
+			);
+			path = sockets;
+			sourceTree = "<group>";
+		};
+		659B75D3171FD0D9D6BCD39F /* base */ = {
+			isa = PBXGroup;
+			children = (
+				659B7C58545D135D28652641 /* CameraBase.swift */,
+			);
+			path = base;
+			sourceTree = "<group>";
+		};
+		659B75D681E6847DBF0E1368 /* encoder */ = {
+			isa = PBXGroup;
+			children = (
+				659B70CD3BDCBD5D80872FF4 /* audio */,
+				659B75567AAB9341CE2B0BE5 /* input */,
+				659B7B599A38950C76C3D782 /* utils */,
+				659B7374BA6B4AD5954195E6 /* video */,
+			);
+			path = encoder;
+			sourceTree = "<group>";
+		};
+		659B7969CE7340EE2602FFBD /* rtp */ = {
+			isa = PBXGroup;
+			children = (
+				659B75C1AE80B3A514B55F5F /* sockets */,
+				659B750F0B3BC366F057D6CD /* packets */,
+			);
+			path = rtp;
+			sourceTree = "<group>";
+		};
+		659B7A1CCADF53D2C8C870EA /* rtsp */ = {
+			isa = PBXGroup;
+			children = (
+				659B70BD104A35AAB011E801 /* RtspCamera.swift */,
+			);
+			path = rtsp;
+			sourceTree = "<group>";
+		};
+		659B7A447E01962F17C47233 /* rtplibrary */ = {
+			isa = PBXGroup;
+			children = (
+				659B75D3171FD0D9D6BCD39F /* base */,
+				659B7A1CCADF53D2C8C870EA /* rtsp */,
+			);
+			path = rtplibrary;
+			sourceTree = "<group>";
+		};
+		659B7B599A38950C76C3D782 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				659B77D1BD16FDCD819132FC /* CameraHelperFacing.swift */,
+				659B71DE7624E6E01E1CF26F /* Frame.swift */,
+				659B7BE55B7EC6D6ECCBA9E2 /* Conversor.swift */,
+				659B7875B8F7749A95F07A7A /* CodecUtil.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
 		};
-		EBBF0730250D5A5000E18C5A /* audio */ = {
+		659B7C3308CDE3ADC89465B3 /* video */ = {
 			isa = PBXGroup;
 			children = (
-				04E0D204250641AB007F1631 /* AudioEncoder.swift */,
-				EBBF0731250D621900E18C5A /* GetAacData.swift */,
+				659B7F444153FBF262A18AA9 /* GetCameraData.swift */,
+				659B743ABD02EB1635EF6A5C /* CameraManager.swift */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		659B7CC5F8BBFDDFE11B4990 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = rtmp;
+			sourceTree = "<group>";
+		};
+		659B7D5FCEDF18854EC495BD /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				659B791D307ED811890D6398 /* GetMicrophoneData.swift */,
+				659B79ED6A496DE540E0878F /* MicrophoneManager.swift */,
 			);
 			path = audio;
 			sourceTree = "<group>";
 		};
-		EBE7CB53250E84BB0015E620 /* video */ = {
+		659B7F521835325377F48060 /* amf */ = {
 			isa = PBXGroup;
 			children = (
-				EB289B702651765C00FB9B48 /* VideoEncoder.swift */,
-				EBEF57922651A863007B9930 /* GetH264Data.swift */,
 			);
-			path = video;
+			path = amf;
+			sourceTree = "<group>";
+		};
+		659B7FE6CD6E2B1B17A77F31 /* rtcp */ = {
+			isa = PBXGroup;
+			children = (
+				659B7797B610F59BAB8E6436 /* SenderReportTcp.swift */,
+				659B7806C59ACBF229B9201F /* SenderReportUdp.swift */,
+				659B776838C4DC3F43F38E79 /* BaseSenderReport.swift */,
+			);
+			path = rtcp;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -482,6 +525,7 @@
 				044138412501A02500732969 /* LaunchScreen.storyboard in Resources */,
 				0441383E2501A02500732969 /* Assets.xcassets in Resources */,
 				0441383C2501A02300732969 /* Main.storyboard in Resources */,
+				659B73BF320E14A5662BBE0E /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,46 +550,46 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0441388B2501A20500732969 /* AudioPacketCallback.swift in Sources */,
-				044138882501A20500732969 /* VideoPacketCallback.swift in Sources */,
-				0441387C2501A1A600732969 /* Body.swift in Sources */,
-				EB626241250A3E0800E877C6 /* RtpSocketTcp.swift in Sources */,
-				044138742501A14B00732969 /* RtpConstants.swift in Sources */,
-				0441388A2501A20500732969 /* AacPacket.swift in Sources */,
-				EBBF0732250D621900E18C5A /* GetAacData.swift in Sources */,
-				044138732501A14B00732969 /* ConnectCheckerRtsp.swift in Sources */,
-				0441387F2501A1A600732969 /* Protocol.swift in Sources */,
-				EBC92B63250BE32600E24EEE /* SenderReportTcp.swift in Sources */,
-				044138712501A14B00732969 /* Utils.swift in Sources */,
-				0441387B2501A1A600732969 /* CommandsManager.swift in Sources */,
 				044138392501A02300732969 /* ViewController.swift in Sources */,
-				044138752501A14B00732969 /* Socket.swift in Sources */,
-				044138892501A20500732969 /* BasePacket.swift in Sources */,
-				044138872501A20500732969 /* H264Packet.swift in Sources */,
-				0441387E2501A1A600732969 /* RtpSender.swift in Sources */,
-				0441388F2501A34500732969 /* RtspClient.swift in Sources */,
-				EBEF57932651A863007B9930 /* GetH264Data.swift in Sources */,
 				044138352501A02300732969 /* AppDelegate.swift in Sources */,
-				0441387D2501A1A600732969 /* RtpFrame.swift in Sources */,
 				044138372501A02300732969 /* SceneDelegate.swift in Sources */,
-				EB289B712651765C00FB9B48 /* VideoEncoder.swift in Sources */,
-				04E0D205250641AB007F1631 /* AudioEncoder.swift in Sources */,
-				659B7CE98728BEC14A94F406 /* ConcurrentQueue.swift in Sources */,
-				659B7F88672359EA3C38700B /* SenderReportUdp.swift in Sources */,
-				659B7424C6A73B412CF6FA0C /* BaseSenderReport.swift in Sources */,
-				659B714523A8C973CE87E827 /* BaseRtpSocket.swift in Sources */,
-				659B7D07D0D17B6A53D942AD /* RtpSocketUdp.swift in Sources */,
-				659B7FE64EE2970B4C9DE96E /* CameraBase.swift in Sources */,
-				659B748C98E92FF38634AFCC /* GetCameraData.swift in Sources */,
-				659B741206BC2DBAB118E21C /* CameraManager.swift in Sources */,
-				659B7075DD7443816CA3D0F3 /* GetMicrophoneData.swift in Sources */,
-				659B7C01128FC484B9364057 /* MicrophoneManager.swift in Sources */,
-				659B75D42F1C8B38A196D459 /* CameraHelperFacing.swift in Sources */,
-				659B75C18A0243303C53E4F6 /* Frame.swift in Sources */,
-				659B713E27256658C9847A23 /* Conversor.swift in Sources */,
-				659B74231012197B107D1284 /* H265Packet.swift in Sources */,
-				659B73FC051029F996614DF9 /* CodecUtil.swift in Sources */,
-				659B71B661BC522251F5B1C7 /* RtspCamera.swift in Sources */,
+				659B7CAA33D51C06B32CE475 /* AudioEncoder.swift in Sources */,
+				659B7C965F752AC885FF488E /* GetAacData.swift in Sources */,
+				659B7DE9CCD3E12AC0922F91 /* GetMicrophoneData.swift in Sources */,
+				659B7744AD9A56C8BF84146A /* MicrophoneManager.swift in Sources */,
+				659B7E15CB70B08298F646DE /* GetCameraData.swift in Sources */,
+				659B76900AADBD6329B64479 /* CameraManager.swift in Sources */,
+				659B75AFA4FC1CFB3BC0C2B0 /* CameraHelperFacing.swift in Sources */,
+				659B779063CF1AAB8599CF06 /* Frame.swift in Sources */,
+				659B7EA903B30550A8AF4B97 /* Conversor.swift in Sources */,
+				659B745E086481559BF34E5F /* CodecUtil.swift in Sources */,
+				659B74DE319DFAC761C1F886 /* VideoEncoder.swift in Sources */,
+				659B73C0DD1B71834C2178D2 /* GetH264Data.swift in Sources */,
+				659B7FF1C3ED79A47589B9FB /* SenderReportTcp.swift in Sources */,
+				659B7917A1F543F6F8E6B1F7 /* SenderReportUdp.swift in Sources */,
+				659B77274201550B8CB5B24E /* BaseSenderReport.swift in Sources */,
+				659B75A6D27114213576EFB1 /* RtpSocketTcp.swift in Sources */,
+				659B7F37BB9E02093415399A /* BaseRtpSocket.swift in Sources */,
+				659B7FCC077881C01353842D /* RtpSocketUdp.swift in Sources */,
+				659B7A1E9E3623B24581C5B5 /* AacPacket.swift in Sources */,
+				659B7EF7DFEDDA9719DBF3EB /* AudioPacketCallback.swift in Sources */,
+				659B75CC6E1BF3086BBE2A0A /* BasePacket.swift in Sources */,
+				659B75294AD0515DC57BE98F /* H264Packet.swift in Sources */,
+				659B7F3D0B4ED8B34622B463 /* VideoPacketCallback.swift in Sources */,
+				659B740CB9D44FD664E9FEF3 /* H265Packet.swift in Sources */,
+				659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */,
+				659B7A15C4A30FEB5E901043 /* RtpConstants.swift in Sources */,
+				659B785858D79BCE3BB5C672 /* Socket.swift in Sources */,
+				659B782D34C29E2E70A7B8AB /* Utils.swift in Sources */,
+				659B77EDAC78EA7A440AD552 /* ConcurrentQueue.swift in Sources */,
+				659B79DDD2C3E969475E013C /* RtspClient.swift in Sources */,
+				659B7BE0F07F003842F8473F /* Body.swift in Sources */,
+				659B72E3438033E5B5C097AD /* CommandsManager.swift in Sources */,
+				659B7E1A270D6BFFF9FBCC4C /* Protocol.swift in Sources */,
+				659B7CA76C96970003D5FEEA /* RtpFrame.swift in Sources */,
+				659B749D44AD2AF62FD153A2 /* RtpSender.swift in Sources */,
+				659B7D750BA1A73AECCE769A /* CameraBase.swift in Sources */,
+				659B7EEA19627BF1B9665B48 /* RtspCamera.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
