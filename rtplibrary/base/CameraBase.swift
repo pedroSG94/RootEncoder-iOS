@@ -16,6 +16,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private(set) var endpoint: String = ""
     private var streaming = false
     private var onPreview = false
+    private var fpsListener = FpsListener()
 
     public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
@@ -44,6 +45,10 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func prepareVideo() -> Bool {
         prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+    }
+
+    public func setFpsListener(fpsCallback: FpsCallback) {
+        fpsListener.setCallback(callback: fpsCallback)
     }
 
     public func startStream(endpoint: String) {
@@ -118,6 +123,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getH264Data(frame: Frame) {
+        fpsListener.calculateFps()
         getH264DataRtp(frame: frame)
     }
 

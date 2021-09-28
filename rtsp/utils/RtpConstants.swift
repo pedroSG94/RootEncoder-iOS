@@ -10,6 +10,7 @@ public struct RtpConstants {
     //H264
     public static let IDR = 5
     //H265
+    public static let CRA_NUT = 21
     public static let IDR_N_LP = 20
     public static let IDR_W_DLP = 19
 }

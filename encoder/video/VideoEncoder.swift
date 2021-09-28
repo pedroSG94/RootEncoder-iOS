@@ -30,6 +30,7 @@ public class VideoEncoder {
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
     private var running = false
+    private var forceKey = false
     private var codec = CodecUtil.H264
 
     private var session: VTCompressionSession?
@@ -78,28 +79,39 @@ public class VideoEncoder {
         self.codec = codec
     }
 
+    public func forceKeyFrame() {
+        forceKey = true
+    }
+
     public func encodeFrame(buffer: CMSampleBuffer) {
         if (running) {
             guard let session = session else { return }
             guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
             let time = CMSampleBufferGetPresentationTimeStamp(buffer)
-
+            var properties: Dictionary<String, Any>?
+            if (forceKey) {
+                forceKey = false
+                properties = [
+                    kVTEncodeFrameOptionKey_ForceKeyFrame as String: true
+                ];
+            }
             var flag:VTEncodeInfoFlags = VTEncodeInfoFlags()
-            VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: nil, sourceFrameRefcon: nil, infoFlagsOut: &flag)
+            VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: properties as CFDictionary?, sourceFrameRefcon: nil, infoFlagsOut: &flag)
         }
     }
-    
+
     public func stop() {
         running = false
         guard let session: VTCompressionSession = session else { return }
         VTCompressionSessionInvalidate(session)
         isSpsAndPpsSend = false
+        forceKey = false
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?,
                                                                status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
         guard let sampleBuffer = sampleBuffer else {
-            print("nil bufer")
+            print("nil buffer")
             return
         }
         guard let refcon: UnsafeMutableRawPointer = outputCallbackRefCon else {
