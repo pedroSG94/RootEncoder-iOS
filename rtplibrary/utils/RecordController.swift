@@ -4,7 +4,77 @@
 //
 
 import Foundation
+import AVFoundation
 
 public class RecordController {
 
+    private var status = Status.STOPPED
+    private var writer: AVAssetWriter? = nil
+
+    enum Status {
+        case STARTED
+        case STOPPED
+        case RECORDING
+        case PAUSED
+        case RESUMED
+    }
+
+    func startRecord(path: URL) {
+        writer = createWriter(path: path)
+        writer?.startWriting()
+        writer?.startSession(atSourceTime: <#T##CMTime##CoreMedia.CMTime#>)
+        status = Status.STARTED
+    }
+
+    func stopRecord() {
+
+    }
+
+    func recordVideo(videoFrame: Frame) {
+
+    }
+
+    func recordAudio(audioFrame: Frame) {
+
+    }
+
+    func pauseRecord() {
+
+    }
+
+    func resumeRecord() {
+
+    }
+
+    func setVideoFormat() {
+
+    }
+
+    func setAudioFormat() {
+
+    }
+
+    func isRunning() -> Bool {
+        status == Status.STARTED
+        || status == Status.RECORDING
+        || status == Status.PAUSED
+        || status == Status.RESUMED
+    }
+
+    func isRecording() -> Bool {
+        status == Status.RECORDING
+    }
+
+    func getStatus() -> Status {
+        status
+    }
+
+    private func createWriter(path: URL) -> AVAssetWriter? {
+        do {
+            return try AVAssetWriter(outputURL: path, fileType: .mp4)
+        } catch {
+            print("create writer failed")
+        }
+        return nil
+    }
 }

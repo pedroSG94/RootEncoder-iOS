@@ -116,21 +116,20 @@ public class H265Packet: BasePacket {
     private func setSpsPps(sps: Array<UInt8>, pps: Array<UInt8>) {
         let spsBuffer = sps
         let ppsBuffer = pps
-        agregationPacket = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 6)
-
+        agregationPacket = Array<UInt8>()
         // AP NAL header is 48
-        agregationPacket![0] = 48 << 1
-        agregationPacket![1] = 1
+        agregationPacket?.append(48 << 1)
+        agregationPacket?.append(1)
         // Write NALU 1 size into the array (NALU 1 is the SPS).
-        agregationPacket![2] = UInt8(spsBuffer.count) >> 0x08
-        agregationPacket![3] = UInt8(spsBuffer.count) & 0xFF
+        agregationPacket?.append(UInt8(spsBuffer.count) >> 0x08)
+        agregationPacket?.append(UInt8(spsBuffer.count) & 0xFF)
+        // Write NALU 1 into the array
+        agregationPacket?.append(contentsOf: spsBuffer[0...spsBuffer.count - 1])
         // Write NALU 2 size into the array (NALU 2 is the PPS).
-        agregationPacket![spsBuffer.count + 4] = UInt8(ppsBuffer.count) >> 0x08
-        agregationPacket![spsBuffer.count + 5] = UInt8(ppsBuffer.count) & 0xFF
-
-        // Write NALU 1 into the array, then write NALU 2 into the array.
-        agregationPacket![4...spsBuffer.count - 1 + 4] = spsBuffer[0...spsBuffer.count - 1]
-        agregationPacket![6 + spsBuffer.count...6 + spsBuffer.count + ppsBuffer.count - 1] = ppsBuffer[0...ppsBuffer.count - 1]
+        agregationPacket?.append(UInt8(ppsBuffer.count) >> 0x08)
+        agregationPacket?.append(UInt8(ppsBuffer.count) & 0xFF)
+        // Write NALU 2 into the array
+        agregationPacket?.append(contentsOf: ppsBuffer[0...ppsBuffer.count - 1])
     }
 
     override public func reset() {

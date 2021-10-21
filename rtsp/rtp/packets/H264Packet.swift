@@ -104,20 +104,19 @@ public class H264Packet: BasePacket {
     private func setSpsPps(sps: Array<UInt8>, pps: Array<UInt8>) {
         let spsBuffer = sps
         let ppsBuffer = pps
-        stapA = Array<UInt8>(repeating: 0, count: spsBuffer.count + ppsBuffer.count + 5)
-        
+        stapA = Array<UInt8>()
         // STAP-A NAL header is 24
-        stapA![0] = 24
+        stapA?.append(24)
         // Write NALU 1 size into the array (NALU 1 is the SPS).
-        stapA![1] = UInt8(spsBuffer.count) >> 0x08
-        stapA![2] = UInt8(spsBuffer.count) & 0xFF
+        stapA?.append(UInt8(spsBuffer.count) >> 0x08)
+        stapA?.append(UInt8(spsBuffer.count) & 0xFF)
+        // Write NALU 1 into the array
+        stapA?.append(contentsOf: spsBuffer[0...spsBuffer.count - 1])
         // Write NALU 2 size into the array (NALU 2 is the PPS).
-        stapA![spsBuffer.count + 3] = UInt8(ppsBuffer.count) >> 0x08
-        stapA![spsBuffer.count + 4] = UInt8(ppsBuffer.count) & 0xFF
-        
-        // Write NALU 1 into the array, then write NALU 2 into the array.
-        stapA![3...spsBuffer.count - 1 + 3] = spsBuffer[0...spsBuffer.count - 1]
-        stapA![5 + spsBuffer.count...5 + spsBuffer.count + ppsBuffer.count - 1] = ppsBuffer[0...ppsBuffer.count - 1]
+        stapA?.append(UInt8(ppsBuffer.count) >> 0x08)
+        stapA?.append(UInt8(ppsBuffer.count) & 0xFF)
+        // Write NALU 2 into the array
+        stapA?.append(contentsOf: ppsBuffer[0...ppsBuffer.count - 1])
     }
     
     override public func reset() {
