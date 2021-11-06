@@ -1,6 +1,6 @@
 # rtmp-rtsp-stream-client-swift
 
-Library to stream in rtmp and rtsp for IOS. All code in Swift
+Library to stream in rtmp and rtsp for IOS. All code in Swift.
 
 ## State
 
