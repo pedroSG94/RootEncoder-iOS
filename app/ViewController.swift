@@ -58,12 +58,24 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
     func onAuthSuccessRtsp() {
         print("auth success")
     }
-    
+
+    private let thread = DispatchQueue.global()
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         validatePermissions()
-        rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
-        rtspCamera.startPreview()
+//        rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+//        rtspCamera.startPreview()
+        thread.async {
+            let socket = Socket(tlsEnabled: false, host: "192.168.1.132", port: 1935, callback: self)
+            let handshake = Handshake()
+            do {
+                let result = try handshake.sendHandshake(socket: socket)
+                print("handshake: \(result)")
+            } catch {
+                print("handshake error")
+            }
+        }
     }
     
     override func viewDidLoad() {

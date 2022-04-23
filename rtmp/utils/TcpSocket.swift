@@ -1,15 +1,20 @@
+//
+// Created by Pedro  on 24/4/22.
+// Copyright (c) 2022 pedroSG94. All rights reserved.
+//
+
 import Foundation
 import Network
 
-public class Socket: NSObject, StreamDelegate {
-    var callback: ConnectCheckerRtsp
+public class TcpSocket: NSObject, StreamDelegate {
+    var callback: ConnectCheckerRtmp
     var host: String?
     private var connection: NWConnection? = nil
 
     /**
         TCP or TCP/TLS socket
      */
-    public init(tlsEnabled: Bool, host: String, port: Int, callback: ConnectCheckerRtsp) {
+    public init(tlsEnabled: Bool, host: String, port: Int, callback: ConnectCheckerRtmp) {
         self.callback = callback
         self.host = host
         let parameters: NWParameters = tlsEnabled ? .tls : .tcp
@@ -19,7 +24,7 @@ public class Socket: NSObject, StreamDelegate {
     /**
         UDP socket
     */
-    public init(host: String, localPort: Int, port: Int, callback: ConnectCheckerRtsp) {
+    public init(host: String, localPort: Int, port: Int, callback: ConnectCheckerRtmp) {
         self.callback = callback
         self.host = host
         let localEndpoint = NWEndpoint.hostPort(host: "0.0.0.0", port: NWEndpoint.Port("\(localPort)")!)
@@ -27,7 +32,7 @@ public class Socket: NSObject, StreamDelegate {
         parameters.requiredLocalEndpoint = localEndpoint
         connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
     }
-    
+
     public func connect() {
         let sync = DispatchGroup()
         sync.enter()
@@ -45,13 +50,13 @@ public class Socket: NSObject, StreamDelegate {
                 break
             case .preparing:
                 print("preparing")
-                 break
+                break
             case .cancelled:
                 print("cacelled")
-                self.callback.onConnectionFailedRtsp(reason: "connection cancelled")
+                self.callback.onConnectionFailedRtmp(reason: "connection cancelled")
             case .failed(_):
                 print("failed")
-                self.callback.onConnectionFailedRtsp(reason: "connection failed")
+                self.callback.onConnectionFailedRtmp(reason: "connection failed")
                 break
             @unknown default:
                 print("new state: \(newState)")
@@ -61,7 +66,7 @@ public class Socket: NSObject, StreamDelegate {
         connection?.start(queue: .main)
         sync.wait()
     }
-    
+
     public func disconnect() {
         connection?.forceCancel()
         connection = nil
@@ -76,7 +81,7 @@ public class Socket: NSObject, StreamDelegate {
         connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
             if (error != nil) {
                 print("error: \(error)")
-                self.callback.onConnectionFailedRtsp(reason: "write packet error")
+                self.callback.onConnectionFailedRtmp(reason: "write packet error")
             }
         })))
     }
@@ -85,7 +90,7 @@ public class Socket: NSObject, StreamDelegate {
         let data = Data(bytes: buffer, count: size)
         write(data: data)
     }
-    
+
     public func write(data: String) {
         print("\(data)")
         let buffer = [UInt8](data.utf8)
@@ -97,7 +102,7 @@ public class Socket: NSObject, StreamDelegate {
         return [UInt8](data)
     }
 
-    public func readString() -> String {
+    public func read() -> String {
         let data: Data = read()
         let message = String(data: data, encoding: String.Encoding.utf8)!
         print(message)
@@ -123,10 +128,10 @@ public class Socket: NSObject, StreamDelegate {
                     result = Data(data)
                 }
                 if let error = error {
-                    self.callback.onConnectionFailedRtsp(reason: "fail to read \(error)")
+                    self.callback.onConnectionFailedRtmp(reason: "fail to read \(error)")
                 }
                 if isComplete {
-                    self.callback.onConnectionFailedRtsp(reason: "fail to read EOF")
+                    self.callback.onConnectionFailedRtmp(reason: "fail to read EOF")
 
                 }
                 sync.leave()
@@ -136,16 +141,5 @@ public class Socket: NSObject, StreamDelegate {
         }
         sync.wait()
         return result
-    }
-}
-
-extension Data {
-
-    init(copying dd: DispatchData) {
-        var result = Data(count: dd.count)
-        result.withUnsafeMutableBytes { buf in
-            _ = dd.copyBytes(to: buf)
-        }
-        self = result
     }
 }

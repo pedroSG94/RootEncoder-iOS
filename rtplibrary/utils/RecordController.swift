@@ -10,7 +10,7 @@ public class RecordController {
 
     private var status = Status.STOPPED
     private var writer: AVAssetWriter? = nil
-
+    private var time = CMTime.zero
     enum Status {
         case STARTED
         case STOPPED
@@ -22,7 +22,7 @@ public class RecordController {
     func startRecord(path: URL) {
         writer = createWriter(path: path)
         writer?.startWriting()
-        writer?.startSession(atSourceTime: <#T##CMTime##CoreMedia.CMTime#>)
+        writer?.startSession(atSourceTime: time)
         status = Status.STARTED
     }
 

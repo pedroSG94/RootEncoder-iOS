@@ -57,7 +57,7 @@ public class RtspClient {
                     self.socket?.connect()
                     //Options
                     self.socket?.write(data: self.commandsManager.createOptions())
-                    let optionsResponse = self.socket?.read()
+                    let optionsResponse = self.socket?.readString()
                     let optionsStatus = self.commandsManager.getResponse(response: optionsResponse!, isAudio: false)
                     if (optionsStatus != 200) {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, options \(optionsStatus)")
@@ -65,7 +65,7 @@ public class RtspClient {
                     }
                     //Announce
                     self.socket?.write(data: self.commandsManager.createAnnounce())
-                    let announceResponse = self.socket?.read()
+                    let announceResponse = self.socket?.readString()
                     let announceStatus = self.commandsManager.getResponse(response: announceResponse!, isAudio: false)
                     if announceStatus == 403 {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
@@ -73,7 +73,7 @@ public class RtspClient {
                         if (self.commandsManager.canAuth()) {
                             //Announce with auth
                             self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse!))
-                            let authResponse = self.socket?.read()
+                            let authResponse = self.socket?.readString()
                             let authStatus = self.commandsManager.getResponse(response: authResponse!, isAudio: false)
                             if authStatus == 401 {
                                 self.connectCheckerRtsp?.onAuthErrorRtsp()
@@ -93,7 +93,7 @@ public class RtspClient {
                         //Setup video
                         self.rtpSender.setVideoInfo(sps: self.sps!, pps: self.pps!, vps: self.vps)
                         self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
-                        let videoSetupResponse = self.socket?.read()
+                        let videoSetupResponse = self.socket?.readString()
                         let setupAudioStatus = self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false)
                         if (setupAudioStatus != 200) {
                             self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
@@ -102,7 +102,7 @@ public class RtspClient {
                     }
                     //Setup audio
                     self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
-                    let audioSetupResponse = self.socket?.read()
+                    let audioSetupResponse = self.socket?.readString()
                     let setupVideoStatus = self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true)
                     if (setupVideoStatus != 200) {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
@@ -110,7 +110,7 @@ public class RtspClient {
                     }
                     //Record
                     self.socket?.write(data: self.commandsManager.createRecord())
-                    let recordResponse = self.socket?.read()
+                    let recordResponse = self.socket?.readString()
                     let recordStatus = self.commandsManager.getResponse(response: recordResponse!, isAudio: false)
                     if (recordStatus != 200) {
                         self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
