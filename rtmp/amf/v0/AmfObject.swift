@@ -7,4 +7,19 @@ import Foundation
 
 public class AmfObject: AmfData {
 
+    public override func readBody(socket: Socket) {
+
+    }
+
+    public override func writeBody(socket: Socket) {
+
+    }
+
+    public override func getType() -> AmfType {
+        AmfType.OBJECT
+    }
+
+    public override func getSize() -> Int {
+        1
+    }
 }
