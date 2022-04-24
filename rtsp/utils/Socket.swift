@@ -113,7 +113,7 @@ public class Socket: NSObject, StreamDelegate {
         return [UInt8](data)
     }
 
-    public func readUntil(length: Int) -> Data {
+    private func readUntil(length: Int) -> Data {
         var result = Data()
         let sync = DispatchGroup()
         sync.enter()

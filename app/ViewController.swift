@@ -68,6 +68,7 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
 //        rtspCamera.startPreview()
         thread.async {
             let socket = Socket(tlsEnabled: false, host: "192.168.1.132", port: 1935, callback: self)
+            socket.connect()
             let handshake = Handshake()
             do {
                 let result = try handshake.sendHandshake(socket: socket)
