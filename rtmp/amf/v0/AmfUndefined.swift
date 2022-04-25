@@ -7,10 +7,10 @@ import Foundation
 
 public class AmfUndefined: AmfData {
 
-    public override func readBody(socket: Socket) {
+    public override func readBody(socket: Socket) throws {
     }
 
-    public override func writeBody(socket: Socket) {
+    public override func writeBody(socket: Socket) throws {
     }
 
     public override func getType() -> AmfType {

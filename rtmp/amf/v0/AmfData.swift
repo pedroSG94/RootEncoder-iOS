@@ -7,7 +7,7 @@ import Foundation
 
 public class AmfData: AmfActions {
 
-    func getAmfData(socket: Socket) throws -> AmfData {
+    static func getAmfData(socket: Socket) throws -> AmfData {
         let identify: UInt8 = socket.readUntil(length: 1)[0]
         let type = getMarkType(type: identify)
         let amfData: AmfData? = {
@@ -40,16 +40,20 @@ public class AmfData: AmfActions {
         }
     }
 
-    func getMarkType(type: UInt8) -> AmfType {
+    static func getMarkType(type: UInt8) -> AmfType {
         let amfType = AmfType.init(rawValue: type)
         return amfType ?? AmfType.STRING
     }
 
-    public func readBody(socket: Socket) {
+    func writeHeader(socket: Socket) {
+        socket.write(buffer: Array(arrayLiteral: getType().rawValue))
+    }
+
+    public func readBody(socket: Socket) throws {
         <#code#>
     }
 
-    public func writeBody(socket: Socket) {
+    public func writeBody(socket: Socket) throws {
         <#code#>
     }
 
@@ -63,8 +67,8 @@ public class AmfData: AmfActions {
 }
 
 public protocol AmfActions {
-    func readBody(socket: Socket)
-    func writeBody(socket: Socket)
+    func readBody(socket: Socket) throws
+    func writeBody(socket: Socket) throws
     func getType() -> AmfType
     func getSize() -> Int
 }

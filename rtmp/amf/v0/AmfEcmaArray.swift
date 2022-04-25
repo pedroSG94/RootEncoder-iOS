@@ -7,11 +7,11 @@ import Foundation
 
 public class AmfEcmaArray: AmfData {
 
-    public override func readBody(socket: Socket) {
+    public override func readBody(socket: Socket) throws {
 
     }
 
-    public override func writeBody(socket: Socket) {
+    public override func writeBody(socket: Socket) throws {
 
     }
 
