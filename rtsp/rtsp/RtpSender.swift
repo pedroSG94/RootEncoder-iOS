@@ -9,6 +9,11 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
     private let thread = DispatchQueue(label: "RtpSender")
     private var running = false
     private let queue = ConcurrentQueue()
+    private let callback: ConnectCheckerRtsp
+
+    public init(callback: ConnectCheckerRtsp) {
+        self.callback = callback
+    }
 
     public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>,
                               videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) {
@@ -22,8 +27,8 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
             let audioReportPorts = Array<Int>(arrayLiteral: audioClientPorts[1], audioServerPorts[1])
             let videoSocketPorts = Array<Int>(arrayLiteral: videoClientPorts[0], videoServerPorts[0])
             let audioSocketPorts = Array<Int>(arrayLiteral: audioClientPorts[0], audioServerPorts[0])
-            tcpSocket = RtpSocketUdp(callback: socket.callback, host: socket.host!, videoPorts: videoSocketPorts, audioPorts: audioSocketPorts)
-            tcpReport = SenderReportUdp(callback: socket.callback, host: socket.host!, videoPorts: videoReportPorts, audioPorts: audioReportPorts)
+            tcpSocket = RtpSocketUdp(callback: callback, host: socket.host, videoPorts: videoSocketPorts, audioPorts: audioSocketPorts)
+            tcpReport = SenderReportUdp(callback: callback, host: socket.host, videoPorts: videoReportPorts, audioPorts: audioReportPorts)
             break
         }
     }
@@ -71,8 +76,13 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
                     usleep(100)
                     continue
                 } else {
-                    self.tcpSocket?.sendFrame(rtpFrame: frame!)
-                    self.tcpReport?.update(rtpFrame: frame!)
+                    do {
+                        try self.tcpSocket?.sendFrame(rtpFrame: frame!)
+                        try self.tcpReport?.update(rtpFrame: frame!)
+                    } catch let error {
+                        self.callback.onConnectionFailedRtsp(reason: error.localizedDescription)
+                        return
+                    }
                 }
             }
         }

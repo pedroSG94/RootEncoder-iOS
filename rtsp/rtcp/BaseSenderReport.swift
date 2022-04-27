@@ -56,15 +56,15 @@ public class BaseSenderReport {
         setLong(buffer: &audioBuffer, n: ssrcAudio, begin: 4, end: 8)
     }
 
-    public func update(rtpFrame: RtpFrame) {
+    public func update(rtpFrame: RtpFrame) throws {
         if (rtpFrame.channelIdentifier == RtpConstants.videoTrack) {
-            updateVideo(rtpFrame: rtpFrame)
+            try updateVideo(rtpFrame: rtpFrame)
         } else {
-            updateAudio(rtpFrame: rtpFrame)
+            try updateAudio(rtpFrame: rtpFrame)
         }
     }
 
-    private func updateAudio(rtpFrame: RtpFrame) {
+    private func updateAudio(rtpFrame: RtpFrame) throws {
         audioPacketCount += 1
         audioOctetCount += UInt64(rtpFrame.length!)
 
@@ -75,11 +75,11 @@ public class BaseSenderReport {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: audioBuffer, rtpFrame: rtpFrame, packets: audioPacketCount, octet: audioOctetCount)
+            try sendReport(buffer: audioBuffer, rtpFrame: rtpFrame, packets: audioPacketCount, octet: audioOctetCount)
         }
     }
 
-    private func updateVideo(rtpFrame: RtpFrame) {
+    private func updateVideo(rtpFrame: RtpFrame) throws {
         videoPacketCount += 1
         videoOctetCount += UInt64(rtpFrame.length!)
 
@@ -90,14 +90,14 @@ public class BaseSenderReport {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
             setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            sendReport(buffer: videoBuffer, rtpFrame: rtpFrame, packets: videoPacketCount, octet: videoOctetCount)
+            try sendReport(buffer: videoBuffer, rtpFrame: rtpFrame, packets: videoPacketCount, octet: videoOctetCount)
         }
     }
 
     /**
      This method must be overridden
      */
-    func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) {
+    func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) throws {
         let type = (rtpFrame.channelIdentifier == RtpConstants.audioTrack) ? "Audio" : "Video"
         print("send \(type) report, packets: \(packets), octet: \(octet)")
     }

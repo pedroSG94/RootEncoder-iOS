@@ -2,15 +2,14 @@ import Foundation
 import Network
 
 public class Socket: NSObject, StreamDelegate {
-    var callback: ConnectCheckerRtsp
-    var host: String?
+
+    var host: String
     private var connection: NWConnection? = nil
 
     /**
         TCP or TCP/TLS socket
      */
-    public init(tlsEnabled: Bool, host: String, port: Int, callback: ConnectCheckerRtsp) {
-        self.callback = callback
+    public init(tlsEnabled: Bool, host: String, port: Int) {
         self.host = host
         let parameters: NWParameters = tlsEnabled ? .tls : .tcp
         connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
@@ -19,8 +18,7 @@ public class Socket: NSObject, StreamDelegate {
     /**
         UDP socket
     */
-    public init(host: String, localPort: Int, port: Int, callback: ConnectCheckerRtsp) {
-        self.callback = callback
+    public init(host: String, localPort: Int, port: Int) {
         self.host = host
         let localEndpoint = NWEndpoint.hostPort(host: "0.0.0.0", port: NWEndpoint.Port("\(localPort)")!)
         let parameters = NWParameters.udp
@@ -28,8 +26,9 @@ public class Socket: NSObject, StreamDelegate {
         connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
     }
     
-    public func connect() {
+    public func connect() throws {
         let sync = DispatchGroup()
+        var messageError: String? = nil
         sync.enter()
         connection?.stateUpdateHandler = { (newState) in
             switch (newState) {
@@ -47,11 +46,13 @@ public class Socket: NSObject, StreamDelegate {
                 print("preparing")
                  break
             case .cancelled:
-                print("cacelled")
-                self.callback.onConnectionFailedRtsp(reason: "connection cancelled")
+                print("cancelled")
+                messageError = "connection cancelled"
+                sync.leave()
             case .failed(_):
                 print("failed")
-                self.callback.onConnectionFailedRtsp(reason: "connection failed")
+                messageError = "connection failed"
+                sync.leave()
                 break
             @unknown default:
                 print("new state: \(newState)")
@@ -60,6 +61,9 @@ public class Socket: NSObject, StreamDelegate {
         }
         connection?.start(queue: .main)
         sync.wait()
+        if (messageError != nil) {
+            throw IOException.runtimeError(messageError!)
+        }
     }
     
     public func disconnect() {
@@ -67,67 +71,73 @@ public class Socket: NSObject, StreamDelegate {
         connection = nil
     }
 
-    public func write(buffer: [UInt8]) {
+    public func write(buffer: [UInt8]) throws {
         let data = Data(buffer)
-        write(data: data)
+        try write(data: data)
     }
 
-    public func write(data: Data) {
+    public func write(data: Data) throws {
+        let sync = DispatchGroup()
+        var messageError: String? = nil
+        sync.enter()
         connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
             if (error != nil) {
-                print("error: \(error)")
-                self.callback.onConnectionFailedRtsp(reason: "write packet error")
+                print("error: \(error!)")
+                messageError = "write packet error"
             }
+            sync.leave()
         })))
+        sync.wait()
+        if (messageError != nil) {
+            throw IOException.runtimeError(messageError!)
+        }
     }
 
-    public func write(buffer: [UInt8], size: Int) {
+    public func write(buffer: [UInt8], size: Int) throws {
         let data = Data(bytes: buffer, count: size)
-        write(data: data)
+        try write(data: data)
     }
     
-    public func write(data: String) {
+    public func write(data: String) throws {
         print("\(data)")
         let buffer = [UInt8](data.utf8)
-        self.write(buffer: buffer)
+        try self.write(buffer: buffer)
     }
 
-    public func read() -> [UInt8] {
-        let data: Data = read()
+    public func read() throws -> [UInt8] {
+        let data: Data = try read()
         return [UInt8](data)
     }
 
-    public func readString() -> String {
-        let data: Data = read()
+    public func readString() throws -> String {
+        let data: Data = try read()
         let message = String(data: data, encoding: String.Encoding.utf8)!
         print(message)
         return message
     }
 
-    public func read() -> Data {
-        readUntil(length: 65536)
+    public func read() throws -> Data {
+        try readUntil(length: 65536)
     }
 
-    public func readUntil(length: Int) -> [UInt8] {
-        let data: Data = readUntil(length: length)
+    public func readUntil(length: Int) throws -> [UInt8] {
+        let data: Data = try readUntil(length: length)
         return [UInt8](data)
     }
 
-    private func readUntil(length: Int) -> Data {
+    private func readUntil(length: Int) throws -> Data {
         var result = Data()
+        var messageError: String? = nil
         let sync = DispatchGroup()
         sync.enter()
         if #available(iOS 14.0, *) {
             connection?.receiveDiscontiguous(minimumIncompleteLength: 1, maximumLength: length, completion: { data, context, isComplete, error in
                 if let data = data {
                     result = Data(data)
-                }
-                if let error = error {
-                    self.callback.onConnectionFailedRtsp(reason: "fail to read \(error)")
-                }
-                if isComplete {
-                    self.callback.onConnectionFailedRtsp(reason: "fail to read EOF")
-
+                } else if let error = error {
+                    messageError = "fail to read \(error)"
+                } else if isComplete {
+                    messageError = "fail to read EOF"
                 }
                 sync.leave()
             })
@@ -135,6 +145,9 @@ public class Socket: NSObject, StreamDelegate {
             // Fallback on earlier versions
         }
         sync.wait()
+        if (messageError != nil) {
+            throw IOException.runtimeError(messageError!)
+        }
         return result
     }
 }

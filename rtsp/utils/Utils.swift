@@ -5,7 +5,6 @@ extension Array {
     func get(destiny: inout Array, index: Int, length: Int) -> Array {
         var result = self
         for i in stride(from: 0, to: length, by: 1) {
-            let a = index + i
             destiny[index + i] = result.remove(at: 0)
         }
         return result
@@ -49,7 +48,7 @@ public extension String {
     }
 
     var md5: String {
-        let data = Data(self.utf8)
+        let data = Data(utf8)
         let hash = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> [UInt8] in
             var hash = [UInt8](repeating: 0, count: Int(CC_MD5_DIGEST_LENGTH))
             CC_MD5(bytes.baseAddress, CC_LONG(data.count), &hash)

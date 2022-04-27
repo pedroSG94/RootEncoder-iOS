@@ -16,7 +16,7 @@ public class AmfNumber: AmfData {
     }
 
     public override func readBody(socket: Socket) throws {
-        let bytes = socket.readUntil(length: getSize())
+        let bytes = try socket.readUntil(length: getSize())
         value = bytes.withUnsafeBytes {
             $0.load(fromByteOffset: 0, as: Double.self)
         }
@@ -28,7 +28,7 @@ public class AmfNumber: AmfData {
                 Array(UnsafeBufferPointer(start: $0, count: getSize()))
             }
         }
-        socket.write(buffer: bytes)
+        try socket.write(buffer: bytes)
     }
 
     public override func getType() -> AmfType {

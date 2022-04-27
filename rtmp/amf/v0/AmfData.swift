@@ -8,7 +8,7 @@ import Foundation
 public class AmfData: AmfActions {
 
     static func getAmfData(socket: Socket) throws -> AmfData {
-        let identify: UInt8 = socket.readUntil(length: 1)[0]
+        let identify: UInt8 = try socket.readUntil(length: 1)[0]
         let type = getMarkType(type: identify)
         let amfData: AmfData? = {
             switch type {
@@ -35,7 +35,7 @@ public class AmfData: AmfActions {
         if (amfData == nil) {
             throw IOException.runtimeError("Unimplemented AMF data type: \(type)")
         } else {
-            amfData?.readBody(socket: socket)
+            try amfData?.readBody(socket: socket)
             return amfData!
         }
     }
@@ -45,24 +45,24 @@ public class AmfData: AmfActions {
         return amfType ?? AmfType.STRING
     }
 
-    func writeHeader(socket: Socket) {
-        socket.write(buffer: Array(arrayLiteral: getType().rawValue))
+    func writeHeader(socket: Socket) throws {
+        try socket.write(buffer: Array(arrayLiteral: getType().rawValue))
     }
 
     public func readBody(socket: Socket) throws {
-        <#code#>
+
     }
 
     public func writeBody(socket: Socket) throws {
-        <#code#>
+
     }
 
     public func getType() -> AmfType {
-        <#code#>
+        AmfType.UNDEFINED
     }
 
     public func getSize() -> Int {
-        <#code#>
+        0
     }
 }
 

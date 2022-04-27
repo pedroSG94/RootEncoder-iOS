@@ -17,14 +17,14 @@ public class RtpSocketTcp: BaseRtpSocket {
         self.socket = socket
     }
     
-    public override func sendFrame(rtpFrame: RtpFrame) {
+    public override func sendFrame(rtpFrame: RtpFrame) throws {
         var buffer = rtpFrame.buffer
         header[1] = UInt8(2 * rtpFrame.channelIdentifier!)
         header[2] = UInt8(rtpFrame.length! >> 8)
         header[3] = UInt8(rtpFrame.length! & 0xFF)
         buffer?.insert(contentsOf: header, at: 0)
         
-        socket?.write(buffer: buffer!)
+        try socket?.write(buffer: buffer!)
         print("wrote packet: \(rtpFrame.channelIdentifier == RtpConstants.audioTrack ? "Audio" : "Video"), size: \(buffer!.count)")
     }
 }

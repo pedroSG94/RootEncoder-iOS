@@ -15,10 +15,14 @@ class SenderReportUdp: BaseSenderReport {
     public init(callback: ConnectCheckerRtsp, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) {
         self.videoPorts = videoPorts
         self.audioPorts = audioPorts
-        videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1], callback: callback)
-        audioSocket = Socket(host: host, localPort: audioPorts[0], port: audioPorts[1], callback: callback)
-        videoSocket.connect()
-        audioSocket.connect()
+        videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1])
+        audioSocket = Socket(host: host, localPort: audioPorts[0], port: audioPorts[1])
+        do {
+            try videoSocket.connect()
+            try audioSocket.connect()
+        } catch let error {
+            callback.onConnectionFailedRtsp(reason: error.localizedDescription)
+        }
         super.init()
     }
 
@@ -27,14 +31,14 @@ class SenderReportUdp: BaseSenderReport {
         audioSocket.disconnect()
     }
 
-    public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) {
+    public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) throws {
         let isAudio = rtpFrame.channelIdentifier == RtpConstants.audioTrack
         var port = 0
         if (isAudio) {
-            audioSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
+            try audioSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
             port = audioPorts[1]
         } else {
-            videoSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
+            try videoSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
             port = videoPorts[1]
         }
         let type = isAudio ? "Audio" : "Video"

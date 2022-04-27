@@ -16,13 +16,13 @@ public class AmfBoolean: AmfData {
     }
 
     public override func readBody(socket: Socket) throws {
-        let byte = socket.readUntil(length: 1)[0]
+        let byte = try socket.readUntil(length: 1)[0]
         value = byte != 0x00
     }
 
     public override func writeBody(socket: Socket) throws {
         let byte: UInt8 = value ? 0x01 : 0x00
-        socket.write(buffer: [UInt8](arrayLiteral: byte))
+        try socket.write(buffer: [UInt8](arrayLiteral: byte))
     }
 
     public override func getType() -> AmfType {

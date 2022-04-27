@@ -7,7 +7,7 @@ import Foundation
 
 public class BaseRtpSocket {
 
-    public func sendFrame(rtpFrame: RtpFrame) {
+    public func sendFrame(rtpFrame: RtpFrame) throws {
 
     }
 

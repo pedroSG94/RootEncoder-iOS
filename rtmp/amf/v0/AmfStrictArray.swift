@@ -15,7 +15,7 @@ public class AmfStrictArray: AmfData {
     public init(items: [AmfData] = Array()) {
         self.items = items
         bodySize += 4
-        items.forEach { amfData in
+        for amfData in items {
             bodySize += amfData.getSize() + 1
         }
     }
@@ -24,12 +24,12 @@ public class AmfStrictArray: AmfData {
         items.removeAll()
         bodySize = 0
         //get number of items as UInt32
-        let lengthBytes = socket.readUntil(length: 4)
+        let lengthBytes = try socket.readUntil(length: 4)
         let length = lengthBytes.withUnsafeBytes {
             $0.load(fromByteOffset: 0, as: UInt32.self)
         }
         //read items
-        for i in 0...length {
+        for _ in 0...length {
             let amfData: AmfData = try AmfData.getAmfData(socket: socket)
             bodySize += amfData.getSize() + 1
             items.append(amfData)
@@ -43,11 +43,11 @@ public class AmfStrictArray: AmfData {
                 Array(UnsafeBufferPointer(start: $0, count: getSize()))
             }
         }
-        socket.write(buffer: bytes)
+        try socket.write(buffer: bytes)
         //write items
-        items.forEach { amfData in
-            amfData.writeHeader(socket: socket)
-            amfData.writeBody(socket: socket)
+        for amfData in items {
+            try amfData.writeHeader(socket: socket)
+            try amfData.writeBody(socket: socket)
         }
     }
 

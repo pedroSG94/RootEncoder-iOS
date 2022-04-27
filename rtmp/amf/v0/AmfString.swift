@@ -18,20 +18,21 @@ public class AmfString: AmfData {
     }
 
     public override func readBody(socket: Socket) throws {
-        let lengthBytes = socket.readUntil(length: 2)
-        let length = Int(UnsafePointer(lengthBytes).withMemoryRebound(to: UInt16.self, capacity: 1) {
+        let lengthBytes = try socket.readUntil(length: 2)
+        let uint8Pointer = UnsafeMutablePointer<UInt8>.allocate(capacity: lengthBytes.count)
+        let length = Int(uint8Pointer.withMemoryRebound(to: UInt16.self, capacity: 1) {
             $0.pointee
         })
         bodySize = length + 2
-        let valueBytes = socket.readUntil(length: length)
+        let valueBytes = try socket.readUntil(length: length)
         value = String(bytes: valueBytes, encoding: .ascii)!
     }
 
     public override func writeBody(socket: Socket) throws {
         let i16 = UInt16(bodySize - 2)
-        socket.write(buffer: [UInt8](arrayLiteral: UInt8(i16 >> 8), UInt8(i16 & 0x00ff)))
+        try socket.write(buffer: [UInt8](arrayLiteral: UInt8(i16 >> 8), UInt8(i16 & 0x00ff)))
         let valueBytes: [UInt8] = Array(value.utf8)
-        socket.write(buffer: valueBytes)
+        try socket.write(buffer: valueBytes)
     }
 
     public override func getType() -> AmfType {
