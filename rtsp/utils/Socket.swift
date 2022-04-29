@@ -5,6 +5,7 @@ public class Socket: NSObject, StreamDelegate {
 
     var host: String
     private var connection: NWConnection? = nil
+    private var bufferAppend: [UInt8]? = nil
 
     /**
         TCP or TCP/TLS socket
@@ -60,6 +61,9 @@ public class Socket: NSObject, StreamDelegate {
             }
         }
         connection?.start(queue: .main)
+        var inStream: InputStream? = nil
+        var outStream: OutputStream? = nil
+        inStream?.
         sync.wait()
         if (messageError != nil) {
             throw IOException.runtimeError(messageError!)
@@ -69,6 +73,10 @@ public class Socket: NSObject, StreamDelegate {
     public func disconnect() {
         connection?.forceCancel()
         connection = nil
+    }
+
+    public func appendRead(buffer: [UInt8]) {
+        bufferAppend = buffer
     }
 
     public func write(buffer: [UInt8]) throws {
@@ -106,7 +114,11 @@ public class Socket: NSObject, StreamDelegate {
 
     public func read() throws -> [UInt8] {
         let data: Data = try read()
-        return [UInt8](data)
+        var bytes = [UInt8](data)
+        if (bufferAppend != nil) {
+            bytes.insert(contentsOf: bufferAppend!, at: 0)
+        }
+        return bytes
     }
 
     public func readString() throws -> String {
@@ -122,7 +134,11 @@ public class Socket: NSObject, StreamDelegate {
 
     public func readUntil(length: Int) throws -> [UInt8] {
         let data: Data = try readUntil(length: length)
-        return [UInt8](data)
+        var bytes = [UInt8](data)
+        if (bufferAppend != nil) {
+            bytes.insert(contentsOf: bufferAppend!, at: 0)
+        }
+        return bytes
     }
 
     private func readUntil(length: Int) throws -> Data {

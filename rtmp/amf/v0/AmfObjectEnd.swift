@@ -10,8 +10,9 @@ import Foundation
 
 public class AmfObjectEnd: AmfData {
 
-    private var found = false
+    var found = false
     private let endSequence: [UInt8]
+    var readBodyData: [UInt8]? = nil
     private let type = AmfType.OBJECT_END
 
     public init(found: Bool = false) {
@@ -21,6 +22,7 @@ public class AmfObjectEnd: AmfData {
 
     public override func readBody(socket: Socket) throws {
         let bytes = try socket.readUntil(length: getSize())
+        readBodyData = bytes
         found = bytes == endSequence
     }
 

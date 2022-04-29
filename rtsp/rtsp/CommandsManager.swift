@@ -32,7 +32,7 @@ public class CommandsManager {
     }
     
     public func getSampleRate() -> Int {
-        return sampleRate
+        sampleRate
     }
     
     private func addHeader() -> String {
@@ -44,15 +44,15 @@ public class CommandsManager {
     }
     
     public func createOptions() -> String {
-        return "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
     }
     
     public func createRecord() -> String {
-        return "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())\r\n"
+        "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())\r\n"
     }
     
     public func createTeardown() -> String {
-        return "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
     }
     
     public func createSetup(track: Int) -> String {
@@ -92,15 +92,15 @@ public class CommandsManager {
     }
     
     public func canAuth() -> Bool {
-        return self.user != nil && self.password != nil
+        user != nil && password != nil
     }
     
     public func getAudioTrack() -> Int {
-        return RtpConstants.audioTrack
+        RtpConstants.audioTrack
     }
     
     public func getVideoTrack() -> Int {
-        return RtpConstants.videoTrack
+        RtpConstants.videoTrack
     }
     
     private func createBody() -> String {
@@ -111,11 +111,11 @@ public class CommandsManager {
     }
     
     private func createAudioBody(body: Body) -> String {
-        return body.createAACBody(trackAudio: RtpConstants.audioTrack, sampleRate: sampleRate, isStereo: isStereo)
+        body.createAACBody(trackAudio: RtpConstants.audioTrack, sampleRate: sampleRate, isStereo: isStereo)
     }
     
     private func createVideoBody(body: Body) -> String {
-        return vps == nil ? body.createH264Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps) : body.createH265Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps, vps: vps!)
+        vps == nil ? body.createH264Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps) : body.createH265Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps, vps: vps!)
     }
     
     public func setAuth(user: String, password: String) {

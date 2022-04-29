@@ -9,7 +9,7 @@ import Foundation
 
 public class AmfString: AmfData {
 
-    private var value: String = ""
+    var value: String = ""
     private var bodySize: Int = 2
 
     public init(value: String = "") {
@@ -19,10 +19,7 @@ public class AmfString: AmfData {
 
     public override func readBody(socket: Socket) throws {
         let lengthBytes = try socket.readUntil(length: 2)
-        let uint8Pointer = UnsafeMutablePointer<UInt8>.allocate(capacity: lengthBytes.count)
-        let length = Int(uint8Pointer.withMemoryRebound(to: UInt16.self, capacity: 1) {
-            $0.pointee
-        })
+        let length = Int(UInt16(bytes: lengthBytes))
         bodySize = length + 2
         let valueBytes = try socket.readUntil(length: length)
         value = String(bytes: valueBytes, encoding: .ascii)!
@@ -30,7 +27,7 @@ public class AmfString: AmfData {
 
     public override func writeBody(socket: Socket) throws {
         let i16 = UInt16(bodySize - 2)
-        try socket.write(buffer: [UInt8](arrayLiteral: UInt8(i16 >> 8), UInt8(i16 & 0x00ff)))
+        try socket.write(buffer: byteArray(from: i16))
         let valueBytes: [UInt8] = Array(value.utf8)
         try socket.write(buffer: valueBytes)
     }

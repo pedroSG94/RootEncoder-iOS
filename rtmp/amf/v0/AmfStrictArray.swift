@@ -25,9 +25,7 @@ public class AmfStrictArray: AmfData {
         bodySize = 0
         //get number of items as UInt32
         let lengthBytes = try socket.readUntil(length: 4)
-        let length = lengthBytes.withUnsafeBytes {
-            $0.load(fromByteOffset: 0, as: UInt32.self)
-        }
+        let length = UInt32(bytes: lengthBytes)
         //read items
         for _ in 0...length {
             let amfData: AmfData = try AmfData.getAmfData(socket: socket)
