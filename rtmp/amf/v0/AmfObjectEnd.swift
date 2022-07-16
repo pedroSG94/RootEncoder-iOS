@@ -26,8 +26,8 @@ public class AmfObjectEnd: AmfData {
         found = bytes == endSequence
     }
 
-    public override func writeBody(socket: Socket) throws {
-        try socket.write(buffer: endSequence)
+    public override func writeBody() -> [UInt8] {
+        endSequence
     }
 
     public override func getType() -> AmfType {

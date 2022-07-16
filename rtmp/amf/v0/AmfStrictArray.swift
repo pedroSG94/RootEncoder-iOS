@@ -34,19 +34,21 @@ public class AmfStrictArray: AmfData {
         }
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
         //write number of items in the list as UInt32
-        let bytes = withUnsafePointer(to: UInt32(items.count)) {
+        var bytes = [UInt8]()
+        let buffer = withUnsafePointer(to: UInt32(items.count)) {
             $0.withMemoryRebound(to: UInt8.self, capacity: getSize()) {
                 Array(UnsafeBufferPointer(start: $0, count: getSize()))
             }
         }
-        try socket.write(buffer: bytes)
+        bytes.append(contentsOf: buffer)
         //write items
         for amfData in items {
-            try amfData.writeHeader(socket: socket)
-            try amfData.writeBody(socket: socket)
+            bytes.append(contentsOf: amfData.writeHeader())
+            bytes.append(contentsOf: amfData.writeBody())
         }
+        return bytes
     }
 
     public override func getType() -> AmfType {

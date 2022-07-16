@@ -9,7 +9,7 @@ import Foundation
 
 public class AmfNumber: AmfData {
 
-    private var value: Double = 0.0
+    var value: Double = 0.0
 
     public init(value: Double = 0.0) {
         self.value = value
@@ -22,13 +22,13 @@ public class AmfNumber: AmfData {
         }
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
         let bytes = withUnsafePointer(to: &value) {
             $0.withMemoryRebound(to: UInt8.self, capacity: getSize()) {
                 Array(UnsafeBufferPointer(start: $0, count: getSize()))
             }
         }
-        try socket.write(buffer: bytes)
+        return bytes
     }
 
     public override func getType() -> AmfType {

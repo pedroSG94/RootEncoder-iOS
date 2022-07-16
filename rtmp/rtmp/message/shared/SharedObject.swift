@@ -11,7 +11,7 @@ public class SharedObject: RtmpMessage {
         super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
     }
 
-    override func readBody(body: [UInt8]) throws {
+    override func readBody(socket: Socket) throws {
         //TODO Not yet implemented
     }
 

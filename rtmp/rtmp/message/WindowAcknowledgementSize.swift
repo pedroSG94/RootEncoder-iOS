@@ -16,8 +16,8 @@ public class WindowAcknowledgementSize: RtmpMessage {
         super.header.timeStamp = timeStamp
     }
 
-    override func readBody(body: [UInt8]) throws {
-        acknowledgementWindowSize = Int(toUInt32(array: Array(body[0...3])))
+    override func readBody(socket: Socket) throws {
+        acknowledgementWindowSize = Int(toUInt32(array: try socket.readUntil(length: 4)))
     }
 
     override func storeBody() -> [UInt8] {

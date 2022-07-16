@@ -32,18 +32,22 @@
 		659B74F02869E3D03C535894 /* FlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B739C5A84A84CE3DA83A1 /* FlvPacket.swift */; };
 		659B74FFD1BC3B3C0B69A8B1 /* UserControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7FC14427C1199BEEF132 /* UserControl.swift */; };
 		659B75294AD0515DC57BE98F /* H264Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7B0C1CB65A5A86C19988 /* H264Packet.swift */; };
+		659B75391191A186D023DC2B /* Comand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7673612306F7884D15A5 /* Comand.swift */; };
 		659B755B9798F2A62ED72844 /* Abort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7AC0754CEF0D29676AA6 /* Abort.swift */; };
 		659B75A0996A0DD448A0A6F3 /* ControlType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7979045A02D197EFF4EB /* ControlType.swift */; };
 		659B75A6D27114213576EFB1 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B72F38D1549DAFD9D91D7 /* RtpSocketTcp.swift */; };
 		659B75AFA4FC1CFB3BC0C2B0 /* CameraHelperFacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B77D1BD16FDCD819132FC /* CameraHelperFacing.swift */; };
 		659B75CC6E1BF3086BBE2A0A /* BasePacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B742F6764FB433E48EFBA /* BasePacket.swift */; };
 		659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */; };
+		659B7608CA48DED50772BE0E /* CommandAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B712FC66944D71AC4469D /* CommandAmf0.swift */; };
 		659B7613F18F75A9E446EE85 /* RtmpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F258466985FAC56D261 /* RtmpMessage.swift */; };
 		659B7682CE6A2520631FC86B /* AmfObjectEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7602B36489CDF088BA3E /* AmfObjectEnd.swift */; };
 		659B76900AADBD6329B64479 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B743ABD02EB1635EF6A5C /* CameraManager.swift */; };
 		659B76CBED97385DA2244D02 /* WindowAcknowledgementSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B71B91AF61447E1E0D0C8 /* WindowAcknowledgementSize.swift */; };
+		659B76EC4EDFA1BABBC66857 /* CommandAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7252A712523E5206B686 /* CommandAmf3.swift */; };
 		659B77274201550B8CB5B24E /* BaseSenderReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B776838C4DC3F43F38E79 /* BaseSenderReport.swift */; };
 		659B7744AD9A56C8BF84146A /* MicrophoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79ED6A496DE540E0878F /* MicrophoneManager.swift */; };
+		659B774F383D85D18864A5BF /* DataAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E9E09A14E225B779C76 /* DataAmf0.swift */; };
 		659B77605FB3FF832C69128C /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B76009DB9E5D8593F807D /* Event.swift */; };
 		659B7772EC168509D0D66EBC /* BasicHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7BE4E2017C6FD58A7B0B /* BasicHeader.swift */; };
 		659B779063CF1AAB8599CF06 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B71DE7624E6E01E1CF26F /* Frame.swift */; };
@@ -59,8 +63,10 @@
 		659B78A1E38155B7901DC60E /* AmfEcmaArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B739516649BF6B379ED1C /* AmfEcmaArray.swift */; };
 		659B78C02201B5B877995FD5 /* Handshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7A9C7A7BC60BFB0D16DE /* Handshake.swift */; };
 		659B7917A1F543F6F8E6B1F7 /* SenderReportUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7806C59ACBF229B9201F /* SenderReportUdp.swift */; };
+		659B79255D6F05D71D439503 /* DataAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F759371999AA93CF5DC /* DataAmf3.swift */; };
 		659B7958D2DCF0C34B7BB831 /* SharedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B73AE239EB7CA380CA085 /* SharedObject.swift */; };
 		659B795DDD6CEBFF32ED3860 /* SetChunkSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B716581CC30C99F4E5BA6 /* SetChunkSize.swift */; };
+		659B79DBC05E34AF9448447B /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7395A544D07B2688E8B3 /* Data.swift */; };
 		659B79DDD2C3E969475E013C /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F2D0847B69CFE75175F /* RtspClient.swift */; };
 		659B7A15C4A30FEB5E901043 /* RtpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7954901D23B67A805AE1 /* RtpConstants.swift */; };
 		659B7A1E9E3623B24581C5B5 /* AacPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B719A2698D1C8B30997EC /* AacPacket.swift */; };
@@ -135,6 +141,7 @@
 		659B70BD104A35AAB011E801 /* RtspCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspCamera.swift; sourceTree = "<group>"; };
 		659B70D282D8450A1EE90729 /* SharedObjectAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObjectAmf0.swift; sourceTree = "<group>"; };
 		659B70F4E8BF0CB58F6569E8 /* AudioPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPacketCallback.swift; sourceTree = "<group>"; };
+		659B712FC66944D71AC4469D /* CommandAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandAmf0.swift; sourceTree = "<group>"; };
 		659B7142370EE653E88944AF /* FpsListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FpsListener.swift; sourceTree = "<group>"; };
 		659B7145A284C7342D62B440 /* AmfStrictArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfStrictArray.swift; sourceTree = "<group>"; };
 		659B7149085AF28E4D40B8CB /* Aggregate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Aggregate.swift; sourceTree = "<group>"; };
@@ -146,9 +153,11 @@
 		659B721CBD00F9035FDD7FF9 /* RtmpConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConfig.swift; sourceTree = "<group>"; };
 		659B724319CFA2EDEC2C71FC /* Body.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Body.swift; sourceTree = "<group>"; };
 		659B724733C5EB629DE57EA3 /* Amf3Type.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Amf3Type.swift; sourceTree = "<group>"; };
+		659B7252A712523E5206B686 /* CommandAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandAmf3.swift; sourceTree = "<group>"; };
 		659B72F38D1549DAFD9D91D7 /* RtpSocketTcp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSocketTcp.swift; sourceTree = "<group>"; };
 		659B7309E911B59D14B7F9B8 /* GetAacData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
 		659B739516649BF6B379ED1C /* AmfEcmaArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfEcmaArray.swift; sourceTree = "<group>"; };
+		659B7395A544D07B2688E8B3 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		659B739C5A84A84CE3DA83A1 /* FlvPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlvPacket.swift; sourceTree = "<group>"; };
 		659B73AE239EB7CA380CA085 /* SharedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObject.swift; sourceTree = "<group>"; };
 		659B7402EC5ED8DF4AC551EE /* RtpSocketUdp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpSocketUdp.swift; sourceTree = "<group>"; };
@@ -165,6 +174,7 @@
 		659B75E89C79FACA5A9E30AF /* GetH264Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetH264Data.swift; sourceTree = "<group>"; };
 		659B76009DB9E5D8593F807D /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		659B7602B36489CDF088BA3E /* AmfObjectEnd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfObjectEnd.swift; sourceTree = "<group>"; };
+		659B7673612306F7884D15A5 /* Comand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comand.swift; sourceTree = "<group>"; };
 		659B76A88756D36BA42809C2 /* RtmpHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpHeader.swift; sourceTree = "<group>"; };
 		659B76AD5F827C5FA708AE0D /* AmfNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfNumber.swift; sourceTree = "<group>"; };
 		659B76BF9635AB28FE2F2AA1 /* SharedObjectAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObjectAmf3.swift; sourceTree = "<group>"; };
@@ -204,10 +214,12 @@
 		659B7DE55DD9AB1AC9BFF242 /* CommandSessionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSessionHistory.swift; sourceTree = "<group>"; };
 		659B7E3A8E10D3511CAE8BB3 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtsp.swift; sourceTree = "<group>"; };
+		659B7E9E09A14E225B779C76 /* DataAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf0.swift; sourceTree = "<group>"; };
 		659B7EFBA0BD9FDCEEC6B021 /* AmfNull.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfNull.swift; sourceTree = "<group>"; };
 		659B7F258466985FAC56D261 /* RtmpMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpMessage.swift; sourceTree = "<group>"; };
 		659B7F2D0847B69CFE75175F /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
 		659B7F444153FBF262A18AA9 /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
+		659B7F759371999AA93CF5DC /* DataAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf3.swift; sourceTree = "<group>"; };
 		659B7FC14427C1199BEEF132 /* UserControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserControl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -374,6 +386,9 @@
 		659B72B9722CF1C4D832C578 /* command */ = {
 			isa = PBXGroup;
 			children = (
+				659B7673612306F7884D15A5 /* Comand.swift */,
+				659B712FC66944D71AC4469D /* CommandAmf0.swift */,
+				659B7252A712523E5206B686 /* CommandAmf3.swift */,
 			);
 			path = command;
 			sourceTree = "<group>";
@@ -495,6 +510,9 @@
 		659B7A36DD78AC8E69292E4D /* data */ = {
 			isa = PBXGroup;
 			children = (
+				659B7395A544D07B2688E8B3 /* Data.swift */,
+				659B7E9E09A14E225B779C76 /* DataAmf0.swift */,
+				659B7F759371999AA93CF5DC /* DataAmf3.swift */,
 			);
 			path = data;
 			sourceTree = "<group>";
@@ -830,6 +848,12 @@
 				659B77D971C785433E86F0DF /* SharedObjectAmf3.swift in Sources */,
 				659B7CC2968A5B07E188068E /* Audio.swift in Sources */,
 				659B7AD4BA03D9185CD49891 /* Video.swift in Sources */,
+				659B79DBC05E34AF9448447B /* Data.swift in Sources */,
+				659B774F383D85D18864A5BF /* DataAmf0.swift in Sources */,
+				659B79255D6F05D71D439503 /* DataAmf3.swift in Sources */,
+				659B75391191A186D023DC2B /* Comand.swift in Sources */,
+				659B7608CA48DED50772BE0E /* CommandAmf0.swift in Sources */,
+				659B76EC4EDFA1BABBC66857 /* CommandAmf3.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

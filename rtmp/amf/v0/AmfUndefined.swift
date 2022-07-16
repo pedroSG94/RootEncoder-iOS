@@ -10,7 +10,7 @@ public class AmfUndefined: AmfData {
     public override func readBody(socket: Socket) throws {
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
     }
 
     public override func getType() -> AmfType {

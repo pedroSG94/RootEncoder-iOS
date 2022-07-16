@@ -45,11 +45,24 @@ public class AmfData: AmfActions {
         return amfType ?? AmfType.STRING
     }
 
-    func writeHeader(socket: Socket) throws {
-        try socket.write(buffer: Array(arrayLiteral: getType().rawValue))
+    public func readHeader(socket: Socket) throws -> AmfType {
+        let byte = try socket.readUntil(length: 1)[0]
+        return AmfData.getMarkType(type: byte)
+    }
+
+    public func writeHeader() -> [UInt8] {
+        Array(arrayLiteral: getType().rawValue)
+    }
+
+    public func writeHeader(socket: Socket) throws {
+        try socket.write(buffer: writeHeader())
     }
 
     public func readBody(socket: Socket) throws {
+
+    }
+
+    public func writeBody() -> [UInt8] {
 
     }
 

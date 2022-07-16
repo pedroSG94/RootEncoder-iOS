@@ -16,7 +16,7 @@ public class Audio: RtmpMessage {
         super.header.messageLength = flvPacket.length
     }
 
-    override func readBody(body: [UInt8]) throws {
+    override func readBody(socket: Socket) throws {
     }
 
     override func storeBody() -> [UInt8] {

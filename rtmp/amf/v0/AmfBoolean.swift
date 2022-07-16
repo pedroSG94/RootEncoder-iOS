@@ -20,9 +20,9 @@ public class AmfBoolean: AmfData {
         value = byte != 0x00
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
         let byte: UInt8 = value ? 0x01 : 0x00
-        try socket.write(buffer: [UInt8](arrayLiteral: byte))
+        return [UInt8](arrayLiteral: byte)
     }
 
     public override func getType() -> AmfType {

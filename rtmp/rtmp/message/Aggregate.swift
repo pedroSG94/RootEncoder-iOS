@@ -7,7 +7,7 @@ import Foundation
 
 public class Aggregate: RtmpMessage {
 
-    override func readBody(body: [UInt8]) throws {
+    override func readBody(socket: Socket) throws {
         //TODO Not yet implemented
     }
 

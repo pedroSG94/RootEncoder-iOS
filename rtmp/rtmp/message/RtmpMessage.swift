@@ -125,7 +125,7 @@ public class RtmpMessage {
     /**
      * Override functions
      */
-    func readBody(body: [UInt8]) throws {
+    func readBody(socket: Socket) throws {
 
     }
 

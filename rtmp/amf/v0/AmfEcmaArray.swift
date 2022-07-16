@@ -48,11 +48,13 @@ public class AmfEcmaArray: AmfObject {
         bodySize += 4 //add length size to body
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
         //write number of items in the list as UInt32
-        try socket.write(buffer: byteArray(from: length))
+        var bytes = [UInt8]()
+        bytes.append(contentsOf: byteArray(from: length))
         //write items
-        try super.writeBody(socket: socket)
+        bytes.append(contentsOf: super.writeBody())
+        return bytes
     }
 
     public override func getType() -> AmfType {

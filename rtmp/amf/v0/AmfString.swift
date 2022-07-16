@@ -25,11 +25,13 @@ public class AmfString: AmfData {
         value = String(bytes: valueBytes, encoding: .ascii)!
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
+        var bytes = [UInt8]()
         let i16 = UInt16(bodySize - 2)
-        try socket.write(buffer: byteArray(from: i16))
+        bytes.append(contentsOf: byteArray(from: i16))
         let valueBytes: [UInt8] = Array(value.utf8)
-        try socket.write(buffer: valueBytes)
+        bytes.append(contentsOf: valueBytes)
+        return bytes
     }
 
     public override func getType() -> AmfType {

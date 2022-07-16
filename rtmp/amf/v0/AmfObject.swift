@@ -81,15 +81,17 @@ public class AmfObject: AmfData {
         }
     }
 
-    public override func writeBody(socket: Socket) throws {
+    public override func writeBody() -> [UInt8] {
+        var bytes = [UInt8]()
         for (key, value) in properties {
-            try key.writeBody(socket: socket)
+            bytes.append(contentsOf: key.writeBody())
 
-            try value.writeHeader(socket: socket)
-            try value.writeBody(socket: socket)
+            bytes.append(contentsOf: value.writeHeader())
+            bytes.append(contentsOf: value.writeBody())
         }
         let objectEnd = AmfObjectEnd()
-        try objectEnd.writeBody(socket: socket)
+        bytes.append(contentsOf: objectEnd.writeBody())
+        return bytes
     }
 
     public override func getType() -> AmfType {
