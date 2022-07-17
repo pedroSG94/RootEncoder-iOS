@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class DataAmf0: Data {
+public class DataAmf0: DataMessage {
 
     public override init(name: String = "", timeStamp: Int = 0, streamId: Int = 0, basicHeader: BasicHeader = BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue))) {
         super.init(name: name, timeStamp: timeStamp, streamId: streamId, basicHeader: basicHeader)

@@ -16,12 +16,14 @@ public class CommandSessionHistory {
 
     func getLastReadHeader(chunkStreamId: Int) -> RtmpHeader? {
         let reverseList = headerHistory.reversed()
+        var h: RtmpHeader? = nil
         reverseList.forEach { header in
             if (header.basicHeader.chunkStreamId == chunkStreamId) {
-                return header
+                h = header
+                return
             }
         }
-        return nil
+        return h
     }
 
     func getName(id: Int) -> String? {

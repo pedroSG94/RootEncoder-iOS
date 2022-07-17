@@ -17,6 +17,7 @@ public class Aggregate: RtmpMessage {
 
     override func storeBody() -> [UInt8] {
         //TODO Not yet implemented
+        return [UInt8]()
     }
 
     override func getType() -> MessageType {
@@ -25,5 +26,6 @@ public class Aggregate: RtmpMessage {
 
     override func getSize() -> Int {
         //TODO Not yet implemented
+        0
     }
 }

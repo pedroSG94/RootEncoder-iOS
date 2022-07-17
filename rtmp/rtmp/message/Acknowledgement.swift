@@ -10,8 +10,8 @@ public class Acknowledgement: RtmpMessage {
     private var sequenceNUmber: Int
 
     public init(sequenceNUmber: Int = 0) {
-        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
         self.sequenceNUmber = sequenceNUmber
+        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
     }
 
     override func readBody(body: inout [UInt8]) throws {

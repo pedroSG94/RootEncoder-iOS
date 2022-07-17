@@ -5,15 +5,15 @@
 
 import Foundation
 
-public class Data: RtmpMessage {
+public class DataMessage: RtmpMessage {
 
     private let name: String
     private var data = [AmfData]()
     private var bodySize = 0
 
     public init(name: String, timeStamp: Int, streamId: Int, basicHeader: BasicHeader) {
-        super.init(basicHeader: basicHeader)
         self.name = name
+        super.init(basicHeader: basicHeader)
         let amfString = AmfString(value: name)
         bodySize += amfString.getSize() + 1
         for (_, element) in data.enumerated() {

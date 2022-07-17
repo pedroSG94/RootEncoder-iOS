@@ -10,9 +10,9 @@ public class Abort: RtmpMessage {
     private var chunkStreamId: Int
 
     public init(chunkStreamId: Int = 0) {
+        self.chunkStreamId = chunkStreamId
         super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
                 chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
-        self.chunkStreamId = chunkStreamId
     }
 
     override func readBody(body: inout [UInt8]) throws {

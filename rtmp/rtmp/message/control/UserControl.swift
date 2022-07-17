@@ -12,10 +12,10 @@ public class UserControl: RtmpMessage {
     var event: Event
 
     public init(type: ControlType = ControlType.PING_REQUEST, event: Event = Event(data: -1, bufferLength: -1)) {
-        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
-                chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
         self.type = type
         self.event = event
+        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
+                chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
     }
 
     override func readBody(body: inout [UInt8]) throws {
@@ -42,6 +42,7 @@ public class UserControl: RtmpMessage {
         if (event.bufferLength != -1) {
             bytes.append(contentsOf: event.bufferLength.toUInt32Array())
         }
+        return bytes
     }
 
     override func getType() -> MessageType {

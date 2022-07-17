@@ -17,9 +17,11 @@ public class SharedObject: RtmpMessage {
 
     override func storeBody() -> [UInt8] {
         //TODO Not yet implemented
+        return [UInt8]()
     }
 
     override func getSize() -> Int {
         //TODO Not yet implemented
+        0
     }
 }

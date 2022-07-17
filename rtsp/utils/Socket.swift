@@ -63,7 +63,6 @@ public class Socket: NSObject, StreamDelegate {
         connection?.start(queue: .main)
         var inStream: InputStream? = nil
         var outStream: OutputStream? = nil
-        inStream?.
         sync.wait()
         if (messageError != nil) {
             throw IOException.runtimeError(messageError!)

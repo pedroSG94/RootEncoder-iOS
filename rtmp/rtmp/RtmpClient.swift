@@ -7,4 +7,251 @@ import Foundation
 
 public class RtmpClient {
 
+    private let connectCheckerRtmp: ConnectCheckerRtmp
+    private var socket: Socket? = nil
+    private let commandManager = CommandManager()
+    private let rtmpSender = RtmpSender()
+    var isStreaming = false
+    private var publishPermitted = false
+    private var tlsEnabled = false
+
+    public init(connectCheckerRtmp: ConnectCheckerRtmp) {
+        self.connectCheckerRtmp = connectCheckerRtmp
+    }
+
+    public func setOnlyAudio(onlyAudio: Bool) {
+        commandManager.audioDisabled = false
+        commandManager.videoDisabled = onlyAudio
+    }
+
+    public func setOnlyVideo(onlyVideo: Bool) {
+        commandManager.videoDisabled = false
+        commandManager.audioDisabled = onlyVideo
+    }
+
+    public func forceAkamaiTs(enabled: Bool) {
+        commandManager.akamaiTs = enabled
+    }
+
+    public func setVideoInfo(sps: [UInt8], pps: [UInt8], vps: [UInt8]?) {
+
+    }
+
+    public func setFps(fps: Int) {
+        commandManager.setFps(fps: fps)
+    }
+
+    public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
+        commandManager.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+    }
+
+    public func setVideoResolution(width: Int, height: Int) {
+        commandManager.setVideoResolution(width: width, height: height)
+    }
+
+    public func connect(url: String, isRetry: Bool = false) {
+        let thread = DispatchQueue(label: "RtmpClient")
+        thread.async {
+            if !self.isStreaming {
+                let urlResults = url.groups(for: "^rtmps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
+                if urlResults.count > 0 {
+                    let groups = urlResults[0]
+                    self.tlsEnabled = groups[0].hasPrefix("rtmps")
+                    let host = groups[1]
+                    let defaultPort = groups.count == 3
+                    let port = defaultPort ? self.tlsEnabled ? 443 : 1935 : Int(groups[2])!
+                    let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
+                    self.commandManager.host = host
+                    self.commandManager.port = port
+                    self.commandManager.appName = self.getAppName(app: groups[3], name: groups[4])
+                    self.commandManager.streamName = self.getStreamName(name: groups[4])
+                    let tcUrlIndex = groups[0].index(groups[0].startIndex, offsetBy: groups[0].count - self.commandManager.streamName.count)
+                    self.commandManager.tcUrl = self.getTcUrl(url: groups[0].substring(to: tcUrlIndex))
+
+                    self.isStreaming = true
+                    do {
+                        if (try !self.establishConnection()) {
+                            self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Handshake failed")
+                            return
+                        }
+                        guard let socket = self.socket else {
+                            throw IOException.runtimeError("Invalid socket, Connection failed")
+                        }
+                        try self.commandManager.sendChunkSize(socket: socket)
+                        try self.commandManager.sendConnect(auth: "", socket: socket)
+                        while (!self.publishPermitted) {
+                            try self.handleMessages()
+                        }
+                    } catch {
+
+                    }
+                }
+            }
+        }
+    }
+
+    public func disconnect(clear: Bool = true) {
+
+    }
+
+    private func getAppName(app: String, name: String) -> String {
+        if (!name.contains("/")) {
+            return app
+        } else {
+            return "\(app)/\(name.substring(to: name.firstIndex(of: "/")!))"
+        }
+    }
+
+    private func getStreamName(name: String) -> String {
+        if (!name.contains("/")) {
+            return name
+        } else {
+            let index = name.index(name.firstIndex(of: "/")!, offsetBy: 1)
+            return name.substring(with: name.startIndex..<index)
+        }
+    }
+
+    private func getTcUrl(url: String) -> String {
+        if (!url.hasSuffix("/")) {
+            return String(url.dropLast(1))
+        } else {
+            return url
+        }
+    }
+
+    private func handleServerPackets() throws {
+        while (isStreaming) {
+            try handleMessages()
+        }
+    }
+
+    private func handleMessages() throws {
+        guard var socket =  socket else {
+            throw IOException.runtimeError("Invalid socket, Connection failed")
+        }
+        let message = try commandManager.readMessageResponse(socket: socket)
+        switch message.getType() {
+            case .SET_CHUNK_SIZE:
+                let setChunkSize = message as! SetChunkSize
+                commandManager.readChunkSize = setChunkSize.chunkSize
+                print("chunk size configured to \(setChunkSize.chunkSize)")
+            case .ABORT:
+                let abort = message as! Abort
+            case .ACKNOWLEDGEMENT:
+                let acknowledgement = message as! Acknowledgement
+            case .USER_CONTROL:
+                let userControl = message as! UserControl
+                if (userControl.type == ControlType.PING_REQUEST) {
+                    try commandManager.sendPong(event: userControl.event, socket: socket)
+                } else {
+                    print("user control command \(userControl.type) ignored")
+                }
+            case .WINDOW_ACKNOWLEDGEMENT_SIZE:
+                let windowAcknowledgementSize = message as! WindowAcknowledgementSize
+                RtmpConfig.acknowledgementWindowSize = windowAcknowledgementSize.acknowledgementWindowSize
+            case .SET_PEER_BANDWIDTH:
+                let setPeerBandwidth = message as! SetPeerBandwidth
+                try commandManager.sendWindowAcknowledgementSize(socket: socket)
+            case .COMMAND_AMF0, .COMMAND_AMF3:
+                let command = message as! Command
+                let commandName = commandManager.sessionHistory.getName(id: command.commandId)
+                switch (command.name) {
+                    case "_result":
+                        switch (commandName) {
+                            case "connect":
+                                if (commandManager.onAuth) {
+                                    connectCheckerRtmp.onAuthSuccessRtmp()
+                                    commandManager.onAuth = false
+                                }
+                                try commandManager.createStream(socket: socket)
+                            case "createStream":
+                                commandManager.streamId = Int((command.data[3] as! AmfNumber).value)
+                                try commandManager.sendPublish(socket: socket)
+                            default:
+                                print("success response received from \(commandName ?? "unknown command")")
+                        }
+                    case "_error":
+                        let description = ((command.data[3] as! AmfObject).getProperty(name: "description") as! AmfString).value
+                        switch (commandName) {
+                            case "connect":
+                                if (description.contains("reason=authfail") || description.contains("reason=nosuchuser")) {
+                                    connectCheckerRtmp.onAuthErrorRtmp()
+                                } else if (commandManager.user != nil && commandManager.password != nil
+                                        && description.contains("challenge=") && description.contains("salt=") //adobe response
+                                        || description.contains("nonce="))  { //llnw response
+                                    closeConnection()
+                                    try establishConnection()
+                                    if (self.socket == nil) {
+                                        throw IOException.runtimeError("Invalid socket, Connection failed")
+                                    } else {
+                                        socket = self.socket!
+                                    }
+                                    commandManager.onAuth = true
+                                    if (description.contains("challenge=") && description.contains("salt=")) { //create adobe auth
+                                        //TODO send connect auth
+                                    } else if (description.contains("nonce=")) { //create llnw auth)
+                                        //TODO send connect auth
+                                    }
+                                } else if (description.contains("code=403")) {
+                                    if (description.contains("authmod=adobe")) {
+                                        closeConnection()
+                                        try establishConnection()
+                                        if (self.socket == nil) {
+                                            throw IOException.runtimeError("Invalid socket, Connection failed")
+                                        } else {
+                                            socket = self.socket!
+                                        }
+                                        print("sending auth mode adobe")
+                                        try commandManager.sendConnect(auth: "?authmod=adobe&user=\(commandManager.user ?? "")", socket: socket)
+                                    } else if (description.contains("authmod=llnw")) {
+                                        print("sending auth mode llnw")
+                                        try commandManager.sendConnect(auth: "?authmod=llnw&user=\(commandManager.user ?? "")", socket: socket)
+                                    }
+                                } else {
+                                    connectCheckerRtmp.onAuthErrorRtmp()
+                                }
+                            default:
+                                connectCheckerRtmp.onConnectionFailedRtmp(reason: description)
+                        }
+                    case "onStatus":
+                        let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value
+                        switch (commandName) {
+                            case "NetStream.Publish.Start":
+                                try commandManager.sendMetadata(socket: socket)
+                                connectCheckerRtmp.onConnectionSuccessRtmp()
+
+                                rtmpSender.start()
+                                publishPermitted = true
+                            case "NetConnection.Connect.Rejected", "NetStream.Publish.BadName":
+                                connectCheckerRtmp.onConnectionFailedRtmp(reason: "onStatus: \(code)")
+                            default:
+                                print("onStatus $code response received from \(commandName ?? "unknown command")")
+                        }
+                    default:
+                        print("unknown \(command.name) response received from \(commandName ?? "unknown command")")
+                }
+            case .AGGREGATE:
+                let aggregate = message as! Aggregate
+            default:
+                print("unimplemented response for \(message.getType()). Ignored")
+        }
+    }
+
+    public func closeConnection() {
+        socket?.disconnect()
+        commandManager.reset()
+    }
+
+    public func establishConnection() throws -> Bool {
+        socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port)
+        try socket?.connect()
+        let timeStamp = Date().millisecondsSince1970 / 1000
+        let handshake = Handshake()
+        if (try !handshake.sendHandshake(socket: socket!)) {
+            return false
+        }
+        commandManager.timestamp = Int(timeStamp)
+        commandManager.startTs = Date().millisecondsSince1970 * 1000
+        return true
+    }
 }

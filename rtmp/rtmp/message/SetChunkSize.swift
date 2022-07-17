@@ -10,9 +10,9 @@ public class SetChunkSize: RtmpMessage {
     var chunkSize: Int
 
     public init(chunkSize: Int = 0) {
+        self.chunkSize = chunkSize
         super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
                 chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
-        self.chunkSize = chunkSize
     }
 
     override func readBody(body: inout [UInt8]) throws {

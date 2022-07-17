@@ -7,7 +7,7 @@ import Foundation
 
 public class CommandManager {
 
-    private let sessionHistory = CommandSessionHistory()
+    let sessionHistory = CommandSessionHistory()
     var timestamp = 0
     private var commandId = 0
     var streamId = 0
@@ -217,5 +217,13 @@ public class CommandManager {
         try audio.writeHeader(socket: socket)
         try audio.writeBody(socket: socket)
         return audio.header.getPacketLength()
+    }
+
+    public func reset() {
+        startTs = 0
+        timestamp = 0
+        streamId = 0
+        commandId = 0
+        sessionHistory.reset()
     }
 }

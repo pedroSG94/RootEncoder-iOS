@@ -13,6 +13,7 @@ public class AmfNull: AmfData {
     }
 
     public override func writeBody() -> [UInt8] {
+        return [UInt8]()
     }
 
     public override func getType() -> AmfType {

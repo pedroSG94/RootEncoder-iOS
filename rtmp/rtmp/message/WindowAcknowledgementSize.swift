@@ -9,10 +9,11 @@ public class WindowAcknowledgementSize: RtmpMessage {
 
     var acknowledgementWindowSize: Int
 
+
     public init(acknowledgementWindowSize: Int = 0, timeStamp: Int = 0) {
+        self.acknowledgementWindowSize = acknowledgementWindowSize
         super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
                 chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
-        self.acknowledgementWindowSize = acknowledgementWindowSize
         super.header.timeStamp = timeStamp
     }
 

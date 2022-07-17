@@ -46,6 +46,7 @@
 		659B76392363870C4209F176 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79B9B467667E5EFF9415 /* CommandManager.swift */; };
 		659B7682CE6A2520631FC86B /* AmfObjectEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7602B36489CDF088BA3E /* AmfObjectEnd.swift */; };
 		659B76900AADBD6329B64479 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B743ABD02EB1635EF6A5C /* CameraManager.swift */; };
+		659B76CB605CDAC9DB90B551 /* RtmpSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7AE8FD91D2FE9518E185 /* RtmpSender.swift */; };
 		659B76CBED97385DA2244D02 /* WindowAcknowledgementSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B71B91AF61447E1E0D0C8 /* WindowAcknowledgementSize.swift */; };
 		659B76EC4EDFA1BABBC66857 /* CommandAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7252A712523E5206B686 /* CommandAmf3.swift */; };
 		659B77274201550B8CB5B24E /* BaseSenderReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B776838C4DC3F43F38E79 /* BaseSenderReport.swift */; };
@@ -63,6 +64,7 @@
 		659B785858D79BCE3BB5C672 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E3A8E10D3511CAE8BB3 /* Socket.swift */; };
 		659B78642C3E255813522FA3 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7B7D7346CEBD01958B40 /* Extensions.swift */; };
 		659B788AD6550B1AC3AF1650 /* AmfNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B76AD5F827C5FA708AE0D /* AmfNumber.swift */; };
+		659B789BA7B61FE3E4A70FD6 /* RtmpCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7B9D1A5AE56AA5FB036E /* RtmpCamera.swift */; };
 		659B78A1E38155B7901DC60E /* AmfEcmaArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B739516649BF6B379ED1C /* AmfEcmaArray.swift */; };
 		659B78C02201B5B877995FD5 /* Handshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7A9C7A7BC60BFB0D16DE /* Handshake.swift */; };
 		659B7917A1F543F6F8E6B1F7 /* SenderReportUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7806C59ACBF229B9201F /* SenderReportUdp.swift */; };
@@ -204,9 +206,11 @@
 		659B7A70D0EADCDD96E1E2D5 /* SetPeerBandwidth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPeerBandwidth.swift; sourceTree = "<group>"; };
 		659B7A9C7A7BC60BFB0D16DE /* Handshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Handshake.swift; sourceTree = "<group>"; };
 		659B7AC0754CEF0D29676AA6 /* Abort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Abort.swift; sourceTree = "<group>"; };
+		659B7AE8FD91D2FE9518E185 /* RtmpSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpSender.swift; sourceTree = "<group>"; };
 		659B7B0C1CB65A5A86C19988 /* H264Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H264Packet.swift; sourceTree = "<group>"; };
 		659B7B2013069846ACA2710D /* ConnectCheckerRtmp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtmp.swift; sourceTree = "<group>"; };
 		659B7B7D7346CEBD01958B40 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		659B7B9D1A5AE56AA5FB036E /* RtmpCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpCamera.swift; sourceTree = "<group>"; };
 		659B7BE4E2017C6FD58A7B0B /* BasicHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicHeader.swift; sourceTree = "<group>"; };
 		659B7BE55B7EC6D6ECCBA9E2 /* Conversor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversor.swift; sourceTree = "<group>"; };
 		659B7BF7949061E5109452A3 /* H265Packet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = H265Packet.swift; sourceTree = "<group>"; };
@@ -362,6 +366,14 @@
 				659B7309E911B59D14B7F9B8 /* GetAacData.swift */,
 			);
 			path = audio;
+			sourceTree = "<group>";
+		};
+		659B70CDE6810C6F06BE4C72 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				659B7B9D1A5AE56AA5FB036E /* RtmpCamera.swift */,
+			);
+			path = rtmp;
 			sourceTree = "<group>";
 		};
 		659B71BDA3B2418B50E35375 /* rtsp */ = {
@@ -529,6 +541,7 @@
 				659B75D3171FD0D9D6BCD39F /* base */,
 				659B7A1CCADF53D2C8C870EA /* rtsp */,
 				659B76EE93216BEBD8B1F218 /* utils */,
+				659B70CDE6810C6F06BE4C72 /* rtmp */,
 			);
 			path = rtplibrary;
 			sourceTree = "<group>";
@@ -561,6 +574,7 @@
 				659B7D21032CB919F5FA4BFD /* message */,
 				659B79B9B467667E5EFF9415 /* CommandManager.swift */,
 				659B70AED84380B301660A0A /* RtmpClient.swift */,
+				659B7AE8FD91D2FE9518E185 /* RtmpSender.swift */,
 			);
 			path = rtmp;
 			sourceTree = "<group>";
@@ -866,6 +880,8 @@
 				659B76392363870C4209F176 /* CommandManager.swift in Sources */,
 				659B70254A8B67B922AFCAD6 /* RtmpClient.swift in Sources */,
 				659B71E6678813B04FB5C32C /* Acknowledgement.swift in Sources */,
+				659B76CB605CDAC9DB90B551 /* RtmpSender.swift in Sources */,
+				659B789BA7B61FE3E4A70FD6 /* RtmpCamera.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

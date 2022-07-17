@@ -13,6 +13,14 @@ extension Array {
     }
 }
 
+extension String {
+    subscript (range: Range<Int>) -> Substring {
+        let startIndex = self.index(self.startIndex, offsetBy: range.startIndex)
+        let stopIndex = self.index(self.startIndex, offsetBy: range.startIndex + range.count)
+        return self[startIndex..<stopIndex]
+    }
+}
+
 extension AmfString : Hashable {
 
     public func hash(into hasher: inout Hasher) {

@@ -9,13 +9,13 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, ConnectCheckerRtsp {
+class ViewController: UIViewController, ConnectCheckerRtmp {
 
     @IBOutlet weak var tvEndpoint: UITextField!
     @IBOutlet weak var bStartStream: UIButton!
     @IBOutlet weak var cameraView: UIView!
     
-    private var rtspCamera: RtspCamera!
+    private var rtspCamera: CameraBase!
     
     @IBAction func onClickStartStream(_ sender: UIButton) {
         let endpoint = tvEndpoint.text!
@@ -34,28 +34,28 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
         rtspCamera.switchCamera()
     }
 
-    func onConnectionSuccessRtsp() {
+    func onConnectionSuccessRtmp() {
         print("connection success")
     }
     
-    func onConnectionFailedRtsp(reason: String) {
+    func onConnectionFailedRtmp(reason: String) {
         print("connection failed: \(reason)")
         rtspCamera.stopStream()
     }
     
-    func onNewBitrateRtsp(bitrate: UInt64) {
+    func onNewBitrateRtmp(bitrate: UInt64) {
         print("new bitrate: \(bitrate)")
     }
     
-    func onDisconnectRtsp() {
+    func onDisconnectRtmp() {
         print("disconnected")
     }
     
-    func onAuthErrorRtsp() {
+    func onAuthErrorRtmp() {
         print("auth error")
     }
     
-    func onAuthSuccessRtsp() {
+    func onAuthSuccessRtmp() {
         print("auth success")
     }
 
@@ -64,7 +64,7 @@ class ViewController: UIViewController, ConnectCheckerRtsp {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         validatePermissions()
-        rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+        rtspCamera = RtmpCamera(view: cameraView, connectChecker: self)
         rtspCamera.startPreview()
     }
     

@@ -44,7 +44,7 @@ public class AmfEcmaArray: AmfObject {
         let bytes = buffer.takeFirst(n: 4)
         length = Int(UInt32(bytes: bytes))
         //read items
-        try super.readBody(buffer: buffer)
+        try super.readBody(buffer: &buffer)
         bodySize += 4 //add length size to body
     }
 

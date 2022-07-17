@@ -60,12 +60,12 @@ public class AmfObject: AmfData {
     public override func readBody(buffer: inout [UInt8]) throws {
         let objectEnd = AmfObjectEnd()
         while (!objectEnd.found) {
-            try objectEnd.readBody(buffer: buffer)
+            try objectEnd.readBody(buffer: &buffer)
             if (objectEnd.found) {
                 bodySize += objectEnd.getSize()
             } else {
                 let key = AmfString()
-                try key.readBody(buffer: buffer)
+                try key.readBody(buffer: &buffer)
                 bodySize += key.getSize()
 
                 let value = try AmfData.getAmfData(buffer: &buffer)

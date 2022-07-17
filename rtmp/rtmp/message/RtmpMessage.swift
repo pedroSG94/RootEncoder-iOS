@@ -56,7 +56,7 @@ public class RtmpMessage {
             rtmpMessage = Aggregate()
         }
         rtmpMessage.updateHeader(rtmpHeader: header)
-        let body: [UInt8]
+        var body: [UInt8]
         if (header.messageLength > chunkSize) {
             body = try getInputWithoutChunks(socket: socket, header: header, chunkSize: chunkSize, commandSessionHistory: commandSessionHistory)
         } else {
@@ -129,14 +129,14 @@ public class RtmpMessage {
     }
 
     func storeBody() -> [UInt8] {
-
+        return [UInt8]()
     }
 
     func getType() -> MessageType{
-
+        MessageType.ABORT
     }
 
     func getSize() -> Int {
-
+        0
     }
 }

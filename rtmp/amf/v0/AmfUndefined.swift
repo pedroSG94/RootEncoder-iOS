@@ -11,6 +11,7 @@ public class AmfUndefined: AmfData {
     }
 
     public override func writeBody() -> [UInt8] {
+        return [UInt8]()
     }
 
     public override func getType() -> AmfType {

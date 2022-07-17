@@ -9,13 +9,13 @@ public class Command: RtmpMessage {
 
     var name: String
     var commandId: Int
-    private var data = [AmfData]()
+    var data = [AmfData]()
     private var bodySize = 0
 
     public init(name: String, commandId: Int, timeStamp: Int, streamId: Int, basicHeader: BasicHeader) {
-        super.init(basicHeader: basicHeader)
         self.name = name
         self.commandId = commandId
+        super.init(basicHeader: basicHeader)
         let amfString = AmfString(value: name)
         bodySize += amfString.getSize() + 1
         data.append(amfString)

@@ -12,10 +12,10 @@ public class SetPeerBandwidth: RtmpMessage {
     private var type: SetPeerBandwidthType
 
     public init(acknowledgementWindowSize: Int = 0, type: SetPeerBandwidthType = SetPeerBandwidthType.DYNAMIC) {
-        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
-                chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
         self.acknowledgementWindowSize = acknowledgementWindowSize
         self.type = type
+        super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0,
+                chunkStreamId: Int(ChunkStreamId.PROTOCOL_CONTROL.rawValue)))
     }
 
     override func readBody(body: inout [UInt8]) throws {
@@ -29,6 +29,7 @@ public class SetPeerBandwidth: RtmpMessage {
         var bytes = [UInt8]()
         bytes.append(contentsOf: acknowledgementWindowSize.toUInt32Array())
         bytes.append(type.rawValue)
+        return bytes
     }
 
     override func getType() -> MessageType {

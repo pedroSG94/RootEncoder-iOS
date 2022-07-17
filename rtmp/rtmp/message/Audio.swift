@@ -10,6 +10,7 @@ public class Audio: RtmpMessage {
     private let flvPacket: FlvPacket
 
     public init(flvPacket: FlvPacket = FlvPacket(), streamId: Int = 0) {
+        self.flvPacket = flvPacket
         super.init(basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.AUDIO.rawValue)))
         super.header.messageStreamId = streamId
         super.header.timeStamp = Int(flvPacket.timeStamp)
