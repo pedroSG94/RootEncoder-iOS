@@ -7,8 +7,8 @@ import Foundation
 
 public class AmfData: AmfActions {
 
-    static func getAmfData(socket: Socket) throws -> AmfData {
-        let identify: UInt8 = try socket.readUntil(length: 1)[0]
+    static func getAmfData(buffer: inout [UInt8]) throws -> AmfData {
+        let identify: UInt8 = buffer.takeFirst(n: 1)[0]
         let type = getMarkType(type: identify)
         let amfData: AmfData? = {
             switch type {
@@ -35,7 +35,7 @@ public class AmfData: AmfActions {
         if (amfData == nil) {
             throw IOException.runtimeError("Unimplemented AMF data type: \(type)")
         } else {
-            try amfData?.readBody(socket: socket)
+            try amfData?.readBody(buffer: &buffer)
             return amfData!
         }
     }
@@ -45,8 +45,8 @@ public class AmfData: AmfActions {
         return amfType ?? AmfType.STRING
     }
 
-    public func readHeader(socket: Socket) throws -> AmfType {
-        let byte = try socket.readUntil(length: 1)[0]
+    public func readHeader(buffer: inout [UInt8]) throws -> AmfType {
+        let byte = buffer.takeFirst(n: 1)[0]
         return AmfData.getMarkType(type: byte)
     }
 
@@ -58,7 +58,7 @@ public class AmfData: AmfActions {
         try socket.write(buffer: writeHeader())
     }
 
-    public func readBody(socket: Socket) throws {
+    public func readBody(buffer: inout [UInt8]) throws {
 
     }
 
@@ -80,7 +80,7 @@ public class AmfData: AmfActions {
 }
 
 public protocol AmfActions {
-    func readBody(socket: Socket) throws
+    func readBody(buffer: inout [UInt8]) throws
     func writeBody(socket: Socket) throws
     func getType() -> AmfType
     func getSize() -> Int

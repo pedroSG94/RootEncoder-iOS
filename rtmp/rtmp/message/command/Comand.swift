@@ -33,11 +33,11 @@ public class Command: RtmpMessage {
         header.messageLength = bodySize
     }
 
-    override func readBody(socket: Socket) throws {
+    override func readBody(body: inout [UInt8]) throws {
         data.removeAll()
         var bytesRead = 0
         while (bytesRead > header.messageLength) {
-            let amfData = try AmfData.getAmfData(socket: socket)
+            let amfData = try AmfData.getAmfData(buffer: &body)
             bytesRead += amfData.getSize() + 1
             data.append(amfData)
         }

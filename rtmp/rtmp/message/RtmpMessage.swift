@@ -25,35 +25,35 @@ public class RtmpMessage {
         let rtmpMessage: RtmpMessage
         switch header.messageType! {
         case .SET_CHUNK_SIZE:
-            <#code#>
+            rtmpMessage = SetChunkSize()
         case .ABORT:
-            <#code#>
+            rtmpMessage = Abort()
         case .ACKNOWLEDGEMENT:
-            <#code#>
+            rtmpMessage = Acknowledgement()
         case .USER_CONTROL:
-            <#code#>
+            rtmpMessage = UserControl()
         case .WINDOW_ACKNOWLEDGEMENT_SIZE:
-            <#code#>
+            rtmpMessage = WindowAcknowledgementSize()
         case .SET_PEER_BANDWIDTH:
-            <#code#>
+            rtmpMessage = SetPeerBandwidth()
         case .AUDIO:
-            <#code#>
+            rtmpMessage = Audio()
         case .VIDEO:
-            <#code#>
+            rtmpMessage = Video()
         case .DATA_AMF3:
-            <#code#>
+            rtmpMessage = DataAmf3()
         case .SHARED_OBJECT_AMF3:
-            <#code#>
+            rtmpMessage = SharedObjectAmf3()
         case .COMMAND_AMF3:
-            <#code#>
+            rtmpMessage = CommandAmf3()
         case .DATA_AMF0:
-            <#code#>
+            rtmpMessage = DataAmf0()
         case .SHARED_OBJECT_AMF0:
-            <#code#>
+            rtmpMessage = SharedObjectAmf0()
         case .COMMAND_AMF0:
-            <#code#>
+            rtmpMessage = CommandAmf0()
         case .AGGREGATE:
-            <#code#>
+            rtmpMessage = Aggregate()
         }
         rtmpMessage.updateHeader(rtmpHeader: header)
         let body: [UInt8]
@@ -62,7 +62,7 @@ public class RtmpMessage {
         } else {
             body = try socket.readUntil(length: header.messageLength)
         }
-        try rtmpMessage.readBody(body: body)
+        try rtmpMessage.readBody(body: &body)
         return rtmpMessage
     }
 
@@ -111,8 +111,7 @@ public class RtmpMessage {
         var pos = 0
         var length = getSize()
         while (length > chunkSize) {
-            let bytesToWrite = Array(bytes.prefix(upTo: chunkSize))
-            bytes = Array(bytes.dropFirst(chunkSize))
+            let bytesToWrite = bytes.takeFirst(n: chunkSize)
             try socket.write(buffer: bytesToWrite)
             length -= chunkSize
             pos += chunkSize
@@ -125,7 +124,7 @@ public class RtmpMessage {
     /**
      * Override functions
      */
-    func readBody(socket: Socket) throws {
+    func readBody(body: inout [UInt8]) throws {
 
     }
 

@@ -7,7 +7,7 @@ import Foundation
 
 public class AmfUndefined: AmfData {
 
-    public override func readBody(socket: Socket) throws {
+    public override func readBody(buffer: inout [UInt8]) throws {
     }
 
     public override func writeBody() -> [UInt8] {

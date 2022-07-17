@@ -57,23 +57,18 @@ public class AmfObject: AmfData {
         bodySize += value.getSize() + 1
     }
 
-    public override func readBody(socket: Socket) throws {
+    public override func readBody(buffer: inout [UInt8]) throws {
         let objectEnd = AmfObjectEnd()
         while (!objectEnd.found) {
-            try objectEnd.readBody(socket: socket)
+            try objectEnd.readBody(buffer: buffer)
             if (objectEnd.found) {
                 bodySize += objectEnd.getSize()
             } else {
-                //add buffer to start of the next read called
-                if (objectEnd.readBodyData != nil) {
-                    socket.appendRead(buffer: objectEnd.readBodyData!)
-                }
-
                 let key = AmfString()
-                try key.readBody(socket: socket)
+                try key.readBody(buffer: buffer)
                 bodySize += key.getSize()
 
-                let value = try AmfData.getAmfData(socket: socket)
+                let value = try AmfData.getAmfData(buffer: &buffer)
                 bodySize += value.getSize() + 1
 
                 properties[key] = value

@@ -20,15 +20,15 @@ public class AmfStrictArray: AmfData {
         }
     }
 
-    public override func readBody(socket: Socket) throws {
+    public override func readBody(buffer: inout [UInt8]) throws {
         items.removeAll()
         bodySize = 0
         //get number of items as UInt32
-        let lengthBytes = try socket.readUntil(length: 4)
+        let lengthBytes = buffer.takeFirst(n: 4)
         let length = UInt32(bytes: lengthBytes)
         //read items
         for _ in 0...length {
-            let amfData: AmfData = try AmfData.getAmfData(socket: socket)
+            let amfData: AmfData = try AmfData.getAmfData(buffer: &buffer)
             bodySize += amfData.getSize() + 1
             items.append(amfData)
         }

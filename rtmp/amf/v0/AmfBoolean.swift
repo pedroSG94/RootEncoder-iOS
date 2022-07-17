@@ -15,8 +15,8 @@ public class AmfBoolean: AmfData {
         self.value = value
     }
 
-    public override func readBody(socket: Socket) throws {
-        let byte = try socket.readUntil(length: 1)[0]
+    public override func readBody(buffer: inout [UInt8]) throws {
+        let byte = buffer.takeFirst(n: 1)[0]
         value = byte != 0x00
     }
 

@@ -5,6 +5,14 @@
 
 import Foundation
 
+extension Array {
+    public mutating func takeFirst(n: Int) -> Array {
+        let a = self.prefix(upTo: n)
+        removeFirst(n)
+        return Array(a)
+    }
+}
+
 extension AmfString : Hashable {
 
     public func hash(into hasher: inout Hasher) {

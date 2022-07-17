@@ -17,11 +17,11 @@ public class AmfString: AmfData {
         bodySize = Array(value.utf8).count + 2
     }
 
-    public override func readBody(socket: Socket) throws {
-        let lengthBytes = try socket.readUntil(length: 2)
+    public override func readBody(buffer: inout [UInt8]) throws {
+        let lengthBytes = buffer.takeFirst(n: 2)
         let length = Int(UInt16(bytes: lengthBytes))
         bodySize = length + 2
-        let valueBytes = try socket.readUntil(length: length)
+        let valueBytes = buffer.takeFirst(n: length)
         value = String(bytes: valueBytes, encoding: .ascii)!
     }
 

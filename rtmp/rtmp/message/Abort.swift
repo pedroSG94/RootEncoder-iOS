@@ -15,8 +15,8 @@ public class Abort: RtmpMessage {
         self.chunkStreamId = chunkStreamId
     }
 
-    override func readBody(socket: Socket) throws {
-        chunkStreamId = Int(toUInt32(array: try socket.readUntil(length: 4)))
+    override func readBody(body: inout [UInt8]) throws {
+        chunkStreamId = Int(toUInt32(array: body.takeFirst(n: 4)))
     }
 
     override func storeBody() -> [UInt8] {

@@ -39,12 +39,12 @@ public class AmfEcmaArray: AmfObject {
         length = properties.count
     }
 
-    public override func readBody(socket: Socket) throws {
+    public override func readBody(buffer: inout [UInt8]) throws {
         //get number of items as UInt32
-        let bytes = try socket.readUntil(length: 4)
+        let bytes = buffer.takeFirst(n: 4)
         length = Int(UInt32(bytes: bytes))
         //read items
-        try super.readBody(socket: socket)
+        try super.readBody(buffer: buffer)
         bodySize += 4 //add length size to body
     }
 

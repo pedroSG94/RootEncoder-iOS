@@ -30,14 +30,14 @@ public class Data: RtmpMessage {
         header.messageLength = bodySize
     }
 
-    override func readBody(socket: Socket) throws {
+    override func readBody(body: inout [UInt8]) throws {
         bodySize = 0
         let amfString = AmfString()
-        try amfString.readHeader(socket: socket)
-        try amfString.readBody(socket: socket)
+        try amfString.readHeader(buffer: &body)
+        try amfString.readBody(buffer: &body)
         bodySize += amfString.getSize() + 1
         while (bodySize < header.messageLength) {
-            let amfData = try AmfData.getAmfData(socket: socket)
+            let amfData = try AmfData.getAmfData(buffer: &body)
             data.append(amfData)
             bodySize += amfData.getSize() + 1
         }

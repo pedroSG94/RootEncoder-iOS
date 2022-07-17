@@ -18,17 +18,17 @@ public class UserControl: RtmpMessage {
         self.event = event
     }
 
-    override func readBody(socket: Socket) throws {
+    override func readBody(body: inout [UInt8]) throws {
         bodySize = 0
-        let t = toUInt16(array: try socket.readUntil(length: 2))
+        let t = toUInt16(array: body.takeFirst(n: 2))
         if let type = ControlType.init(rawValue: UInt8(t)) {
             self.type = type
         }
         bodySize += 2
-        let data = Int(toUInt32(array: try socket.readUntil(length: 4)))
+        let data = Int(toUInt32(array: body.takeFirst(n: 4)))
         bodySize += 4
         if (type == ControlType.SET_BUFFER_LENGTH) {
-            let bufferLength = Int(toUInt32(array: try socket.readUntil(length: 4)))
+            let bufferLength = Int(toUInt32(array: body.takeFirst(n: 4)))
             event = Event(data: data, bufferLength: bufferLength)
         } else {
             event = Event(data: data)

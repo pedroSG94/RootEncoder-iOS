@@ -15,8 +15,8 @@ public class AmfNumber: AmfData {
         self.value = value
     }
 
-    public override func readBody(socket: Socket) throws {
-        let bytes = try socket.readUntil(length: getSize())
+    public override func readBody(buffer: inout [UInt8]) throws {
+        let bytes = buffer.takeFirst(n: getSize())
         value = bytes.withUnsafeBytes {
             $0.load(fromByteOffset: 0, as: Double.self)
         }

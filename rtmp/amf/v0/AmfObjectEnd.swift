@@ -12,7 +12,6 @@ public class AmfObjectEnd: AmfData {
 
     var found = false
     private let endSequence: [UInt8]
-    var readBodyData: [UInt8]? = nil
     private let type = AmfType.OBJECT_END
 
     public init(found: Bool = false) {
@@ -20,10 +19,12 @@ public class AmfObjectEnd: AmfData {
         endSequence = [UInt8](arrayLiteral: 0x00, 0x000, type.rawValue)
     }
 
-    public override func readBody(socket: Socket) throws {
-        let bytes = try socket.readUntil(length: getSize())
-        readBodyData = bytes
+    public override func readBody(buffer: inout [UInt8]) throws {
+        let bytes = Array(buffer.prefix(upTo: getSize()))
         found = bytes == endSequence
+        if (found) {
+            buffer.removeFirst(getSize())
+        }
     }
 
     public override func writeBody() -> [UInt8] {

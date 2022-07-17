@@ -18,9 +18,9 @@ public class SetPeerBandwidth: RtmpMessage {
         self.type = type
     }
 
-    override func readBody(socket: Socket) throws {
-        acknowledgementWindowSize = Int(toUInt32(array: try socket.readUntil(length: 4)))
-        if let type = SetPeerBandwidthType.init(rawValue: try socket.readUntil(length: 1)[0]) {
+    override func readBody(body: inout [UInt8]) throws {
+        acknowledgementWindowSize = Int(toUInt32(array: body.takeFirst(n: 4)))
+        if let type = SetPeerBandwidthType.init(rawValue: body.takeFirst(n: 1)[0]) {
             self.type = type
         }
     }

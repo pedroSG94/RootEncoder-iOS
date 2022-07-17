@@ -15,8 +15,10 @@
 		044138412501A02500732969 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0441383F2501A02500732969 /* LaunchScreen.storyboard */; };
 		0441384C2501A02500732969 /* appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441384B2501A02500732969 /* appTests.swift */; };
 		044138572501A02500732969 /* appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138562501A02500732969 /* appUITests.swift */; };
+		659B70254A8B67B922AFCAD6 /* RtmpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B70AED84380B301660A0A /* RtmpClient.swift */; };
 		659B70F638816138C552E989 /* AmfObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7DCB4170687CE9F1BAF9 /* AmfObject.swift */; };
 		659B71A88260F22E8F12618F /* AmfStrictArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7145A284C7342D62B440 /* AmfStrictArray.swift */; };
+		659B71E6678813B04FB5C32C /* Acknowledgement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7FE158FD5B4E327B11AA /* Acknowledgement.swift */; };
 		659B723F357643CA6A57E172 /* ChunkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B775BA8C84E4A8CB365B5 /* ChunkType.swift */; };
 		659B72BD5CE2F1C346CA91C3 /* MessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7D9427464F737A217046 /* MessageType.swift */; };
 		659B72CA3ED2E6BE0FFE8549 /* RecordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B751DC15C90CFAF89A5CC /* RecordController.swift */; };
@@ -41,6 +43,7 @@
 		659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7E703BE3A1DA7A54BE56 /* ConnectCheckerRtsp.swift */; };
 		659B7608CA48DED50772BE0E /* CommandAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B712FC66944D71AC4469D /* CommandAmf0.swift */; };
 		659B7613F18F75A9E446EE85 /* RtmpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7F258466985FAC56D261 /* RtmpMessage.swift */; };
+		659B76392363870C4209F176 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B79B9B467667E5EFF9415 /* CommandManager.swift */; };
 		659B7682CE6A2520631FC86B /* AmfObjectEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7602B36489CDF088BA3E /* AmfObjectEnd.swift */; };
 		659B76900AADBD6329B64479 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B743ABD02EB1635EF6A5C /* CameraManager.swift */; };
 		659B76CBED97385DA2244D02 /* WindowAcknowledgementSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B71B91AF61447E1E0D0C8 /* WindowAcknowledgementSize.swift */; };
@@ -138,6 +141,7 @@
 		659B7035FD5755CF78B3FE84 /* IOException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOException.swift; sourceTree = "<group>"; };
 		659B7064F3C5CB5A052CCEFA /* Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		659B709864CEA907DD72DD5B /* BaseRtpSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseRtpSocket.swift; sourceTree = "<group>"; };
+		659B70AED84380B301660A0A /* RtmpClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpClient.swift; sourceTree = "<group>"; };
 		659B70BD104A35AAB011E801 /* RtspCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspCamera.swift; sourceTree = "<group>"; };
 		659B70D282D8450A1EE90729 /* SharedObjectAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObjectAmf0.swift; sourceTree = "<group>"; };
 		659B70F4E8BF0CB58F6569E8 /* AudioPacketCallback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPacketCallback.swift; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 		659B794E0ACD4DA8A3A75F24 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		659B7954901D23B67A805AE1 /* RtpConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpConstants.swift; sourceTree = "<group>"; };
 		659B7979045A02D197EFF4EB /* ControlType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlType.swift; sourceTree = "<group>"; };
+		659B79B9B467667E5EFF9415 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
 		659B79ED6A496DE540E0878F /* MicrophoneManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophoneManager.swift; sourceTree = "<group>"; };
 		659B79F049A0C1E578F4AAE3 /* AmfData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfData.swift; sourceTree = "<group>"; };
 		659B79F9B2A8263FE123FECA /* VideoEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
@@ -221,6 +226,7 @@
 		659B7F444153FBF262A18AA9 /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
 		659B7F759371999AA93CF5DC /* DataAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf3.swift; sourceTree = "<group>"; };
 		659B7FC14427C1199BEEF132 /* UserControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserControl.swift; sourceTree = "<group>"; };
+		659B7FE158FD5B4E327B11AA /* Acknowledgement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acknowledgement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -553,6 +559,8 @@
 				659B7A9C7A7BC60BFB0D16DE /* Handshake.swift */,
 				659B7960B707FC3B939E7598 /* chunk */,
 				659B7D21032CB919F5FA4BFD /* message */,
+				659B79B9B467667E5EFF9415 /* CommandManager.swift */,
+				659B70AED84380B301660A0A /* RtmpClient.swift */,
 			);
 			path = rtmp;
 			sourceTree = "<group>";
@@ -593,6 +601,7 @@
 				659B71B91AF61447E1E0D0C8 /* WindowAcknowledgementSize.swift */,
 				659B7503C8265E3E725F7886 /* Audio.swift */,
 				659B77BAE621002558FC20F5 /* Video.swift */,
+				659B7FE158FD5B4E327B11AA /* Acknowledgement.swift */,
 			);
 			path = message;
 			sourceTree = "<group>";
@@ -854,6 +863,9 @@
 				659B75391191A186D023DC2B /* Comand.swift in Sources */,
 				659B7608CA48DED50772BE0E /* CommandAmf0.swift in Sources */,
 				659B76EC4EDFA1BABBC66857 /* CommandAmf3.swift in Sources */,
+				659B76392363870C4209F176 /* CommandManager.swift in Sources */,
+				659B70254A8B67B922AFCAD6 /* RtmpClient.swift in Sources */,
+				659B71E6678813B04FB5C32C /* Acknowledgement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
