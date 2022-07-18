@@ -63,7 +63,7 @@ public class AmfData: AmfActions {
     }
 
     public func writeBody() -> [UInt8] {
-        return [UInt8]()
+        [UInt8]()
     }
 
     public func writeBody(socket: Socket) throws {

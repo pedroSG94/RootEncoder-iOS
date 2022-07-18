@@ -60,4 +60,8 @@ public class AmfEcmaArray: AmfObject {
     public override func getType() -> AmfType {
         AmfType.ECMA_ARRAY
     }
+
+    public override var description: String {
+        "AmfEcmaArray(properties: \(properties), length: \(length))"
+    }
 }

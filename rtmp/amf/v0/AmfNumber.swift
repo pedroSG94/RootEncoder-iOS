@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AmfNumber: AmfData {
+public class AmfNumber: AmfData, CustomStringConvertible {
 
     var value: Double = 0.0
 
@@ -37,5 +37,9 @@ public class AmfNumber: AmfData {
 
     public override func getSize() -> Int {
         8
+    }
+
+    public var description: String {
+        "AmfNumber(value: \(value))"
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AmfBoolean: AmfData {
+public class AmfBoolean: AmfData, CustomStringConvertible {
 
     private var value: Bool
 
@@ -31,5 +31,9 @@ public class AmfBoolean: AmfData {
 
     public override func getSize() -> Int {
         1
+    }
+
+    public var description: String {
+        "AmfBoolean(value: \(value))"
     }
 }

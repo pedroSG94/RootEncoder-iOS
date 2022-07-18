@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class RtmpHeader {
+public class RtmpHeader: CustomStringConvertible {
 
     var basicHeader: BasicHeader
 
@@ -27,24 +27,24 @@ public class RtmpHeader {
         let lastHeader = commandSessionHistory.getLastReadHeader(chunkStreamId: basicHeader.chunkStreamId)
         switch basicHeader.chunkType {
             case .TYPE_0:
-                timeStamp = toInt(array: try socket.readUntil(length: 3))
-                messageLength = toInt(array: try socket.readUntil(length: 3))
+                timeStamp = toUInt24(array: try socket.readUntil(length: 3))
+                messageLength = toUInt24(array: try socket.readUntil(length: 3))
                 messageType = try RtmpMessage.getMarkType(byte: try socket.readUntil(length: 1)[0])
-                messageStreamId = toInt(array: try socket.readUntil(length: 4)).littleEndian
+                messageStreamId = toUInt32(array: try socket.readUntil(length: 4)).littleEndian
                 //extended timestamp
                 if (timeStamp >= 0xffffff) {
-                    timeStamp = toInt(array: try socket.readUntil(length: 4))
+                    timeStamp = toUInt32(array: try socket.readUntil(length: 4))
                 }
         case .TYPE_1:
             if (lastHeader != nil) {
                 messageStreamId = lastHeader!.messageStreamId
             }
-            timeStamp = toInt(array: try socket.readUntil(length: 3))
-            messageLength = toInt(array: try socket.readUntil(length: 3))
+            timeStamp = toUInt24(array: try socket.readUntil(length: 3))
+            messageLength = toUInt24(array: try socket.readUntil(length: 3))
             messageType = try RtmpMessage.getMarkType(byte: try socket.readUntil(length: 1)[0])
             //extended timestamp
             if (timeStamp >= 0xffffff) {
-                timeStamp = toInt(array: try socket.readUntil(length: 4))
+                timeStamp = toUInt32(array: try socket.readUntil(length: 4))
             }
             case .TYPE_2:
                 if (lastHeader != nil) {
@@ -52,10 +52,10 @@ public class RtmpHeader {
                     messageType = lastHeader!.messageType
                     messageLength = lastHeader!.messageLength
                 }
-                timeStamp = toInt(array: try socket.readUntil(length: 3))
+                timeStamp = toUInt24(array: try socket.readUntil(length: 3))
                 //extended timestamp
                 if (timeStamp >= 0xffffff) {
-                    timeStamp = toInt(array: try socket.readUntil(length: 4))
+                    timeStamp = toUInt32(array: try socket.readUntil(length: 4))
                 }
             case .TYPE_3:
                 if (lastHeader != nil) {
@@ -66,10 +66,10 @@ public class RtmpHeader {
                 }
                 //extended timestamp
                 if (timeStamp >= 0xffffff) {
-                    timeStamp = toInt(array: try socket.readUntil(length: 4))
+                    timeStamp = toUInt32(array: try socket.readUntil(length: 4))
                 }
         }
-        var rtmpHeader = RtmpHeader(basicHeader: basicHeader)
+        let rtmpHeader = RtmpHeader(basicHeader: basicHeader)
         rtmpHeader.timeStamp = timeStamp
         rtmpHeader.messageLength = messageLength
         rtmpHeader.messageType = messageType
@@ -83,9 +83,8 @@ public class RtmpHeader {
 
     func writeHeader(basicHeader: BasicHeader, socket: Socket) throws {
         //Write basic header byte
-        let byte = (Int(basicHeader.chunkType.rawValue) << 6) | basicHeader.chunkStreamId
-        let unsigned = UInt8(bitPattern: Int8(byte))
-        try socket.write(buffer: [UInt8](arrayLiteral: unsigned))
+        let byte = basicHeader.chunkType.rawValue << 6 | UInt8(bitPattern: Int8(basicHeader.chunkStreamId))
+        try socket.write(buffer: [UInt8](arrayLiteral: byte))
         switch basicHeader.chunkType {
             case .TYPE_0:
                 try socket.write(buffer: min(timeStamp, 0xffffff).toUInt24Array())
@@ -124,5 +123,9 @@ public class RtmpHeader {
 
     func getPacketLength() -> Int {
         messageLength + basicHeader.getHeaderSize(timestamp: timeStamp)
+    }
+
+    public var description: String {
+        "RtmpHeader(basicHeader: \(basicHeader), timeStamp: \(timeStamp), messageLength: \(messageLength), messageType: \(messageType), messageStreamId: \(messageStreamId))"
     }
 }

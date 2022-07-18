@@ -58,4 +58,8 @@ public class DataMessage: RtmpMessage {
     override func getSize() -> Int {
         bodySize
     }
+
+    public override var description: String {
+        "DataMessage(name: \(name), data: \(data), bodySize: \(bodySize))"
+    }
 }

@@ -29,4 +29,8 @@ public class Acknowledgement: RtmpMessage {
     override func getSize() -> Int {
         4
     }
+
+    public override var description: String {
+        "Acknowledgement(sequenceNUmber: \(sequenceNUmber))"
+    }
 }

@@ -30,4 +30,8 @@ public class Abort: RtmpMessage {
     override func getSize() -> Int {
         4
     }
+
+    public override var description: String {
+        "Abort(chunkStreamId: \(chunkStreamId))"
+    }
 }

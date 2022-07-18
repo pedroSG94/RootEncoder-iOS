@@ -103,12 +103,14 @@ extension Int {
     }
 }
 
-func toUInt32(array: [UInt8]) -> UInt32 {
-    let data = Data(_: array)
-    let value: UInt32 = data.withUnsafeBytes { bytes in
-        bytes.load(as: UInt32.self)
-    }
-    return value
+func toUInt32(array: [UInt8]) -> Int {
+    Int(UInt32(bytes: array))
+}
+
+func toUInt24(array: [UInt8]) -> Int {
+    var data = [UInt8](arrayLiteral: 0)
+    data.append(contentsOf: array)
+    return Int(UInt32(bytes: array))
 }
 
 func toInt(array: [UInt8]) -> Int {

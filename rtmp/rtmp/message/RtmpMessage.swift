@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class RtmpMessage {
+public class RtmpMessage: CustomStringConvertible {
 
     private let basicHeader: BasicHeader
     lazy var header: RtmpHeader = {
@@ -129,7 +129,7 @@ public class RtmpMessage {
     }
 
     func storeBody() -> [UInt8] {
-        return [UInt8]()
+        [UInt8]()
     }
 
     func getType() -> MessageType{
@@ -138,5 +138,9 @@ public class RtmpMessage {
 
     func getSize() -> Int {
         0
+    }
+
+    public var description: String {
+        "RtmpMessage(basicHeader: \(basicHeader), header: \(header))"
     }
 }

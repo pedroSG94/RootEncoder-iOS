@@ -7,13 +7,20 @@
 
 import Foundation
 
-public class AmfObject: AmfData {
+public class AmfObject: AmfData, CustomStringConvertible {
 
     private var properties = [AmfString : AmfData]()
     internal var bodySize = 0
 
     public init(properties: [AmfString : AmfData] = [AmfString : AmfData]()) {
         self.properties = properties
+        for (key, value) in properties {
+            //Get size of all elements and include in size value. + 1 because include header size
+            bodySize += key.getSize()
+            bodySize += value.getSize() + 1
+        }
+        let objectEnd = AmfObjectEnd()
+        bodySize += objectEnd.getSize()
     }
 
     public func getProperty(name: String) -> AmfData? {
@@ -95,5 +102,9 @@ public class AmfObject: AmfData {
 
     public override func getSize() -> Int {
         bodySize
+    }
+
+    public var description: String {
+        "AmfObject(properties: \(properties), bodySize: \(bodySize))"
     }
 }

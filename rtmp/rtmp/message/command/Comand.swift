@@ -36,7 +36,7 @@ public class Command: RtmpMessage {
     override func readBody(body: inout [UInt8]) throws {
         data.removeAll()
         var bytesRead = 0
-        while (bytesRead > header.messageLength) {
+        while (bytesRead < header.messageLength) {
             let amfData = try AmfData.getAmfData(buffer: &body)
             bytesRead += amfData.getSize() + 1
             data.append(amfData)
@@ -66,5 +66,9 @@ public class Command: RtmpMessage {
 
     override func getSize() -> Int {
         bodySize
+    }
+
+    public override var description: String {
+        "Command(name: \(name), commandId: \(commandId), data: \(data), bodySize: \(bodySize))"
     }
 }

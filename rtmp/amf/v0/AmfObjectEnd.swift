@@ -38,4 +38,8 @@ public class AmfObjectEnd: AmfData {
     public override func getSize() -> Int {
         endSequence.count
     }
+
+    public var description: String {
+        "AmfObjectEnd(found: \(found), endSequence: \(endSequence), type: \(type))"
+    }
 }

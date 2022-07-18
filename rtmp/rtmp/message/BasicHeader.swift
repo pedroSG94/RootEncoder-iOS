@@ -38,7 +38,7 @@
 
 import Foundation
 
-public class BasicHeader {
+public class BasicHeader: CustomStringConvertible {
 
     let chunkType: ChunkType
     let chunkStreamId: Int
@@ -87,5 +87,9 @@ public class BasicHeader {
             size += 4
         }
         return size
+    }
+
+    public var description: String {
+        "BasicHeader(chunkType: \(chunkType), chunkStreamId: \(chunkStreamId))"
     }
 }

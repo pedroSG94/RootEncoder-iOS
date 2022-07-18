@@ -90,6 +90,7 @@ public class CommandManager {
         try connect.writeHeader(socket: socket)
         try connect.writeBody(socket: socket)
         sessionHistory.setPacket(id: commandId, name: "connect")
+        print("send connect: \(connect)")
     }
 
     public func createStream(socket: Socket) throws {
@@ -121,11 +122,13 @@ public class CommandManager {
         try createStream.writeHeader(socket: socket)
         try createStream.writeBody(socket: socket)
         sessionHistory.setPacket(id: commandId, name: "createStream")
+        print("send createStream")
     }
 
     public func readMessageResponse(socket: Socket) throws -> RtmpMessage {
         let message = try RtmpMessage.getMessage(socket: socket, chunkSize: readChunkSize, commandSessionHistory: sessionHistory)
         sessionHistory.setReadHeader(header: message.header)
+        print("read message: \(message)")
         return message
     }
 

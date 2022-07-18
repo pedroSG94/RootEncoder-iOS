@@ -28,4 +28,8 @@ public class Aggregate: RtmpMessage {
         //TODO Not yet implemented
         0
     }
+
+    public override var description: String {
+        "Aggregate()"
+    }
 }

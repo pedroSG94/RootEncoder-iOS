@@ -39,6 +39,10 @@ public class SetPeerBandwidth: RtmpMessage {
     override func getSize() -> Int {
         9
     }
+
+    public override var description: String {
+        "SetPeerBandwidth(acknowledgementWindowSize: \(acknowledgementWindowSize), type: \(type))"
+    }
 }
 
 public enum SetPeerBandwidthType: UInt8 {

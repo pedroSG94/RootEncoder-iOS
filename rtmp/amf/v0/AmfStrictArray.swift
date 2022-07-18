@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AmfStrictArray: AmfData {
+public class AmfStrictArray: AmfData, CustomStringConvertible {
 
     private var items: [AmfData] = Array()
     private var bodySize = 0
@@ -57,5 +57,9 @@ public class AmfStrictArray: AmfData {
 
     public override func getSize() -> Int {
         bodySize
+    }
+
+    public var description: String {
+        "AmfStrictArray(items: \(items), bodySize: \(bodySize))"
     }
 }

@@ -32,4 +32,8 @@ public class WindowAcknowledgementSize: RtmpMessage {
     override func getSize() -> Int {
         4
     }
+
+    public override var description: String {
+        "WindowAcknowledgementSize(acknowledgementWindowSize: \(acknowledgementWindowSize))"
+    }
 }

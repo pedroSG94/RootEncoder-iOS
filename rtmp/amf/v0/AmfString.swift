@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AmfString: AmfData {
+public class AmfString: AmfData, CustomStringConvertible {
 
     var value: String = ""
     private var bodySize: Int = 2
@@ -40,5 +40,9 @@ public class AmfString: AmfData {
 
     public override func getSize() -> Int {
         bodySize
+    }
+
+    public var description: String {
+        "AmfString(value: \(value), bodySize: \(bodySize))"
     }
 }

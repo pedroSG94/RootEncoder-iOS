@@ -112,7 +112,7 @@ public class RtmpClient {
     }
 
     private func getTcUrl(url: String) -> String {
-        if (!url.hasSuffix("/")) {
+        if (url.hasSuffix("/")) {
             return String(url.dropLast(1))
         } else {
             return url
