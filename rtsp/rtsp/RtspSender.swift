@@ -1,6 +1,6 @@
 import Foundation
 
-public class RtpSender: AudioPacketCallback, VideoPacketCallback {
+public class RtspSender {
     
     private var audioPacketizer: AacPacket?
     private var videoPacketizer: BasePacket?
@@ -35,31 +35,33 @@ public class RtpSender: AudioPacketCallback, VideoPacketCallback {
 
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         if (vps == nil) {
-            videoPacketizer = H264Packet(sps: sps, pps: pps, videoPacketCallback: self)
+            videoPacketizer = H264Packet(sps: sps, pps: pps)
         } else {
-            videoPacketizer = H265Packet(sps: sps, pps: pps, videoPacketCallback: self)
+            videoPacketizer = H265Packet(sps: sps, pps: pps)
         }
 
     }
     
     public func setAudioInfo(sampleRate: Int) {
-        audioPacketizer = AacPacket(sampleRate: 44100, audioPacketCallback: self)
+        audioPacketizer = AacPacket(sampleRate: 44100)
     }
     
     public func sendVideo(frame: Frame) {
-        videoPacketizer?.createAndSendPacket(data: frame)
+        videoPacketizer?.createAndSendPacket(
+            data: frame,
+            callback: { (rtpFrame) in
+                queue.add(frame: rtpFrame)
+            }
+        )
     }
     
     public func sendAudio(frame: Frame) {
-        audioPacketizer?.createAndSendPacket(data: frame)
-    }
-    
-    public func onVideoFrameCreated(rtpFrame: RtpFrame) {
-        queue.add(frame: rtpFrame)
-    }
-    
-    public func onAudioFrameCreated(rtpFrame: RtpFrame) {
-        queue.add(frame: rtpFrame)
+        audioPacketizer?.createAndSendPacket(
+            data: frame,
+            callback: { (rtpFrame) in
+                queue.add(frame: rtpFrame)
+            }
+        )
     }
 
     public func start() {

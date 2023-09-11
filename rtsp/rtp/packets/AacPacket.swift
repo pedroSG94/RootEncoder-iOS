@@ -3,15 +3,12 @@ import Foundation
 
 public class AacPacket: BasePacket {
     
-    private var callback: AudioPacketCallback?
-    
-    init(sampleRate: Int, audioPacketCallback: AudioPacketCallback) {
+    init(sampleRate: Int) {
         super.init(clock: UInt64(sampleRate), payloadType: RtpConstants.payloadType + RtpConstants.audioTrack)
         channelIdentifier = RtpConstants.audioTrack
-        callback = audioPacketCallback
     }
     
-    public override func createAndSendPacket(data: Frame) {
+    public override func createAndSendPacket(data: Frame, callback: (RtpFrame) -> Void) {
         let buffer = data.buffer!
         let ts = data.timeStamp!
         let length = Int(data.length!)
@@ -40,6 +37,6 @@ public class AacPacket: BasePacket {
         frame.buffer = rtpBuffer
         frame.channelIdentifier = channelIdentifier
 
-        callback?.onAudioFrameCreated(rtpFrame: frame)
+        callback(frame)
     }
 }

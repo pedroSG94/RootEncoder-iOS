@@ -7,18 +7,16 @@ import Foundation
 
 public class H265Packet: BasePacket {
 
-    private var callback: VideoPacketCallback?
     private var sendKeyFrame = false
     private var agregationPacket: Array<UInt8>?
 
-    public init(sps: Array<UInt8>, pps: Array<UInt8>, videoPacketCallback: VideoPacketCallback) {
+    public init(sps: Array<UInt8>, pps: Array<UInt8>) {
         super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.videoTrack)
-        callback = videoPacketCallback
         channelIdentifier = RtpConstants.videoTrack
         setSpsPps(sps: sps, pps: pps)
     }
 
-    public override func createAndSendPacket(data: Frame) {
+    public override func createAndSendPacket(data: Frame, callback: (RtpFrame) -> Void) {
         var buffer = data.buffer!
         let ts = data.timeStamp!
         let dts = ts * 1000
@@ -41,7 +39,7 @@ public class H265Packet: BasePacket {
             frame.timeStamp = rtpTs
             frame.length = rtpBuffer.count
             frame.buffer = rtpBuffer
-            callback?.onVideoFrameCreated(rtpFrame: frame)
+            callback(frame)
             sendKeyFrame = true
         }
         if sendKeyFrame {
@@ -60,7 +58,7 @@ public class H265Packet: BasePacket {
                 frame.timeStamp = rtpTs
                 frame.length = rtpBuffer.count
                 frame.buffer = rtpBuffer
-                callback?.onVideoFrameCreated(rtpFrame: frame)
+                callback(frame)
             }
             // Large NAL unit => Split nal unit
             else {
@@ -103,7 +101,7 @@ public class H265Packet: BasePacket {
                     frame.timeStamp = rtpTs
                     frame.length = rtpBuffer.count
                     frame.buffer = rtpBuffer
-                    callback?.onVideoFrameCreated(rtpFrame: frame)
+                    callback(frame)
                     // Switch start bit
                     header[2] = header[2] & 0x7F
                 }
