@@ -29,7 +29,8 @@ public class RtmpHeader: CustomStringConvertible {
             case .TYPE_0:
                 timeStamp = toUInt24(array: try socket.readUntil(length: 3))
                 messageLength = toUInt24(array: try socket.readUntil(length: 3))
-                messageType = try RtmpMessage.getMarkType(byte: try socket.readUntil(length: 1)[0])
+                let b = try socket.readUntil(length: 1)[0]
+                messageType = try RtmpMessage.getMarkType(byte: b)
                 messageStreamId = toUInt32(array: try socket.readUntil(length: 4)).littleEndian
                 //extended timestamp
                 if (timeStamp >= 0xffffff) {

@@ -28,7 +28,7 @@ public class AmfNumber: AmfData, CustomStringConvertible {
                 Array(UnsafeBufferPointer(start: $0, count: getSize()))
             }
         }
-        return bytes
+        return bytes.reversed()
     }
 
     public override func getType() -> AmfType {

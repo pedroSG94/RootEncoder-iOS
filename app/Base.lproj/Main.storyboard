@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="ipad9_7" orientation="landscape" layout="fullscreen" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -14,51 +14,68 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="app" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="X1c-mP-jwF">
-                                <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                            </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rSi-C7-ZNO">
-                                <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X1c-mP-jwF">
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
                                 <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="rtmp://192.168.0.191:1935/live/pedro" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yyl-zP-rbY">
-                                        <rect key="frame" x="181" y="108" width="662" height="55"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" systemColor="linkColor"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5nS-Sw-t2Z">
-                                        <rect key="frame" x="8" y="542" width="497" height="100"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5nS-Sw-t2Z">
+                                        <rect key="frame" x="8" y="1277" width="130" height="41"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="130" id="jED-Z3-jgr"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <state key="normal" title="Start Stream"/>
                                         <connections>
                                             <action selector="onClickStartStream:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZX5-pi-zp5"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BH5-0o-4ak">
-                                        <rect key="frame" x="527" y="542" width="497" height="100"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BH5-0o-4ak">
+                                        <rect key="frame" x="863" y="1277" width="153" height="41"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="153" id="NeB-Yg-vbH"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <state key="normal" title="Switch camera"/>
                                         <connections>
                                             <action selector="onClickSwitchCamera:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mCE-BV-XW2"/>
                                         </connections>
                                     </button>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" text="rtmp://192.168.0.191:1935/live/pedro" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yyl-zP-rbY">
+                                        <rect key="frame" x="8" y="48" width="1008" height="55"/>
+                                        <color key="backgroundColor" systemColor="linkColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="55" id="K1u-8B-4M1"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="55" id="dAD-yW-Q7Z"/>
+                                        </constraints>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="38"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
                                 </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="5nS-Sw-t2Z" firstAttribute="leading" secondItem="X1c-mP-jwF" secondAttribute="leading" constant="8" id="0ji-Xc-iO3"/>
+                                    <constraint firstAttribute="trailing" secondItem="yyl-zP-rbY" secondAttribute="trailing" constant="8" id="JyC-B4-BlN"/>
+                                    <constraint firstAttribute="trailing" secondItem="BH5-0o-4ak" secondAttribute="trailing" constant="8" id="Ljd-Mz-tL0"/>
+                                    <constraint firstItem="yyl-zP-rbY" firstAttribute="top" secondItem="X1c-mP-jwF" secondAttribute="top" constant="48" id="RZi-Ei-n7T"/>
+                                    <constraint firstItem="yyl-zP-rbY" firstAttribute="leading" secondItem="X1c-mP-jwF" secondAttribute="leading" constant="8" id="TJz-ck-4YM"/>
+                                    <constraint firstAttribute="bottom" secondItem="5nS-Sw-t2Z" secondAttribute="bottom" constant="48" id="VVf-Je-OnG"/>
+                                    <constraint firstAttribute="bottom" secondItem="BH5-0o-4ak" secondAttribute="bottom" constant="48" id="Xbn-n3-tTh"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="X1c-mP-jwF" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="cqJ-cm-r9v"/>
+                            <constraint firstAttribute="bottom" secondItem="X1c-mP-jwF" secondAttribute="bottom" id="kMh-P2-lsc"/>
+                            <constraint firstItem="X1c-mP-jwF" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="vxr-y5-m61"/>
+                            <constraint firstItem="X1c-mP-jwF" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="zS4-D4-Vas"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="bStartStream" destination="5nS-Sw-t2Z" id="oug-B8-BXh"/>
@@ -68,7 +85,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="129.4921875" y="100.78125"/>
+            <point key="canvasLocation" x="121.73913043478262" y="93.75"/>
         </scene>
     </scenes>
     <resources>

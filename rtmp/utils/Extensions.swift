@@ -55,51 +55,67 @@ func byteArrayLittleEndian<T>(from value: T) -> [UInt8] where T: FixedWidthInteg
 extension Int {
 
     public func toUInt8Array() -> [UInt8] {
-        let bytes = byteArray(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0])
-        return array
+        let uInt = UInt32(self)
+        var bigEndian = uInt.bigEndian
+        let count = MemoryLayout<UInt32>.size
+        let byteArray = withUnsafePointer(to: &bigEndian) {
+            $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+                UnsafeBufferPointer(start: $0, count: count)
+            }
+        }
+        return [UInt8](arrayLiteral: byteArray[3])
     }
 
     public func toUInt16Array() -> [UInt8] {
-        let bytes = byteArray(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1])
-        return array
+        let uInt = UInt32(self)
+        var bigEndian = uInt.bigEndian
+        let count = MemoryLayout<UInt32>.size
+        let byteArray = withUnsafePointer(to: &bigEndian) {
+            $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+                UnsafeBufferPointer(start: $0, count: count)
+            }
+        }
+        return [UInt8](arrayLiteral: byteArray[2], byteArray[3])
     }
 
     public func toUInt24Array() -> [UInt8] {
-        let bytes = byteArray(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1], bytes[2])
-        return array
+        let uInt = UInt32(self)
+        var bigEndian = uInt.bigEndian
+        let count = MemoryLayout<UInt32>.size
+        let byteArray = withUnsafePointer(to: &bigEndian) {
+            $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+                UnsafeBufferPointer(start: $0, count: count)
+            }
+        }
+        return [UInt8](arrayLiteral: byteArray[1], byteArray[2], byteArray[3])
     }
 
     public func toUInt32Array() -> [UInt8] {
-        let bytes = byteArray(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1], bytes[2], bytes[3])
-        return array
+        let uInt = UInt32(self)
+        var bigEndian = uInt.bigEndian
+        let count = MemoryLayout<UInt32>.size
+        let byteArray = withUnsafePointer(to: &bigEndian) {
+            $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+                UnsafeBufferPointer(start: $0, count: count)
+            }
+        }
+        return [UInt8](arrayLiteral: byteArray[0], byteArray[1], byteArray[2], byteArray[3])
     }
 
     public func toUInt8LittleEndianArray() -> [UInt8] {
-        let bytes = byteArrayLittleEndian(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0])
-        return array
+        toUInt8Array().reversed()
     }
 
     public func toUInt16LittleEndianArray() -> [UInt8] {
-        let bytes = byteArrayLittleEndian(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1])
-        return array
+        toUInt16Array().reversed()
     }
 
     public func toUInt24LittleEndianArray() -> [UInt8] {
-        let bytes = byteArrayLittleEndian(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1], bytes[2])
-        return array
+        toUInt24Array().reversed()
     }
 
     public func toUInt32LittleEndianArray() -> [UInt8] {
-        let bytes = byteArrayLittleEndian(from: self)
-        let array = [UInt8](arrayLiteral: bytes[0], bytes[1], bytes[2], bytes[3])
-        return array
+        toUInt32Array().reversed()
     }
 }
 
@@ -108,23 +124,9 @@ func toUInt32(array: [UInt8]) -> Int {
 }
 
 func toUInt24(array: [UInt8]) -> Int {
-    var data = [UInt8](arrayLiteral: 0)
-    data.append(contentsOf: array)
-    return Int(UInt32(bytes: array))
-}
-
-func toInt(array: [UInt8]) -> Int {
-    let data = Data(_: array)
-    let value: Int = data.withUnsafeBytes { bytes in
-        bytes.load(as: Int.self)
-    }
-    return value
+    Int(UInt32(bytes: array))
 }
 
 func toUInt16(array: [UInt8]) -> UInt16 {
-    let data = Data(_: array)
-    let value: UInt16 = data.withUnsafeBytes { bytes in
-        bytes.load(as: UInt16.self)
-    }
-    return value
+    UInt16(bytes: array)
 }

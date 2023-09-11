@@ -57,7 +57,7 @@ public class Command: RtmpMessage {
 
     override func storeBody() -> [UInt8] {
         var bytes = [UInt8]()
-        for (_, element) in data.enumerated() {
+        for element in data {
             bytes.append(contentsOf: element.writeHeader())
             bytes.append(contentsOf: element.writeBody())
         }
