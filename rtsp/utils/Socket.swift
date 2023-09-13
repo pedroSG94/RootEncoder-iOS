@@ -61,8 +61,6 @@ public class Socket: NSObject, StreamDelegate {
             }
         }
         connection?.start(queue: .main)
-        var inStream: InputStream? = nil
-        var outStream: OutputStream? = nil
         sync.wait()
         if (messageError != nil) {
             throw IOException.runtimeError(messageError!)
@@ -139,7 +137,7 @@ public class Socket: NSObject, StreamDelegate {
         }
         return bytes
     }
-
+    
     private func readUntil(length: Int) throws -> Data {
         var result = Data()
         var messageError: String? = nil
@@ -154,6 +152,7 @@ public class Socket: NSObject, StreamDelegate {
                 } else if isComplete {
                     messageError = "fail to read EOF"
                 }
+                
                 sync.leave()
             })
         } else {

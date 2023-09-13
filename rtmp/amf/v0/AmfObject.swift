@@ -9,7 +9,7 @@ import Foundation
 
 public class AmfObject: AmfData, CustomStringConvertible {
 
-    private var properties = [AmfString : AmfData]()
+    var properties = [AmfString : AmfData]()
     internal var bodySize = 0
 
     public init(properties: [AmfString : AmfData] = [AmfString : AmfData]()) {

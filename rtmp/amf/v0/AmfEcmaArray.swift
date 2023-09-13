@@ -7,7 +7,6 @@ import Foundation
 
 public class AmfEcmaArray: AmfObject {
 
-    private var properties =  [AmfString : AmfData]()
     var length: Int = 0
 
     public override init(properties: [AmfString : AmfData] = [AmfString : AmfData]()) {
@@ -51,7 +50,7 @@ public class AmfEcmaArray: AmfObject {
     public override func writeBody() -> [UInt8] {
         //write number of items in the list as UInt32
         var bytes = [UInt8]()
-        bytes.append(contentsOf: byteArray(from: length))
+        bytes.append(contentsOf: byteArray(from: UInt32(length)))
         //write items
         bytes.append(contentsOf: super.writeBody())
         return bytes

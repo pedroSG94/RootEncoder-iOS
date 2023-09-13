@@ -58,7 +58,7 @@ public class BasicHeader: CustomStringConvertible {
         if (chunkTypeValue > 63) {
             throw IOException.runtimeError("Unknown chunk stream id value: \(chunkStreamIdValue)")
         }
-        if (chunkTypeValue == 0) { //Basic header 2 Bytes
+        if (chunkStreamIdValue == 0) { //Basic header 2 Bytes
             let b: UInt8 = try socket.readUntil(length: 1)[0]
             chunkStreamIdValue = Int(b) - 64
         } else if (chunkStreamIdValue == 1) { //Basic header 3 Bytes

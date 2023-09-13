@@ -17,9 +17,12 @@ public class AmfNumber: AmfData, CustomStringConvertible {
 
     public override func readBody(buffer: inout [UInt8]) throws {
         let bytes = buffer.takeFirst(n: getSize())
-        value = bytes.withUnsafeBytes {
-            $0.load(fromByteOffset: 0, as: Double.self)
+        var intValue: UInt64 = 0
+        for byte in bytes {
+            intValue = (intValue << 8) | UInt64(byte)
         }
+
+        value = Double(bitPattern: intValue)
     }
 
     public override func writeBody() -> [UInt8] {

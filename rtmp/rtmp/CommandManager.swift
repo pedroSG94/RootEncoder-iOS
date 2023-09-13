@@ -136,22 +136,22 @@ public class CommandManager {
         let metadata = DataAmf0(name: "@setDataFrame", timeStamp: getCurrentTimestamp(), streamId: streamId)
         metadata.addData(amfData: AmfString(value: "onMetaData"))
         let amfEcmaArray = AmfEcmaArray()
-        amfEcmaArray.setProperty(name: "duration", data: 0)
+        amfEcmaArray.setProperty(name: "duration", data: 0.0)
         if (!videoDisabled) {
             amfEcmaArray.setProperty(name: "width", data: Double(width))
             amfEcmaArray.setProperty(name: "height", data: Double(height))
-            amfEcmaArray.setProperty(name: "videocodecid", data: 7)
+            amfEcmaArray.setProperty(name: "videocodecid", data: 7.0)
             amfEcmaArray.setProperty(name: "framerate", data: Double(fps))
-            amfEcmaArray.setProperty(name: "videodatarate", data: 0)
+            amfEcmaArray.setProperty(name: "videodatarate", data: 0.0)
         }
         if (!audioDisabled) {
-            amfEcmaArray.setProperty(name: "audiocodecid", data: 10)
+            amfEcmaArray.setProperty(name: "audiocodecid", data: 10.0)
             amfEcmaArray.setProperty(name: "audiosamplerate", data: Double(sampleRate))
-            amfEcmaArray.setProperty(name: "audiosamplesize", data: 16)
-            amfEcmaArray.setProperty(name: "audiodatarate", data: 0)
+            amfEcmaArray.setProperty(name: "audiosamplesize", data: 16.0)
+            amfEcmaArray.setProperty(name: "audiodatarate", data: 0.0)
             amfEcmaArray.setProperty(name: "stereo", data: isStereo)
         }
-        amfEcmaArray.setProperty(name: "filesize", data: 0)
+        amfEcmaArray.setProperty(name: "filesize", data: 0.0)
         metadata.addData(amfData: amfEcmaArray)
 
         try metadata.writeHeader(socket: socket)
@@ -175,6 +175,7 @@ public class CommandManager {
         let windowAcknowledgementSize = WindowAcknowledgementSize(acknowledgementWindowSize: RtmpConfig.acknowledgementWindowSize, timeStamp: getCurrentTimestamp())
         try windowAcknowledgementSize.writeHeader(socket: socket)
         try windowAcknowledgementSize.writeBody(socket: socket)
+        print("send windowAcknowledgementSize: \(windowAcknowledgementSize.description)")
     }
 
     public func sendPong(event: Event, socket: Socket) throws {

@@ -215,7 +215,7 @@ public class RtmpClient {
                         }
                     case "onStatus":
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value
-                        switch (commandName) {
+                        switch (code) {
                             case "NetStream.Publish.Start":
                                 try commandManager.sendMetadata(socket: socket)
                                 connectCheckerRtmp.onConnectionSuccessRtmp()
