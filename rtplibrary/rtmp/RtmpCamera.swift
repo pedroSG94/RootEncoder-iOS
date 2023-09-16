@@ -34,11 +34,11 @@ public class RtmpCamera: CameraBase {
     }
 
     public override func getAacDataRtp(frame: Frame) {
-        //client.sendAudio(frame: frame)
+        client.sendAudio(frame: frame)
     }
 
     public override func getH264DataRtp(frame: Frame) {
-        //client.sendVideo(frame: frame)
+        client.sendVideo(frame: frame)
     }
 
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {

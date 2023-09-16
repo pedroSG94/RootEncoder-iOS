@@ -23,7 +23,7 @@ public class CommandManager {
     var startTs: Int64 = 0
     var readChunkSize = RtmpConfig.DEFAULT_CHUNK_SIZE
     var audioDisabled = false
-    var videoDisabled = false
+    var videoDisabled = true
 
     private var width = 640
     private var height = 480

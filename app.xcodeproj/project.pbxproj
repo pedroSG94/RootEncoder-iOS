@@ -104,6 +104,14 @@
 		659B7FCC077881C01353842D /* RtpSocketUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7402EC5ED8DF4AC551EE /* RtpSocketUdp.swift */; };
 		659B7FE417F7B9F945BB64CA /* FpsListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7142370EE653E88944AF /* FpsListener.swift */; };
 		659B7FF1C3ED79A47589B9FB /* SenderReportTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 659B7797B610F59BAB8E6436 /* SenderReportTcp.swift */; };
+		EB564EDA2AB6230A00AD433F /* AacFlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564ED92AB6230A00AD433F /* AacFlvPacket.swift */; };
+		EB564EDC2AB6237400AD433F /* AudioFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EDB2AB6237400AD433F /* AudioFormat.swift */; };
+		EB564EDE2AB6239600AD433F /* AudioObjectType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EDD2AB6239600AD433F /* AudioObjectType.swift */; };
+		EB564EE02AB623A700AD433F /* AudioSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EDF2AB623A700AD433F /* AudioSize.swift */; };
+		EB564EE22AB623C400AD433F /* AudioSoundRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE12AB623C400AD433F /* AudioSoundRate.swift */; };
+		EB564EE42AB623D600AD433F /* AudioSoundType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE32AB623D600AD433F /* AudioSoundType.swift */; };
+		EB564EE62AB623F200AD433F /* AudioSpecificConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE52AB623F200AD433F /* AudioSpecificConfig.swift */; };
+		EB564EE82AB6321F00AD433F /* ConcurrentFlvQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE72AB6321F00AD433F /* ConcurrentFlvQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -227,6 +235,14 @@
 		659B7F759371999AA93CF5DC /* DataAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf3.swift; sourceTree = "<group>"; };
 		659B7FC14427C1199BEEF132 /* UserControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserControl.swift; sourceTree = "<group>"; };
 		659B7FE158FD5B4E327B11AA /* Acknowledgement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acknowledgement.swift; sourceTree = "<group>"; };
+		EB564ED92AB6230A00AD433F /* AacFlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AacFlvPacket.swift; sourceTree = "<group>"; };
+		EB564EDB2AB6237400AD433F /* AudioFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFormat.swift; sourceTree = "<group>"; };
+		EB564EDD2AB6239600AD433F /* AudioObjectType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioObjectType.swift; sourceTree = "<group>"; };
+		EB564EDF2AB623A700AD433F /* AudioSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSize.swift; sourceTree = "<group>"; };
+		EB564EE12AB623C400AD433F /* AudioSoundRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSoundRate.swift; sourceTree = "<group>"; };
+		EB564EE32AB623D600AD433F /* AudioSoundType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSoundType.swift; sourceTree = "<group>"; };
+		EB564EE52AB623F200AD433F /* AudioSpecificConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpecificConfig.swift; sourceTree = "<group>"; };
+		EB564EE72AB6321F00AD433F /* ConcurrentFlvQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFlvQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -340,6 +356,7 @@
 				659B7B7D7346CEBD01958B40 /* Extensions.swift */,
 				659B7DE55DD9AB1AC9BFF242 /* CommandSessionHistory.swift */,
 				659B721CBD00F9035FDD7FF9 /* RtmpConfig.swift */,
+				EB564EE72AB6321F00AD433F /* ConcurrentFlvQueue.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -419,6 +436,8 @@
 		659B73BF32F7DB032220BA2D /* flv */ = {
 			isa = PBXGroup;
 			children = (
+				EB564ED82AB622E900AD433F /* video */,
+				EB564ED72AB622E100AD433F /* audio */,
 				659B739C5A84A84CE3DA83A1 /* FlvPacket.swift */,
 				659B7DB5B84D9C7E172F6FAB /* FlvType.swift */,
 			);
@@ -651,6 +670,27 @@
 			path = rtcp;
 			sourceTree = "<group>";
 		};
+		EB564ED72AB622E100AD433F /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				EB564ED92AB6230A00AD433F /* AacFlvPacket.swift */,
+				EB564EDB2AB6237400AD433F /* AudioFormat.swift */,
+				EB564EDD2AB6239600AD433F /* AudioObjectType.swift */,
+				EB564EDF2AB623A700AD433F /* AudioSize.swift */,
+				EB564EE12AB623C400AD433F /* AudioSoundRate.swift */,
+				EB564EE32AB623D600AD433F /* AudioSoundType.swift */,
+				EB564EE52AB623F200AD433F /* AudioSpecificConfig.swift */,
+			);
+			path = audio;
+			sourceTree = "<group>";
+		};
+		EB564ED82AB622E900AD433F /* video */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -790,6 +830,7 @@
 				659B7C965F752AC885FF488E /* GetAacData.swift in Sources */,
 				659B7DE9CCD3E12AC0922F91 /* GetMicrophoneData.swift in Sources */,
 				659B7744AD9A56C8BF84146A /* MicrophoneManager.swift in Sources */,
+				EB564EDC2AB6237400AD433F /* AudioFormat.swift in Sources */,
 				659B7E15CB70B08298F646DE /* GetCameraData.swift in Sources */,
 				659B76900AADBD6329B64479 /* CameraManager.swift in Sources */,
 				659B75AFA4FC1CFB3BC0C2B0 /* CameraHelperFacing.swift in Sources */,
@@ -804,8 +845,10 @@
 				659B75A6D27114213576EFB1 /* RtpSocketTcp.swift in Sources */,
 				659B7F37BB9E02093415399A /* BaseRtpSocket.swift in Sources */,
 				659B7FCC077881C01353842D /* RtpSocketUdp.swift in Sources */,
+				EB564EE22AB623C400AD433F /* AudioSoundRate.swift in Sources */,
 				659B7A1E9E3623B24581C5B5 /* AacPacket.swift in Sources */,
 				659B75CC6E1BF3086BBE2A0A /* BasePacket.swift in Sources */,
+				EB564EDA2AB6230A00AD433F /* AacFlvPacket.swift in Sources */,
 				659B75294AD0515DC57BE98F /* H264Packet.swift in Sources */,
 				659B740CB9D44FD664E9FEF3 /* H265Packet.swift in Sources */,
 				659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */,
@@ -833,11 +876,13 @@
 				659B7F2D5B8C5600D5AD289A /* AmfData.swift in Sources */,
 				659B7DB3C42CA082DCE783CC /* AmfType.swift in Sources */,
 				659B77C06788913ED57EE288 /* Amf3Type.swift in Sources */,
+				EB564EE82AB6321F00AD433F /* ConcurrentFlvQueue.swift in Sources */,
 				659B749E0E4084A45D93F514 /* IOException.swift in Sources */,
 				659B77DC7B94B8183C68E3A8 /* AmfBoolean.swift in Sources */,
 				659B78A1E38155B7901DC60E /* AmfEcmaArray.swift in Sources */,
 				659B78152D48208D9E019E8D /* AmfNull.swift in Sources */,
 				659B788AD6550B1AC3AF1650 /* AmfNumber.swift in Sources */,
+				EB564EE62AB623F200AD433F /* AudioSpecificConfig.swift in Sources */,
 				659B70F638816138C552E989 /* AmfObject.swift in Sources */,
 				659B7682CE6A2520631FC86B /* AmfObjectEnd.swift in Sources */,
 				659B71A88260F22E8F12618F /* AmfStrictArray.swift in Sources */,
@@ -849,6 +894,7 @@
 				659B7B873D7C1959C41B35E7 /* RtmpHeader.swift in Sources */,
 				659B7E2440F35F1F27694CF2 /* CommandSessionHistory.swift in Sources */,
 				659B7613F18F75A9E446EE85 /* RtmpMessage.swift in Sources */,
+				EB564EE02AB623A700AD433F /* AudioSize.swift in Sources */,
 				659B7BD739DEAF40C61EB772 /* RtmpConfig.swift in Sources */,
 				659B755B9798F2A62ED72844 /* Abort.swift in Sources */,
 				659B7B38534E1C0B4DA72580 /* Aggregate.swift in Sources */,
@@ -862,8 +908,10 @@
 				659B7AD6FF1DA956026F09DD /* SharedObjectAmf0.swift in Sources */,
 				659B77D971C785433E86F0DF /* SharedObjectAmf3.swift in Sources */,
 				659B7CC2968A5B07E188068E /* Audio.swift in Sources */,
+				EB564EDE2AB6239600AD433F /* AudioObjectType.swift in Sources */,
 				659B7AD4BA03D9185CD49891 /* Video.swift in Sources */,
 				659B79DBC05E34AF9448447B /* Data.swift in Sources */,
+				EB564EE42AB623D600AD433F /* AudioSoundType.swift in Sources */,
 				659B774F383D85D18864A5BF /* DataAmf0.swift in Sources */,
 				659B79255D6F05D71D439503 /* DataAmf3.swift in Sources */,
 				659B75391191A186D023DC2B /* Comand.swift in Sources */,

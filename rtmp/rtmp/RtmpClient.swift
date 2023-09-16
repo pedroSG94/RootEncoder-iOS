@@ -10,13 +10,14 @@ public class RtmpClient {
     private let connectCheckerRtmp: ConnectCheckerRtmp
     private var socket: Socket? = nil
     private let commandManager = CommandManager()
-    private let rtmpSender = RtmpSender()
+    private let rtmpSender: RtmpSender
     var isStreaming = false
     private var publishPermitted = false
     private var tlsEnabled = false
 
     public init(connectCheckerRtmp: ConnectCheckerRtmp) {
         self.connectCheckerRtmp = connectCheckerRtmp
+        rtmpSender = RtmpSender(callback: connectCheckerRtmp, commandManager: commandManager)
     }
 
     public func setOnlyAudio(onlyAudio: Bool) {
@@ -34,7 +35,7 @@ public class RtmpClient {
     }
 
     public func setVideoInfo(sps: [UInt8], pps: [UInt8], vps: [UInt8]?) {
-
+        rtmpSender.setVideoInfo(sps: sps, pps: pps, vps: vps)
     }
 
     public func setFps(fps: Int) {
@@ -43,6 +44,7 @@ public class RtmpClient {
 
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
         commandManager.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+        rtmpSender.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
     }
 
     public func setVideoResolution(width: Int, height: Int) {
@@ -91,7 +93,19 @@ public class RtmpClient {
     }
 
     public func disconnect(clear: Bool = true) {
-
+        if isStreaming {
+            rtmpSender.stop()
+            do {
+                if let socket = self.socket {
+                    try commandManager.sendClose(socket: socket)
+                }
+            } catch {
+            }
+            socket?.disconnect()
+            commandManager.reset()
+            isStreaming = false
+            connectCheckerRtmp.onDisconnectRtmp()
+        }
     }
 
     private func getAppName(app: String, name: String) -> String {
@@ -219,7 +233,7 @@ public class RtmpClient {
                             case "NetStream.Publish.Start":
                                 try commandManager.sendMetadata(socket: socket)
                                 connectCheckerRtmp.onConnectionSuccessRtmp()
-
+                                rtmpSender.socket = socket
                                 rtmpSender.start()
                                 publishPermitted = true
                             case "NetConnection.Connect.Rejected", "NetStream.Publish.BadName":
@@ -253,5 +267,17 @@ public class RtmpClient {
         commandManager.timestamp = Int(timeStamp)
         commandManager.startTs = Date().millisecondsSince1970 * 1000
         return true
+    }
+    
+    public func sendVideo(frame: Frame) {
+        if (isStreaming) {
+            rtmpSender.sendVideo(frame: frame)
+        }
+    }
+    
+    public func sendAudio(frame: Frame) {
+        if (isStreaming) {
+            rtmpSender.sendAudio(frame: frame)
+        }
     }
 }

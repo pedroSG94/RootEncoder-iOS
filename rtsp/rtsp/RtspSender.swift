@@ -6,7 +6,7 @@ public class RtspSender {
     private var videoPacketizer: BasePacket?
     private var tcpSocket: BaseRtpSocket?
     private var tcpReport: BaseSenderReport?
-    private let thread = DispatchQueue(label: "RtpSender")
+    private let thread = DispatchQueue(label: "RtspSender")
     private var running = false
     private let queue = ConcurrentQueue()
     private let callback: ConnectCheckerRtsp
