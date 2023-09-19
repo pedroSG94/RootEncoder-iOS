@@ -112,6 +112,12 @@
 		EB564EE42AB623D600AD433F /* AudioSoundType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE32AB623D600AD433F /* AudioSoundType.swift */; };
 		EB564EE62AB623F200AD433F /* AudioSpecificConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE52AB623F200AD433F /* AudioSpecificConfig.swift */; };
 		EB564EE82AB6321F00AD433F /* ConcurrentFlvQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE72AB6321F00AD433F /* ConcurrentFlvQueue.swift */; };
+		EB564EEA2ABA0D6300AD433F /* H264FlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EE92ABA0D6200AD433F /* H264FlvPacket.swift */; };
+		EB564EEC2ABA0E0D00AD433F /* VideoDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EEB2ABA0E0D00AD433F /* VideoDataType.swift */; };
+		EB564EEE2ABA0E9800AD433F /* VideoFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EED2ABA0E9800AD433F /* VideoFormat.swift */; };
+		EB564EF02ABA0F2F00AD433F /* VideoNalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EEF2ABA0F2F00AD433F /* VideoNalType.swift */; };
+		EB564EF22ABA0FFB00AD433F /* ProfileIop.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EF12ABA0FFB00AD433F /* ProfileIop.swift */; };
+		EB564EF42ABA10A000AD433F /* VideoSpecificConfigAVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -243,6 +249,12 @@
 		EB564EE32AB623D600AD433F /* AudioSoundType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSoundType.swift; sourceTree = "<group>"; };
 		EB564EE52AB623F200AD433F /* AudioSpecificConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpecificConfig.swift; sourceTree = "<group>"; };
 		EB564EE72AB6321F00AD433F /* ConcurrentFlvQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFlvQueue.swift; sourceTree = "<group>"; };
+		EB564EE92ABA0D6200AD433F /* H264FlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H264FlvPacket.swift; sourceTree = "<group>"; };
+		EB564EEB2ABA0E0D00AD433F /* VideoDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDataType.swift; sourceTree = "<group>"; };
+		EB564EED2ABA0E9800AD433F /* VideoFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFormat.swift; sourceTree = "<group>"; };
+		EB564EEF2ABA0F2F00AD433F /* VideoNalType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoNalType.swift; sourceTree = "<group>"; };
+		EB564EF12ABA0FFB00AD433F /* ProfileIop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileIop.swift; sourceTree = "<group>"; };
+		EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSpecificConfigAVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -687,6 +699,12 @@
 		EB564ED82AB622E900AD433F /* video */ = {
 			isa = PBXGroup;
 			children = (
+				EB564EE92ABA0D6200AD433F /* H264FlvPacket.swift */,
+				EB564EEB2ABA0E0D00AD433F /* VideoDataType.swift */,
+				EB564EED2ABA0E9800AD433F /* VideoFormat.swift */,
+				EB564EEF2ABA0F2F00AD433F /* VideoNalType.swift */,
+				EB564EF12ABA0FFB00AD433F /* ProfileIop.swift */,
+				EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */,
 			);
 			path = video;
 			sourceTree = "<group>";
@@ -853,6 +871,7 @@
 				659B740CB9D44FD664E9FEF3 /* H265Packet.swift in Sources */,
 				659B7603EE00356D9792293D /* ConnectCheckerRtsp.swift in Sources */,
 				659B7A15C4A30FEB5E901043 /* RtpConstants.swift in Sources */,
+				EB564EEA2ABA0D6300AD433F /* H264FlvPacket.swift in Sources */,
 				659B785858D79BCE3BB5C672 /* Socket.swift in Sources */,
 				659B782D34C29E2E70A7B8AB /* Utils.swift in Sources */,
 				659B77EDAC78EA7A440AD552 /* ConcurrentQueue.swift in Sources */,
@@ -874,6 +893,7 @@
 				659B7EF86123951E52A7A9D4 /* FlvType.swift in Sources */,
 				659B7A9B354F1EBFA5DBB65F /* AmfVersion.swift in Sources */,
 				659B7F2D5B8C5600D5AD289A /* AmfData.swift in Sources */,
+				EB564EEE2ABA0E9800AD433F /* VideoFormat.swift in Sources */,
 				659B7DB3C42CA082DCE783CC /* AmfType.swift in Sources */,
 				659B77C06788913ED57EE288 /* Amf3Type.swift in Sources */,
 				EB564EE82AB6321F00AD433F /* ConcurrentFlvQueue.swift in Sources */,
@@ -902,10 +922,12 @@
 				659B72EF12D24BA43E128CAE /* SetPeerBandwidth.swift in Sources */,
 				659B76CBED97385DA2244D02 /* WindowAcknowledgementSize.swift in Sources */,
 				659B77605FB3FF832C69128C /* Event.swift in Sources */,
+				EB564EF02ABA0F2F00AD433F /* VideoNalType.swift in Sources */,
 				659B75A0996A0DD448A0A6F3 /* ControlType.swift in Sources */,
 				659B74FFD1BC3B3C0B69A8B1 /* UserControl.swift in Sources */,
 				659B7958D2DCF0C34B7BB831 /* SharedObject.swift in Sources */,
 				659B7AD6FF1DA956026F09DD /* SharedObjectAmf0.swift in Sources */,
+				EB564EF42ABA10A000AD433F /* VideoSpecificConfigAVC.swift in Sources */,
 				659B77D971C785433E86F0DF /* SharedObjectAmf3.swift in Sources */,
 				659B7CC2968A5B07E188068E /* Audio.swift in Sources */,
 				EB564EDE2AB6239600AD433F /* AudioObjectType.swift in Sources */,
@@ -920,6 +942,8 @@
 				659B76392363870C4209F176 /* CommandManager.swift in Sources */,
 				659B70254A8B67B922AFCAD6 /* RtmpClient.swift in Sources */,
 				659B71E6678813B04FB5C32C /* Acknowledgement.swift in Sources */,
+				EB564EF22ABA0FFB00AD433F /* ProfileIop.swift in Sources */,
+				EB564EEC2ABA0E0D00AD433F /* VideoDataType.swift in Sources */,
 				659B76CB605CDAC9DB90B551 /* RtmpSender.swift in Sources */,
 				659B789BA7B61FE3E4A70FD6 /* RtmpCamera.swift in Sources */,
 			);

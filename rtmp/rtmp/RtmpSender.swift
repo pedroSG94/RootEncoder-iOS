@@ -7,6 +7,7 @@ import Foundation
 
 public class RtmpSender {
 
+    private let h264FlvPacket = H264FlvPacket()
     private let aacFlvPacket = AacFlvPacket()
     private let thread = DispatchQueue(label: "RtspSender")
     private var running = false
@@ -21,7 +22,7 @@ public class RtmpSender {
     }
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        
+        h264FlvPacket.setVideoInfo(sps: sps, pps: pps)
     }
     
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
@@ -29,7 +30,12 @@ public class RtmpSender {
     }
     
     public func sendVideo(frame: Frame) {
-        
+        h264FlvPacket.createFlvVideoPacket(
+            data: frame,
+            callback: { (flvPacket) in
+                queue.add(frame: flvPacket)
+            }
+        )
     }
     
     public func sendAudio(frame: Frame) {
@@ -71,5 +77,6 @@ public class RtmpSender {
     public func stop() {
         running = false
         aacFlvPacket.reset()
+        h264FlvPacket.reset(resetInfo: true)
     }
 }
