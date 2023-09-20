@@ -12,11 +12,21 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
     func onConnectionSuccessRtmp() {
         print("connection success")
+        toastText = "connection success"
+        isShowingToast = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isShowingToast = false
+        }
     }
     
     func onConnectionFailedRtmp(reason: String) {
         print("connection failed: \(reason)")
         rtmpCamera.stopStream()
+        toastText = "connection failed: \(reason)"
+        isShowingToast = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isShowingToast = false
+        }
     }
     
     func onNewBitrateRtmp(bitrate: UInt64) {
@@ -25,19 +35,36 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
     func onDisconnectRtmp() {
         print("disconnected")
+        toastText = "disconnected"
+        isShowingToast = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isShowingToast = false
+        }
     }
     
     func onAuthErrorRtmp() {
         print("auth error")
+        toastText = "auth error"
+        isShowingToast = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isShowingToast = false
+        }
     }
     
     func onAuthSuccessRtmp() {
         print("auth success")
+        toastText = "auth success"
+        isShowingToast = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            isShowingToast = false
+        }
     }
     
     
     @State private var endpoint = "rtmp://192.168.0.177:1935/live/pedro"
     @State private var bStreamText = "Start stream"
+    @State private var isShowingToast = false
+    @State private var toastText = ""
     @State private var rtmpCamera: CameraBase!
     
     var body: some View {
@@ -87,7 +114,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                     }
                 }).padding(.bottom, 24)
             }.frame(width: .infinity, height: .infinity, alignment: .bottom)
-        }
+        }.showToast(text: toastText, isShowing: $isShowingToast)
     }
 }
 

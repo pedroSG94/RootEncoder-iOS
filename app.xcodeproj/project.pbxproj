@@ -115,6 +115,7 @@
 		EB564EF22ABA0FFB00AD433F /* ProfileIop.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EF12ABA0FFB00AD433F /* ProfileIop.swift */; };
 		EB564EF42ABA10A000AD433F /* VideoSpecificConfigAVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */; };
 		EBA400102ABA6A1600249638 /* MainSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */; };
+		EBA400122ABA7AED00249638 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA400112ABA7AED00249638 /* ToastView.swift */; };
 		EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */; };
 		EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD42ABA62E500249638 /* CameraUIView.swift */; };
 		EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */; };
@@ -252,6 +253,7 @@
 		EB564EF12ABA0FFB00AD433F /* ProfileIop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileIop.swift; sourceTree = "<group>"; };
 		EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSpecificConfigAVC.swift; sourceTree = "<group>"; };
 		EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSwiftUIView.swift; sourceTree = "<group>"; };
+		EBA400112ABA7AED00249638 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD42ABA62E500249638 /* CameraUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspSwiftUIView.swift; sourceTree = "<group>"; };
@@ -317,6 +319,7 @@
 				EBA4FFD42ABA62E500249638 /* CameraUIView.swift */,
 				EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */,
 				EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */,
+				EBA400112ABA7AED00249638 /* ToastView.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -855,6 +858,7 @@
 				659B74DE319DFAC761C1F886 /* VideoEncoder.swift in Sources */,
 				659B73C0DD1B71834C2178D2 /* GetH264Data.swift in Sources */,
 				659B7FF1C3ED79A47589B9FB /* SenderReportTcp.swift in Sources */,
+				EBA400122ABA7AED00249638 /* ToastView.swift in Sources */,
 				659B7917A1F543F6F8E6B1F7 /* SenderReportUdp.swift in Sources */,
 				659B77274201550B8CB5B24E /* BaseSenderReport.swift in Sources */,
 				659B75A6D27114213576EFB1 /* RtpSocketTcp.swift in Sources */,
