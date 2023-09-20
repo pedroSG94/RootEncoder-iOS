@@ -1,38 +1,31 @@
-# rtmp-rtsp-stream-client-swift
+# RootEncoder iOS
 
-Library to stream in rtmp and rtsp for IOS. All code in Swift.
+RootEncoder (rtmp-rtsp-stream-client-swift) is a stream encoder to push video/audio to media servers using protocols RTMP, RTSP and SRT with all code written in Swift
 
-## State
-
-Actually any bug report will be ignored because it is not stable/usable.
-Any feature request or suggestion is welcome.
-
-I need to fix multiple things but it is working.
-
-This project is under develop and it is not usable.
-This will take so much time so don't expect anything about it.
+For now the min iOS version required is iOS14 but I have plan to downgrade it a bit.
 
 ## Features
 
+- [x] H264 and AAC support
 - [x] Switch camera while streaming
 - [x] RTSP TCP/UDP
 - [x] RTSPS
 - [x] RTSP auth (basic and digest)
+- [x] RTMP
+- [x] RTMPS
 
-### Incoming features
+## Incoming features
 
-I will develop this features:
+I will develop this features but not in this order.
 
-- RTSP H265 (Frozen for now)
-- Local video record
-- Upload to cocoa or similar
-- RTMP (included RTMPS and auth)
-- Real time filters
-- Stream from device display (DisplayRtsp/DisplayRtmp)
-- Stream from file (FromFileRtsp/FromFileRtmp)
-- Minors features: video bitrate on fly, adaptative bitrate, multiple streams, etc.
-
-### H265 frozen reason (Any help or suggestion is welcome)
-
-If you encode frames in H265 only the first frame is an IDR (IDR_N_LP in my case). 
-After that, the encoder use CRA_NUT as key frame but it is not working to start stream.
+- [ ] RTMP auth (adobe and llnw)
+- [ ] H265 support (RTMP and RTSP)
+- [ ] Reconnection (RTMP and RTSP)
+- [ ] Get upload bandwidth used (RTMP and RTSP)
+- [ ] Local video record
+- [ ] Real time filters (with OpenGl and/or Metal)
+- [ ] Stream from device display (DisplayRtsp/DisplayRtmp)
+- [ ] Stream from file (FromFileRtsp/FromFileRtmp)
+- [ ] Upload to cocoapod or similar
+- [ ] Minors features: video bitrate on fly, adaptative bitrate.
+- [ ] SRT
