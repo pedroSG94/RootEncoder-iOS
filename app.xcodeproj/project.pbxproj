@@ -293,7 +293,7 @@
 				044138322501A02300732969 /* Products */,
 				659B75D681E6847DBF0E1368 /* encoder */,
 				659B703A0302B3AB5808DB8F /* rtsp */,
-				659B7A447E01962F17C47233 /* rtplibrary */,
+				659B7A447E01962F17C47233 /* library */,
 				659B707A2DD7314EAA0D8ECB /* rtmp */,
 				659B7C7C942D059E7C4F1424 /* .gitignore */,
 			);
@@ -312,14 +312,13 @@
 		044138332501A02300732969 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				EBA400152ABBAF3400249638 /* components */,
 				044138342501A02300732969 /* StreamerApp.swift */,
 				0441383D2501A02500732969 /* Assets.xcassets */,
 				044138422501A02500732969 /* Info.plist */,
 				EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */,
-				EBA4FFD42ABA62E500249638 /* CameraUIView.swift */,
 				EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */,
 				EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */,
-				EBA400112ABA7AED00249638 /* ToastView.swift */,
 			);
 			path = app;
 			sourceTree = "<group>";
@@ -563,7 +562,7 @@
 			path = data;
 			sourceTree = "<group>";
 		};
-		659B7A447E01962F17C47233 /* rtplibrary */ = {
+		659B7A447E01962F17C47233 /* library */ = {
 			isa = PBXGroup;
 			children = (
 				659B75D3171FD0D9D6BCD39F /* base */,
@@ -571,7 +570,7 @@
 				659B76EE93216BEBD8B1F218 /* utils */,
 				659B70CDE6810C6F06BE4C72 /* rtmp */,
 			);
-			path = rtplibrary;
+			path = library;
 			sourceTree = "<group>";
 		};
 		659B7B599A38950C76C3D782 /* utils */ = {
@@ -710,6 +709,15 @@
 				EB564EF32ABA10A000AD433F /* VideoSpecificConfigAVC.swift */,
 			);
 			path = video;
+			sourceTree = "<group>";
+		};
+		EBA400152ABBAF3400249638 /* components */ = {
+			isa = PBXGroup;
+			children = (
+				EBA400112ABA7AED00249638 /* ToastView.swift */,
+				EBA4FFD42ABA62E500249638 /* CameraUIView.swift */,
+			);
+			path = components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

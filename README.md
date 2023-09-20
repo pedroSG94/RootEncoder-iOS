@@ -1,6 +1,6 @@
 # RootEncoder iOS
 
-RootEncoder (rtmp-rtsp-stream-client-swift) is a stream encoder to push video/audio to media servers using protocols RTMP, RTSP and SRT with all code written in Swift
+RootEncoder iOS (rtmp-rtsp-stream-client-swift) is a stream encoder to push video/audio to media servers using protocols RTMP, RTSP and SRT with all code written in Swift
 
 For now the min iOS version required is iOS14 but I have plan to downgrade it a bit.
 
