@@ -29,7 +29,7 @@ public class H265Packet: BasePacket {
         let naluLength = Int(buffer.count)
         let type: UInt8 = header[4] >> (1 & 0x3F)
 
-        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP {
+        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP || type == RtpConstants.CRA_NUT {
             var rtpBuffer = getBuffer(size: agregationPacket!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             markPacket(buffer: &rtpBuffer)
