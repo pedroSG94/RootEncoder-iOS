@@ -93,14 +93,22 @@ public class RtmpClient {
     }
 
     public func disconnect(clear: Bool = true) {
+        let thread = DispatchQueue(label: "RtmpClient.disconnect")
         if isStreaming {
             rtmpSender.stop()
-            do {
-                if let socket = self.socket {
-                    try commandManager.sendClose(socket: socket)
+            let sync = DispatchGroup()
+            sync.enter()
+            thread.async {
+                do {
+                    if let socket = self.socket {
+                        try self.commandManager.sendClose(socket: socket)
+                    }
+                    sync.leave()
+                } catch {
+                    sync.leave()
                 }
-            } catch {
             }
+            sync.wait(timeout: DispatchTime.now() + 0.1)
             socket?.disconnect()
             commandManager.reset()
             isStreaming = false

@@ -6,6 +6,7 @@ public class Socket: NSObject, StreamDelegate {
     var host: String
     private var connection: NWConnection? = nil
     private var bufferAppend: [UInt8]? = nil
+    private let lock = DispatchQueue(label: "com.pedro.Socket.sync")
 
     /**
         TCP or TCP/TLS socket
@@ -29,13 +30,18 @@ public class Socket: NSObject, StreamDelegate {
     
     public func connect() throws {
         let sync = DispatchGroup()
+        
         var messageError: String? = nil
         sync.enter()
+        var shouldLeave = true
         connection?.stateUpdateHandler = { (newState) in
             switch (newState) {
             case .ready:
                 print("connection success")
-                sync.leave()
+                if (shouldLeave) {
+                    sync.leave()
+                    shouldLeave = false
+                }
                 break
             case .setup:
                 print("setup")
@@ -49,11 +55,17 @@ public class Socket: NSObject, StreamDelegate {
             case .cancelled:
                 print("cancelled")
                 messageError = "connection cancelled"
-                sync.leave()
+                if (shouldLeave) {
+                    sync.leave()
+                    shouldLeave = false
+                }
             case .failed(_):
                 print("failed")
                 messageError = "connection failed"
-                sync.leave()
+                if (shouldLeave) {
+                    sync.leave()
+                    shouldLeave = false
+                }
                 break
             @unknown default:
                 print("new state: \(newState)")
@@ -81,20 +93,23 @@ public class Socket: NSObject, StreamDelegate {
         try write(data: data)
     }
 
+    
     public func write(data: Data) throws {
-        let sync = DispatchGroup()
-        var messageError: String? = nil
-        sync.enter()
-        connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
-            if (error != nil) {
-                print("error: \(error!)")
-                messageError = "write packet error"
+        try lock.sync {
+            let sync = DispatchGroup()
+            var messageError: String? = nil
+            sync.enter()
+            connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
+                if (error != nil) {
+                    print("error: \(error!)")
+                    messageError = "write packet error"
+                }
+                sync.leave()
+            })))
+            sync.wait()
+            if (messageError != nil) {
+                throw IOException.runtimeError(messageError!)
             }
-            sync.leave()
-        })))
-        sync.wait()
-        if (messageError != nil) {
-            throw IOException.runtimeError(messageError!)
         }
     }
 
@@ -139,11 +154,11 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     private func readUntil(length: Int) throws -> Data {
-        var result = Data()
-        var messageError: String? = nil
-        let sync = DispatchGroup()
-        sync.enter()
-        if #available(iOS 14.0, *) {
+        try lock.sync {
+            var result = Data()
+            var messageError: String? = nil
+            let sync = DispatchGroup()
+            sync.enter()
             connection?.receiveDiscontiguous(minimumIncompleteLength: 1, maximumLength: length, completion: { data, context, isComplete, error in
                 if let data = data {
                     result = Data(data)
@@ -155,14 +170,12 @@ public class Socket: NSObject, StreamDelegate {
                 
                 sync.leave()
             })
-        } else {
-            // Fallback on earlier versions
+            sync.wait()
+            if (messageError != nil) {
+                throw IOException.runtimeError(messageError!)
+            }
+            return result
         }
-        sync.wait()
-        if (messageError != nil) {
-            throw IOException.runtimeError(messageError!)
-        }
-        return result
     }
 }
 

@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-@available(iOS 14.0, *)
 @main
 struct StreamerApp: App {
     var body: some Scene {

@@ -143,12 +143,20 @@ public class RtspClient {
     }
     
     public func disconnect() {
+        let thread = DispatchQueue(label: "RtspClient.disconnect")
         if streaming {
             rtspSender.stop()
-            do {
-                try socket?.write(data: commandsManager.createTeardown())
-            } catch {
+            let sync = DispatchGroup()
+            sync.enter()
+            thread.async {
+                do {
+                    try self.socket?.write(data: self.commandsManager.createTeardown())
+                    sync.leave()
+                } catch {
+                    sync.leave()
+                }
             }
+            sync.wait(timeout: DispatchTime.now() + 0.1)
             socket?.disconnect()
             commandsManager.reset()
             streaming = false
