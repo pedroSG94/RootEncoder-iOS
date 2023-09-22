@@ -64,6 +64,7 @@ public class VideoEncoder {
                 kVTCompressionPropertyKey_MaxKeyFrameInterval: frameInterval,
                 kVTCompressionPropertyKey_RealTime: true,
                 kVTCompressionPropertyKey_Quality: 0.25,
+                kVTCompressionPropertyKey_AllowFrameReordering: true
             ] as CFDictionary)
             VTCompressionSessionPrepareToEncodeFrames(sess)
             initTs = Date().millisecondsSince1970
@@ -234,7 +235,9 @@ public class VideoEncoder {
                 bufferOffset += Int(naluLength)
 
                 var rawH264 = [UInt8](data)
+                let type: UInt8 = rawH264[0] >> (1 & 0x3F)
                 rawH264.insert(contentsOf: startCode, at: 0)
+                
                 var frame = Frame()
                 frame.buffer = rawH264
                 let end = Date().millisecondsSince1970

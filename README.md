@@ -4,6 +4,10 @@ RootEncoder iOS (rtmp-rtsp-stream-client-swift) is a stream encoder to push vide
 
 For now the min iOS version required is iOS14 but I have plan to downgrade it a bit.
 
+## Status
+
+The project is not stable yet
+
 ## Features
 
 - [x] H264 and AAC support

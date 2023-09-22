@@ -25,11 +25,12 @@ public class H265Packet: BasePacket {
 
         var header = Array<UInt8>(repeating: 0, count: 6)
         buffer = buffer.get(destiny: &header, index: 0, length: 6)
-
+        //128, 224, 0, 3, 0, 169, 138, 199, 7, 91, 205, 21, 98, 1, 64
+        
         let naluLength = Int(buffer.count)
         let type: UInt8 = header[4] >> (1 & 0x3F)
 
-        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP || type == RtpConstants.CRA_NUT {
+        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP || type == RtpConstants.CRA_NUT || data.flag == 1 {
             var rtpBuffer = getBuffer(size: agregationPacket!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             markPacket(buffer: &rtpBuffer)
@@ -72,7 +73,7 @@ public class H265Packet: BasePacket {
                 //   |S|E|  FuType   |
                 //   +---------------+
                 header[2] = type // FU header type
-                header[2] = header[2] & 0x80 // Start bit
+                header[2] += 0x80 // Start bit
 
                 var sum = 0
                 while sum < naluLength {
@@ -86,7 +87,7 @@ public class H265Packet: BasePacket {
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
                     rtpBuffer[RtpConstants.rtpHeaderLength + 1] = header[1]
                     rtpBuffer[RtpConstants.rtpHeaderLength + 2] = header[2]
-
+                    
                     let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
 
                     buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 3, length: length)

@@ -65,7 +65,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     @State private var bStreamText = "Start stream"
     @State private var isShowingToast = false
     @State private var toastText = ""
-    @State private var rtspCamera: CameraBase!
+    @State private var rtspCamera: RtspCamera!
     
     var body: some View {
         ZStack {
@@ -75,6 +75,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
             
             camera.onAppear {
                 rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+                //rtspCamera.setCodec(codec: CodecUtil.H265)
                 rtspCamera.startPreview()
             }
             camera.onDisappear {
