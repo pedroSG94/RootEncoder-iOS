@@ -9,14 +9,15 @@ public class CommandsManager {
     private var sessionId: String? = nil
     private var authorization: String? = nil
     private var timeStamp: Int64?
-    var isOnlyAudio = false
+    var videoDisabled = false
+    var audioDisabled = false
     //Audio
     private var sampleRate = 44100
     private var isStereo = true
     //Video
-    private var sps: String = "Z0KAHtoHgUZA"
-    private var pps: String = "aM4NiA=="
-    private var vps: String? = nil
+    var sps: Array<UInt8>? = nil
+    var pps: Array<UInt8>? = nil
+    var vps: Array<UInt8>? = nil
     //Auth
     private var user: String? = nil
     private var password: String? = nil
@@ -56,7 +57,7 @@ public class CommandsManager {
     }
     
     public func createSetup(track: Int) -> String {
-        let ports = track == RtpConstants.videoTrack ? videoClientPorts : audioClientPorts
+        let ports = track == RtpConstants.trackVideo ? videoClientPorts : audioClientPorts
         let params = mProtocol == .TCP ? "TCP;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
         return "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
     }
@@ -96,26 +97,35 @@ public class CommandsManager {
     }
     
     public func getAudioTrack() -> Int {
-        RtpConstants.audioTrack
+        RtpConstants.trackAudio
     }
     
     public func getVideoTrack() -> Int {
-        RtpConstants.videoTrack
+        RtpConstants.trackVideo
     }
     
     private func createBody() -> String {
         let body = Body()
-        let videoBody = createVideoBody(body: body)
-        let audioBody = createAudioBody(body: body)
+        var videoBody = ""
+        if (!videoDisabled) {
+            videoBody = createVideoBody(body: body)
+        }
+        var audioBody = ""
+        if (!audioDisabled) {
+            audioBody = createAudioBody(body: body)
+        }
         return "v=0\r\no=- \(timeStamp!) \(timeStamp!) IN IP4 127.0.0.1\r\ns=Unnamed\r\ni=N/A\r\nc=IN IP4 \(host!)\r\nt=0 0\r\na=recvonly\r\n\(videoBody)\(audioBody)"
     }
     
     private func createAudioBody(body: Body) -> String {
-        body.createAACBody(trackAudio: RtpConstants.audioTrack, sampleRate: sampleRate, isStereo: isStereo)
+        body.createAACBody(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
     }
     
     private func createVideoBody(body: Body) -> String {
-        vps == nil ? body.createH264Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps) : body.createH265Body(trackVideo: RtpConstants.videoTrack, sps: sps, pps: pps, vps: vps!)
+        let spsString = Data(sps!).base64EncodedString()
+        let ppsString = Data(pps!).base64EncodedString()
+        let vpsString = vps != nil ? Data(vps!).base64EncodedString() : nil
+        return vps == nil ? body.createH264Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString) : body.createH265Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString, vps: vpsString!)
     }
     
     public func setAuth(user: String, password: String) {
@@ -134,7 +144,7 @@ public class CommandsManager {
         self.isStereo = isStereo
     }
     
-    public func setVideoConfig(sps: String, pps: String, vps: String?) {
+    public func setVideoConfig(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         self.sps = sps
         self.pps = pps
         self.vps = vps
@@ -172,5 +182,9 @@ public class CommandsManager {
     
     public func reset() {
         cSeq = 0
+        sessionId = nil
+        sps = nil
+        pps = nil
+        vps = nil
     }
 }

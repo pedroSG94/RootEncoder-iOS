@@ -32,7 +32,7 @@ class SenderReportUdp: BaseSenderReport {
     }
 
     public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) throws {
-        let isAudio = rtpFrame.channelIdentifier == RtpConstants.audioTrack
+        let isAudio = rtpFrame.channelIdentifier == RtpConstants.trackAudio
         var port = 0
         if (isAudio) {
             try audioSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))

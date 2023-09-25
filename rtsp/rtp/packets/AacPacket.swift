@@ -4,8 +4,8 @@ import Foundation
 public class AacPacket: BasePacket {
     
     init(sampleRate: Int) {
-        super.init(clock: UInt64(sampleRate), payloadType: RtpConstants.payloadType + RtpConstants.audioTrack)
-        channelIdentifier = RtpConstants.audioTrack
+        super.init(clock: UInt64(sampleRate), payloadType: RtpConstants.payloadType + RtpConstants.trackAudio)
+        channelIdentifier = RtpConstants.trackAudio
     }
     
     public override func createAndSendPacket(data: Frame, callback: (RtpFrame) -> Void) {

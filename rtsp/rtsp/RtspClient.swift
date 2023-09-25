@@ -8,7 +8,7 @@ public class RtspClient {
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
     private let rtspSender: RtspSender
-    private var sps: Array<UInt8>? = nil, pps: Array<UInt8>? = nil, vps: Array<UInt8>? = nil
+    private var semaphore = DispatchSemaphore(value: 0)
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -23,22 +23,38 @@ public class RtspClient {
         commandsManager.mProtocol = mProtocol
     }
 
+    /**
+    * Must be called before connect
+    */
     public func setOnlyAudio(onlyAudio: Bool) {
-        commandsManager.isOnlyAudio = onlyAudio
+        if (onlyAudio) {
+          RtpConstants.trackAudio = 0
+          RtpConstants.trackVideo = 1
+        } else {
+          RtpConstants.trackVideo = 0
+          RtpConstants.trackAudio = 1
+        }
+        commandsManager.audioDisabled = false
+        commandsManager.videoDisabled = onlyAudio
     }
-    
+
+    /**
+    * Must be called before connect
+    */
+    public func setOnlyVideo(onlyVideo: Bool) {
+        RtpConstants.trackVideo = 0
+        RtpConstants.trackAudio = 1
+        commandsManager.videoDisabled = false
+        commandsManager.audioDisabled = onlyVideo
+    }
+
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
         commandsManager.setAudioConfig(sampleRate: sampleRate, isStereo: isStereo)
     }
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        self.sps = sps
-        self.pps = pps
-        self.vps = vps
-        let spsString = Data(sps).base64EncodedString()
-        let ppsString = Data(pps).base64EncodedString()
-        let vpsString = vps != nil ? Data(vps!).base64EncodedString() : nil
-        commandsManager.setVideoConfig(sps: spsString, pps: ppsString, vps: vpsString)
+        commandsManager.setVideoConfig(sps: sps, pps: pps, vps: vps)
+        semaphore.signal()
     }
     
     public func connect(url: String) {
@@ -57,6 +73,23 @@ public class RtspClient {
                     do {
                         self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port)
                         try self.socket?.connect()
+                        if (!self.commandsManager.audioDisabled) {
+                            self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
+                        }
+                        if (!self.commandsManager.videoDisabled) {
+                            if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
+                                print("waiting for sps and pps")
+                                let _ = self.semaphore.wait(timeout: DispatchTime.now() + 5)
+                                if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
+                                    self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "sps or pps is null")
+                                    return
+                                } else {
+                                    self.rtspSender.setVideoInfo(sps: self.commandsManager.sps!, pps: self.commandsManager.pps!, vps: self.commandsManager.vps)
+                                }
+                            } else {
+                                self.rtspSender.setVideoInfo(sps: self.commandsManager.sps!, pps: self.commandsManager.pps!, vps: self.commandsManager.vps)
+                            }
+                        }
                         //Options
                         try self.socket?.write(data: self.commandsManager.createOptions())
                         let optionsResponse = try self.socket?.readString()
@@ -91,24 +124,26 @@ public class RtspClient {
                         } else if announceStatus != 200 {
                             self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(announceStatus)")
                         }
-                        if !self.commandsManager.isOnlyAudio {
+                        if !self.commandsManager.videoDisabled {
                             //Setup video
-                            self.rtspSender.setVideoInfo(sps: self.sps!, pps: self.pps!, vps: self.vps)
                             try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                             let videoSetupResponse = try self.socket?.readString()
-                            let setupAudioStatus = self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false)
+                            
+                            let setupVideoStatus = self.commandsManager.getResponse(response: videoSetupResponse!, isAudio: false)
+                            if (setupVideoStatus != 200) {
+                                self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
+                                return
+                            }
+                        }
+                        if !self.commandsManager.audioDisabled {
+                            //Setup audio
+                            try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
+                            let audioSetupResponse = try self.socket?.readString()
+                            let setupAudioStatus = self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true)
                             if (setupAudioStatus != 200) {
                                 self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
                                 return
                             }
-                        }
-                        //Setup audio
-                        try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
-                        let audioSetupResponse = try self.socket?.readString()
-                        let setupVideoStatus = self.commandsManager.getResponse(response: audioSetupResponse!, isAudio: true)
-                        if (setupVideoStatus != 200) {
-                            self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
-                            return
                         }
                         //Record
                         try self.socket?.write(data: self.commandsManager.createRecord())
@@ -119,7 +154,6 @@ public class RtspClient {
                             return
                         }
                         self.streaming = true
-                        self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
 
                         self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
                                 videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
@@ -165,13 +199,13 @@ public class RtspClient {
     }
     
     public func sendVideo(frame: Frame) {
-        if (streaming && !commandsManager.isOnlyAudio) {
+        if (!commandsManager.videoDisabled) {
             rtspSender.sendVideo(frame: frame)
         }
     }
     
     public func sendAudio(frame: Frame) {
-        if (streaming) {
+        if (!commandsManager.audioDisabled) {
             rtspSender.sendAudio(frame: frame)
         }
     }

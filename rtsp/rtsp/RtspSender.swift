@@ -15,8 +15,7 @@ public class RtspSender {
         self.callback = callback
     }
 
-    public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>,
-                              videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) {
+    public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>, videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) {
         switch (mProtocol) {
         case .TCP:
             tcpSocket = RtpSocketTcp(socket: socket)
@@ -47,21 +46,25 @@ public class RtspSender {
     }
     
     public func sendVideo(frame: Frame) {
-        videoPacketizer?.createAndSendPacket(
-            data: frame,
-            callback: { (rtpFrame) in
-                queue.add(frame: rtpFrame)
-            }
-        )
+        if (running) {
+            videoPacketizer?.createAndSendPacket(
+                data: frame,
+                callback: { (rtpFrame) in
+                    queue.add(frame: rtpFrame)
+                }
+            )
+        }
     }
     
     public func sendAudio(frame: Frame) {
-        audioPacketizer?.createAndSendPacket(
-            data: frame,
-            callback: { (rtpFrame) in
-                queue.add(frame: rtpFrame)
-            }
-        )
+        if (running) {
+            audioPacketizer?.createAndSendPacket(
+                data: frame,
+                callback: { (rtpFrame) in
+                    queue.add(frame: rtpFrame)
+                }
+            )
+        }
     }
 
     public func start() {

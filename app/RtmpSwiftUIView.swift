@@ -22,6 +22,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     func onConnectionFailedRtmp(reason: String) {
         print("connection failed: \(reason)")
         rtmpCamera.stopStream()
+        bStreamText = "Start stream"
         toastText = "connection failed: \(reason)"
         isShowingToast = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

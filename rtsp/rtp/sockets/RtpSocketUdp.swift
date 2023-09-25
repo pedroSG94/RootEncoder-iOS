@@ -32,7 +32,7 @@ public class RtpSocketUdp: BaseRtpSocket {
     }
 
     public override func sendFrame(rtpFrame: RtpFrame) throws {
-        let isAudio = rtpFrame.channelIdentifier == RtpConstants.audioTrack
+        let isAudio = rtpFrame.channelIdentifier == RtpConstants.trackAudio
         var port = 0
         if (isAudio) {
             try audioSocket.write(buffer: rtpFrame.buffer!)

@@ -51,12 +51,15 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         fpsListener.setCallback(callback: fpsCallback)
     }
 
+    public func startStreamRtp(endpoint: String) {}
+        
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
         microphone.start()
         cameraManager.start()
         onPreview = true
         streaming = true
+        startStreamRtp(endpoint: endpoint)
     }
 
     public func stopStreamRtp() {}

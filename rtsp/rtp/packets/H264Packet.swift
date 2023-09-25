@@ -6,8 +6,8 @@ public class H264Packet: BasePacket {
     private var stapA: Array<UInt8>?
     
     public init(sps: Array<UInt8>, pps: Array<UInt8>) {
-        super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.videoTrack)
-        channelIdentifier = RtpConstants.videoTrack
+        super.init(clock: UInt64(RtpConstants.clockVideoFrequency), payloadType: RtpConstants.payloadType + RtpConstants.trackVideo)
+        channelIdentifier = RtpConstants.trackVideo
         setSpsPps(sps: sps, pps: pps)
     }
     

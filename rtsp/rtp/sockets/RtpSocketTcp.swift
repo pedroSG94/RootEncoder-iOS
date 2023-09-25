@@ -25,6 +25,6 @@ public class RtpSocketTcp: BaseRtpSocket {
         buffer?.insert(contentsOf: header, at: 0)
         
         try socket?.write(buffer: buffer!)
-        print("wrote packet: \(rtpFrame.channelIdentifier == RtpConstants.audioTrack ? "Audio" : "Video"), size: \(buffer!.count)")
+        print("wrote packet: \(rtpFrame.channelIdentifier == RtpConstants.trackAudio ? "Audio" : "Video"), size: \(buffer!.count)")
     }
 }

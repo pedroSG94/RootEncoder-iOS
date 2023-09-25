@@ -32,7 +32,11 @@ public class RtmpCamera: CameraBase {
     public override func stopStreamRtp() {
         client.disconnect()
     }
-
+    
+    public override func startStreamRtp(endpoint: String) {
+        client.connect(url: endpoint)
+    }
+    
     public override func getAacDataRtp(frame: Frame) {
         client.sendAudio(frame: frame)
     }
@@ -43,6 +47,5 @@ public class RtmpCamera: CameraBase {
 
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         client.setVideoInfo(sps: sps, pps: pps, vps: vps)
-        client.connect(url: endpoint)
     }
 }

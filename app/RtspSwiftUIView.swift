@@ -22,6 +22,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     func onConnectionFailedRtsp(reason: String) {
         print("connection failed: \(reason)")
         rtspCamera.stopStream()
+        bStreamText = "Start stream"
         toastText = "connection failed: \(reason)"
         isShowingToast = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

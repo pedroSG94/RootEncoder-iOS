@@ -57,7 +57,7 @@ public class BaseSenderReport {
     }
 
     public func update(rtpFrame: RtpFrame) throws {
-        if (rtpFrame.channelIdentifier == RtpConstants.videoTrack) {
+        if (rtpFrame.channelIdentifier == RtpConstants.trackVideo) {
             try updateVideo(rtpFrame: rtpFrame)
         } else {
             try updateAudio(rtpFrame: rtpFrame)
@@ -98,7 +98,7 @@ public class BaseSenderReport {
      This method must be overridden
      */
     func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) throws {
-        let type = (rtpFrame.channelIdentifier == RtpConstants.audioTrack) ? "Audio" : "Video"
+        let type = (rtpFrame.channelIdentifier == RtpConstants.trackAudio) ? "Audio" : "Video"
         print("send \(type) report, packets: \(packets), octet: \(octet)")
     }
 
