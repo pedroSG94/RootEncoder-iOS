@@ -45,7 +45,7 @@ public class RtspSender {
         audioPacketizer = AacPacket(sampleRate: 44100)
     }
     
-    public func sendVideo(frame: Frame) {
+    public func sendVideo(frame: RtspFrame) {
         if (running) {
             videoPacketizer?.createAndSendPacket(
                 data: frame,
@@ -56,7 +56,7 @@ public class RtspSender {
         }
     }
     
-    public func sendAudio(frame: Frame) {
+    public func sendAudio(frame: RtspFrame) {
         if (running) {
             audioPacketizer?.createAndSendPacket(
                 data: frame,

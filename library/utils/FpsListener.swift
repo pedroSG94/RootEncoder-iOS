@@ -8,7 +8,7 @@ import Foundation
 public class FpsListener {
 
    private var fps = 0
-   private var time: Int64 = Date().millisecondsSince1970
+    private var time: Int64 = Int64(Date().timeIntervalSince1970)
    private var callback: FpsCallback?
 
    public func setCallback(callback: FpsCallback) {
@@ -16,10 +16,10 @@ public class FpsListener {
    }
 
    public func calculateFps() {
-      if (Date().millisecondsSince1970 - time > 1000) {
+       if (Int64(Date().timeIntervalSince1970) - time > 1000) {
          callback?.onFps(fps: fps)
          fps = 0
-         time = Date().millisecondsSince1970
+           time = Int64(Date().timeIntervalSince1970)
       }
    }
 }

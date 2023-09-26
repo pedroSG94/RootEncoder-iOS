@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import rtsp
 
 struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     

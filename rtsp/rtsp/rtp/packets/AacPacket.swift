@@ -8,7 +8,7 @@ public class AacPacket: BasePacket {
         channelIdentifier = RtpConstants.trackAudio
     }
     
-    public override func createAndSendPacket(data: Frame, callback: (RtpFrame) -> Void) {
+    public override func createAndSendPacket(data: RtspFrame, callback: (RtpFrame) -> Void) {
         let buffer = data.buffer!
         let ts = data.timeStamp!
         let length = Int(data.length!)

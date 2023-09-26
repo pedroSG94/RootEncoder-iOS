@@ -5,7 +5,7 @@
 
 import Foundation
 
-class SenderReportUdp: BaseSenderReport {
+public class SenderReportUdp: BaseSenderReport {
 
     private var videoSocket: Socket
     private var audioSocket: Socket

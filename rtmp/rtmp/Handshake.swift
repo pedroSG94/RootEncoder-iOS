@@ -71,7 +71,7 @@ public class Handshake {
         print("writing C1")
         var c1 = [UInt8](repeating: 0x00, count: handshakeSize)
 
-        let timestamp: UInt32 = UInt32(Date().millisecondsSince1970 / 1000)
+        let timestamp: UInt32 = UInt32(Date().timeIntervalSince1970 / 1000)
         print("writing time \(timestamp) to c1")
         let timestampData = withUnsafeBytes(of: timestamp.bigEndian) {
             Array($0)

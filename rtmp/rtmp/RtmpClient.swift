@@ -267,13 +267,13 @@ public class RtmpClient {
     public func establishConnection() throws -> Bool {
         socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port)
         try socket?.connect()
-        let timeStamp = Date().millisecondsSince1970 / 1000
+        let timeStamp = Date().timeIntervalSince1970 / 1000
         let handshake = Handshake()
         if (try !handshake.sendHandshake(socket: socket!)) {
             return false
         }
         commandManager.timestamp = Int(timeStamp)
-        commandManager.startTs = Date().millisecondsSince1970 * 1000
+        commandManager.startTs = Int64(Date().timeIntervalSince1970 * 1000)
         return true
     }
     

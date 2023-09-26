@@ -198,13 +198,13 @@ public class RtspClient {
         }
     }
     
-    public func sendVideo(frame: Frame) {
+    public func sendVideo(frame: RtspFrame) {
         if (!commandsManager.videoDisabled) {
             rtspSender.sendVideo(frame: frame)
         }
     }
     
-    public func sendAudio(frame: Frame) {
+    public func sendAudio(frame: RtspFrame) {
         if (!commandsManager.audioDisabled) {
             rtspSender.sendAudio(frame: frame)
         }

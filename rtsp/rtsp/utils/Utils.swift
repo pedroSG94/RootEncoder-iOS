@@ -57,3 +57,7 @@ public extension String {
         return hash.map { String(format: "%02x", $0) }.joined()
     }
 }
+
+public func intToBytes<T>(from value: T) -> [UInt8] where T: FixedWidthInteger {
+    withUnsafeBytes(of: value.littleEndian, Array.init)
+}
