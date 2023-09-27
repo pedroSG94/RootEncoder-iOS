@@ -6,6 +6,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import encoder
 import rtsp
 
 public class RtspCamera: CameraBase {

@@ -5,6 +5,7 @@
 
 import Foundation
 import AVFoundation
+import encoder
 
 public class RecordController {
 

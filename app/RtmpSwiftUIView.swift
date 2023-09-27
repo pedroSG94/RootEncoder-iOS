@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import RootEncoder
 import rtmp
 
 struct RtmpSwiftUIView: View, ConnectCheckerRtmp {

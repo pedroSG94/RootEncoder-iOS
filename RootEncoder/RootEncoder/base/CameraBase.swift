@@ -6,6 +6,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import encoder
 
 public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
 
