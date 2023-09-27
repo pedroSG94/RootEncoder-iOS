@@ -26,7 +26,7 @@ public class AudioEncoder {
         converter = AVAudioConverter(from: inputFormat, to: outputFormat!)
         converter!.bitRate = bitrate
         print("prepare audio success")
-        initTs = Int64(Date().timeIntervalSince1970)
+        initTs = Date().millisecondsSince1970
         running = true
         return true
     }
@@ -45,7 +45,7 @@ public class AudioEncoder {
                         let info = aacBuffer.packetDescriptions![Int(i)]
                         var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
                         mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
-                        let end = Int64(Date().timeIntervalSince1970)
+                        let end = Date().millisecondsSince1970
                         let elapsedNanoSeconds = (end - self.initTs) * 1000
 
                         var frame = Frame()

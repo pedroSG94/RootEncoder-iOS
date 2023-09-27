@@ -67,7 +67,7 @@ public class VideoEncoder {
                 kVTCompressionPropertyKey_AllowFrameReordering: true
             ] as CFDictionary)
             VTCompressionSessionPrepareToEncodeFrames(sess)
-            initTs = Int64(Date().timeIntervalSince1970)
+            initTs = Date().millisecondsSince1970
             print("prepare video success")
             running = true
             return true
@@ -240,7 +240,7 @@ public class VideoEncoder {
                 
                 var frame = Frame()
                 frame.buffer = rawH264
-                let end = Int64(Date().timeIntervalSince1970)
+                let end = Date().millisecondsSince1970
                 let elapsedNanoSeconds = (end - initTs) * 1000
                 frame.timeStamp = UInt64(elapsedNanoSeconds)
                 frame.length = UInt32(frame.buffer!.count)

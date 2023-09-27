@@ -22,7 +22,7 @@ public class CommandManager {
     var akamaiTs = false
     var startTs: Int64 = 0
     var readChunkSize = RtmpConfig.DEFAULT_CHUNK_SIZE
-    var audioDisabled = true
+    var audioDisabled = false
     var videoDisabled = false
 
     private var width = 640
@@ -51,7 +51,7 @@ public class CommandManager {
     }
 
     private func getCurrentTimestamp() -> Int {
-        Int(Date().timeIntervalSince1970) / 1000 - timestamp
+        Int(Date().millisecondsSince1970) / 1000 - timestamp
     }
 
     public func sendChunkSize(socket: Socket) throws {
@@ -199,7 +199,7 @@ public class CommandManager {
         let video: Video
         if (akamaiTs) {
             var packet = flvPacket
-            packet.timeStamp = (Int64(Date().timeIntervalSince1970 * 1000) - startTs) / 1000
+            packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
             video = Video(flvPacket: packet, streamId: streamId)
         } else {
             video = Video(flvPacket: flvPacket, streamId: streamId)
@@ -213,7 +213,7 @@ public class CommandManager {
         let audio: Audio
         if (akamaiTs) {
             var packet = flvPacket
-            packet.timeStamp = (Int64(Date().timeIntervalSince1970 * 1000) - startTs) / 1000
+            packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
             audio = Audio(flvPacket: packet, streamId: streamId)
         } else {
             audio = Audio(flvPacket: flvPacket, streamId: streamId)
