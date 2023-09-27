@@ -8,10 +8,8 @@ public class AacPacket: BasePacket {
         channelIdentifier = RtpConstants.trackAudio
     }
     
-    public override func createAndSendPacket(data: RtspFrame, callback: (RtpFrame) -> Void) {
-        let buffer = data.buffer!
-        let ts = data.timeStamp!
-        let length = Int(data.length!)
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
+        let length = buffer.count
         let dts = ts * 1000
         var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
         rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]

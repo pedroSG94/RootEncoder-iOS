@@ -11,9 +11,8 @@ public class H264Packet: BasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public override func createAndSendPacket(data: RtspFrame, callback: (RtpFrame) -> Void) {
-        var buffer = data.buffer!
-        let ts = data.timeStamp!
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
+        var buffer = buffer
         let dts = ts * 1000
         var frame = RtpFrame()
         frame.channelIdentifier = channelIdentifier

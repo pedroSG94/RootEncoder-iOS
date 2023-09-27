@@ -25,7 +25,6 @@
 		EBB16F042AC386D300B48654 /* RtpSocketTcp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC422AC383A800AAA380 /* RtpSocketTcp.swift */; };
 		EBB16F052AC386D300B48654 /* BaseRtpSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC432AC383A800AAA380 /* BaseRtpSocket.swift */; };
 		EBB16F062AC386D300B48654 /* RtpSocketUdp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC442AC383A800AAA380 /* RtpSocketUdp.swift */; };
-		EBB16F082AC3870A00B48654 /* RtspFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F072AC3870A00B48654 /* RtspFrame.swift */; };
 		EBB16F0A2AC3874700B48654 /* IOException.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F092AC3874700B48654 /* IOException.swift */; };
 		EBC6AC242AC3839200AAA380 /* rtsp.docc in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC232AC3839200AAA380 /* rtsp.docc */; };
 		EBC6AC2A2AC3839200AAA380 /* rtsp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBC6AC1F2AC3839200AAA380 /* rtsp.framework */; };
@@ -47,7 +46,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		EBB16F072AC3870A00B48654 /* RtspFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspFrame.swift; sourceTree = "<group>"; };
 		EBB16F092AC3874700B48654 /* IOException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOException.swift; sourceTree = "<group>"; };
 		EBC6AC1F2AC3839200AAA380 /* rtsp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = rtsp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBC6AC222AC3839200AAA380 /* rtsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rtsp.h; sourceTree = "<group>"; };
@@ -173,7 +171,6 @@
 				EBC6AC4E2AC383A800AAA380 /* Socket.swift */,
 				EBC6AC4F2AC383A800AAA380 /* Utils.swift */,
 				EBC6AC502AC383A800AAA380 /* ConcurrentQueue.swift */,
-				EBB16F072AC3870A00B48654 /* RtspFrame.swift */,
 				EBB16F092AC3874700B48654 /* IOException.swift */,
 			);
 			path = utils;
@@ -316,7 +313,6 @@
 				EBB16F062AC386D300B48654 /* RtpSocketUdp.swift in Sources */,
 				EBB16EF52AC3861500B48654 /* AacPacket.swift in Sources */,
 				EBB16EF62AC3861500B48654 /* BasePacket.swift in Sources */,
-				EBB16F082AC3870A00B48654 /* RtspFrame.swift in Sources */,
 				EBB16EF72AC3861500B48654 /* H264Packet.swift in Sources */,
 				EBB16EF82AC3861500B48654 /* H265Packet.swift in Sources */,
 				EBB16EF92AC3861500B48654 /* ConnectCheckerRtsp.swift in Sources */,

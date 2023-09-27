@@ -29,18 +29,18 @@ public class RtmpSender {
         aacFlvPacket.sendAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
     }
     
-    public func sendVideo(frame: Frame) {
+    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         h264FlvPacket.createFlvVideoPacket(
-            data: frame,
+            buffer: buffer, ts: ts,
             callback: { (flvPacket) in
                 queue.add(frame: flvPacket)
             }
         )
     }
     
-    public func sendAudio(frame: Frame) {
+    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         aacFlvPacket.createFlvAudioPacket(
-            data: frame,
+            buffer: buffer, ts: ts,
             callback: { (flvPacket) in
                 queue.add(frame: flvPacket)
             }

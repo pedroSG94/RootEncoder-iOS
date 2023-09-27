@@ -28,7 +28,8 @@ public class AacFlvPacket {
         self.audioSize = audioSize
     }
     
-    func createFlvAudioPacket(data: Frame, callback: (FlvPacket) -> Void) {
+    func createFlvAudioPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
+        let length = buffer.count
         header[0] = isStereo ? AudioSoundType.STEREO.rawValue : AudioSoundType.MONO.rawValue
         header[0] |= (audioSize.rawValue << 1)
                 
@@ -51,13 +52,13 @@ public class AacFlvPacket {
             config.write(buffer: &buffer, offset: header.count)
             configSend = true
         } else {
-            let dataSize = Int(data.length ?? 0)
+            let dataSize = Int(length)
             buffer = [UInt8](repeating: 0, count: dataSize + header.count)
             header[1] = AudioType.RAW.rawValue
-            buffer[header.count..<buffer.count] = data.buffer![0..<dataSize]
+            buffer[header.count..<dataSize] = buffer[0..<dataSize]
         }
         buffer[0..<header.count] = header[0..<header.count]
-        let ts = (data.timeStamp ?? 0) / 1000
+        let ts = ts / 1000
         callback(FlvPacket(buffer: buffer, timeStamp: Int64(ts), length: buffer.count, type: .AUDIO))
     }
     

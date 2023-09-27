@@ -14,7 +14,7 @@ public class BasePacket {
         self.payloadType = payloadType
     }
 
-    public func createAndSendPacket(data: RtspFrame, callback: (RtpFrame) -> Void) { }
+    public func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) { }
 
     public func setSSRC(ssrc: UInt64) {
         self.ssrc = ssrc

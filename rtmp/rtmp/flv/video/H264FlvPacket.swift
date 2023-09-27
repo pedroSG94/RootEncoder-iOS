@@ -30,8 +30,8 @@ public class H264FlvPacket {
         self.pps = pps
     }
     
-    func createFlvVideoPacket(data: Frame, callback: (FlvPacket) -> Void) {
-        let ts = data.timeStamp! / 1000
+    func createFlvVideoPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
+        let ts = ts / 1000
         let cts = 0
         header[2] = UInt8(cts >> 16)
         header[3] = UInt8(cts >> 8)
@@ -57,13 +57,13 @@ public class H264FlvPacket {
             configSend = true
         }
         
-        let headerSize = getHeaderSize(byteBuffer: data.buffer!)
+        let headerSize = getHeaderSize(byteBuffer: buffer)
         
         if headerSize == 0 {
             return
         }
         
-        let validBuffer = removeHeader(byteBuffer: data.buffer!, size: headerSize)
+        let validBuffer = removeHeader(byteBuffer: buffer, size: headerSize)
         let size = validBuffer.count
         buffer = [UInt8](repeating: 0, count: header.count + size + naluSize)
         

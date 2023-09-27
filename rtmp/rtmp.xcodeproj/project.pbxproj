@@ -1,0 +1,844 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F1B2AC4929100B48654 /* rtmp.docc */; };
+		EBB16F222AC4929200B48654 /* rtmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBB16F172AC4929100B48654 /* rtmp.framework */; };
+		EBB16F272AC4929200B48654 /* rtmpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F262AC4929200B48654 /* rtmpTests.swift */; };
+		EBB16F282AC4929200B48654 /* rtmp.h in Headers */ = {isa = PBXBuildFile; fileRef = EBB16F1A2AC4929100B48654 /* rtmp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EBB16F892AC4932200B48654 /* AmfVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3A2AC492BB00B48654 /* AmfVersion.swift */; };
+		EBB16F8A2AC4932200B48654 /* AmfData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3B2AC492BB00B48654 /* AmfData.swift */; };
+		EBB16F8B2AC4932200B48654 /* AmfType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3C2AC492BB00B48654 /* AmfType.swift */; };
+		EBB16F8C2AC4932200B48654 /* AmfBoolean.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3D2AC492BB00B48654 /* AmfBoolean.swift */; };
+		EBB16F8D2AC4932200B48654 /* AmfEcmaArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3E2AC492BB00B48654 /* AmfEcmaArray.swift */; };
+		EBB16F8E2AC4932200B48654 /* AmfNull.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F3F2AC492BB00B48654 /* AmfNull.swift */; };
+		EBB16F8F2AC4932200B48654 /* AmfNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F402AC492BB00B48654 /* AmfNumber.swift */; };
+		EBB16F902AC4932200B48654 /* AmfObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F412AC492BB00B48654 /* AmfObject.swift */; };
+		EBB16F912AC4932200B48654 /* AmfObjectEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F422AC492BB00B48654 /* AmfObjectEnd.swift */; };
+		EBB16F922AC4932200B48654 /* AmfStrictArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F432AC492BB00B48654 /* AmfStrictArray.swift */; };
+		EBB16F932AC4932200B48654 /* AmfString.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F442AC492BB00B48654 /* AmfString.swift */; };
+		EBB16F942AC4932200B48654 /* AmfUndefined.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F452AC492BB00B48654 /* AmfUndefined.swift */; };
+		EBB16F952AC4932200B48654 /* Amf3Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F472AC492BB00B48654 /* Amf3Type.swift */; };
+		EBB16F962AC4932200B48654 /* H264FlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F772AC492BB00B48654 /* H264FlvPacket.swift */; };
+		EBB16F972AC4932200B48654 /* VideoDataType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F782AC492BB00B48654 /* VideoDataType.swift */; };
+		EBB16F982AC4932200B48654 /* VideoFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F792AC492BB00B48654 /* VideoFormat.swift */; };
+		EBB16F992AC4932200B48654 /* VideoNalType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F7A2AC492BB00B48654 /* VideoNalType.swift */; };
+		EBB16F9A2AC4932200B48654 /* ProfileIop.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F7B2AC492BB00B48654 /* ProfileIop.swift */; };
+		EBB16F9B2AC4932200B48654 /* VideoSpecificConfigAVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F7C2AC492BB00B48654 /* VideoSpecificConfigAVC.swift */; };
+		EBB16F9C2AC4932200B48654 /* AacFlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F7E2AC492BB00B48654 /* AacFlvPacket.swift */; };
+		EBB16F9D2AC4932200B48654 /* AudioFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F7F2AC492BB00B48654 /* AudioFormat.swift */; };
+		EBB16F9E2AC4932200B48654 /* AudioObjectType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F802AC492BB00B48654 /* AudioObjectType.swift */; };
+		EBB16F9F2AC4932200B48654 /* AudioSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F812AC492BB00B48654 /* AudioSize.swift */; };
+		EBB16FA02AC4932200B48654 /* AudioSoundRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F822AC492BB00B48654 /* AudioSoundRate.swift */; };
+		EBB16FA12AC4932200B48654 /* AudioSoundType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F832AC492BB00B48654 /* AudioSoundType.swift */; };
+		EBB16FA22AC4932200B48654 /* AudioSpecificConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F842AC492BB00B48654 /* AudioSpecificConfig.swift */; };
+		EBB16FA32AC4932200B48654 /* FlvPacket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F862AC492BB00B48654 /* FlvPacket.swift */; };
+		EBB16FA42AC4932200B48654 /* FlvType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F872AC492BB00B48654 /* FlvType.swift */; };
+		EBB16FA52AC4932200B48654 /* Handshake.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F4A2AC492BB00B48654 /* Handshake.swift */; };
+		EBB16FA62AC4932200B48654 /* ChunkStreamId.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F4B2AC492BB00B48654 /* ChunkStreamId.swift */; };
+		EBB16FA72AC4932200B48654 /* ChunkType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F4C2AC492BB00B48654 /* ChunkType.swift */; };
+		EBB16FA82AC4932200B48654 /* Comand.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F4E2AC492BB00B48654 /* Comand.swift */; };
+		EBB16FA92AC4932200B48654 /* CommandAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F4F2AC492BB00B48654 /* CommandAmf0.swift */; };
+		EBB16FAA2AC4932200B48654 /* CommandAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F502AC492BB00B48654 /* CommandAmf3.swift */; };
+		EBB16FAB2AC4932200B48654 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F522AC492BB00B48654 /* Event.swift */; };
+		EBB16FAC2AC4932200B48654 /* ControlType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F532AC492BB00B48654 /* ControlType.swift */; };
+		EBB16FAD2AC4932200B48654 /* UserControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F542AC492BB00B48654 /* UserControl.swift */; };
+		EBB16FAE2AC4932200B48654 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F562AC492BB00B48654 /* Data.swift */; };
+		EBB16FAF2AC4932200B48654 /* DataAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F572AC492BB00B48654 /* DataAmf0.swift */; };
+		EBB16FB02AC4932200B48654 /* DataAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F582AC492BB00B48654 /* DataAmf3.swift */; };
+		EBB16FB12AC4932200B48654 /* SharedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F5A2AC492BB00B48654 /* SharedObject.swift */; };
+		EBB16FB22AC4932200B48654 /* SharedObjectAmf0.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F5B2AC492BB00B48654 /* SharedObjectAmf0.swift */; };
+		EBB16FB32AC4932200B48654 /* SharedObjectAmf3.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F5C2AC492BB00B48654 /* SharedObjectAmf3.swift */; };
+		EBB16FB42AC4932200B48654 /* MessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F5E2AC492BB00B48654 /* MessageType.swift */; };
+		EBB16FB52AC4932200B48654 /* BasicHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F5F2AC492BB00B48654 /* BasicHeader.swift */; };
+		EBB16FB62AC4932200B48654 /* RtmpHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F602AC492BB00B48654 /* RtmpHeader.swift */; };
+		EBB16FB72AC4932200B48654 /* RtmpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F612AC492BB00B48654 /* RtmpMessage.swift */; };
+		EBB16FB82AC4932200B48654 /* Abort.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F622AC492BB00B48654 /* Abort.swift */; };
+		EBB16FB92AC4932200B48654 /* Aggregate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F632AC492BB00B48654 /* Aggregate.swift */; };
+		EBB16FBA2AC4932200B48654 /* SetChunkSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F642AC492BB00B48654 /* SetChunkSize.swift */; };
+		EBB16FBB2AC4932200B48654 /* SetPeerBandwidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F652AC492BB00B48654 /* SetPeerBandwidth.swift */; };
+		EBB16FBC2AC4932200B48654 /* WindowAcknowledgementSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F662AC492BB00B48654 /* WindowAcknowledgementSize.swift */; };
+		EBB16FBD2AC4932200B48654 /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F672AC492BB00B48654 /* Audio.swift */; };
+		EBB16FBE2AC4932200B48654 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F682AC492BB00B48654 /* Video.swift */; };
+		EBB16FBF2AC4932200B48654 /* Acknowledgement.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F692AC492BB00B48654 /* Acknowledgement.swift */; };
+		EBB16FC02AC4932200B48654 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6B2AC492BB00B48654 /* CommandManager.swift */; };
+		EBB16FC12AC4932200B48654 /* RtmpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6C2AC492BB00B48654 /* RtmpClient.swift */; };
+		EBB16FC22AC4932200B48654 /* RtmpSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6D2AC492BB00B48654 /* RtmpSender.swift */; };
+		EBB16FC32AC4932200B48654 /* ConnectCheckerRtmp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */; };
+		EBB16FC42AC4932200B48654 /* IOException.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F702AC492BB00B48654 /* IOException.swift */; };
+		EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F712AC492BB00B48654 /* Extensions.swift */; };
+		EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */; };
+		EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F732AC492BB00B48654 /* RtmpConfig.swift */; };
+		EBB16FC82AC4932200B48654 /* ConcurrentFlvQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */; };
+		EBB16FC92AC4932200B48654 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F752AC492BB00B48654 /* Socket.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EBB16F232AC4929200B48654 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EBB16F0E2AC4929100B48654 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EBB16F162AC4929100B48654;
+			remoteInfo = rtmp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EBB16F172AC4929100B48654 /* rtmp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = rtmp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EBB16F1A2AC4929100B48654 /* rtmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
+		EBB16F1B2AC4929100B48654 /* rtmp.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = rtmp.docc; sourceTree = "<group>"; };
+		EBB16F212AC4929200B48654 /* rtmpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = rtmpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EBB16F262AC4929200B48654 /* rtmpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = rtmpTests.swift; sourceTree = "<group>"; };
+		EBB16F3A2AC492BB00B48654 /* AmfVersion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfVersion.swift; sourceTree = "<group>"; };
+		EBB16F3B2AC492BB00B48654 /* AmfData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfData.swift; sourceTree = "<group>"; };
+		EBB16F3C2AC492BB00B48654 /* AmfType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfType.swift; sourceTree = "<group>"; };
+		EBB16F3D2AC492BB00B48654 /* AmfBoolean.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfBoolean.swift; sourceTree = "<group>"; };
+		EBB16F3E2AC492BB00B48654 /* AmfEcmaArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfEcmaArray.swift; sourceTree = "<group>"; };
+		EBB16F3F2AC492BB00B48654 /* AmfNull.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfNull.swift; sourceTree = "<group>"; };
+		EBB16F402AC492BB00B48654 /* AmfNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfNumber.swift; sourceTree = "<group>"; };
+		EBB16F412AC492BB00B48654 /* AmfObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfObject.swift; sourceTree = "<group>"; };
+		EBB16F422AC492BB00B48654 /* AmfObjectEnd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfObjectEnd.swift; sourceTree = "<group>"; };
+		EBB16F432AC492BB00B48654 /* AmfStrictArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfStrictArray.swift; sourceTree = "<group>"; };
+		EBB16F442AC492BB00B48654 /* AmfString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfString.swift; sourceTree = "<group>"; };
+		EBB16F452AC492BB00B48654 /* AmfUndefined.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AmfUndefined.swift; sourceTree = "<group>"; };
+		EBB16F472AC492BB00B48654 /* Amf3Type.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Amf3Type.swift; sourceTree = "<group>"; };
+		EBB16F4A2AC492BB00B48654 /* Handshake.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Handshake.swift; sourceTree = "<group>"; };
+		EBB16F4B2AC492BB00B48654 /* ChunkStreamId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkStreamId.swift; sourceTree = "<group>"; };
+		EBB16F4C2AC492BB00B48654 /* ChunkType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChunkType.swift; sourceTree = "<group>"; };
+		EBB16F4E2AC492BB00B48654 /* Comand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comand.swift; sourceTree = "<group>"; };
+		EBB16F4F2AC492BB00B48654 /* CommandAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandAmf0.swift; sourceTree = "<group>"; };
+		EBB16F502AC492BB00B48654 /* CommandAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandAmf3.swift; sourceTree = "<group>"; };
+		EBB16F522AC492BB00B48654 /* Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		EBB16F532AC492BB00B48654 /* ControlType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlType.swift; sourceTree = "<group>"; };
+		EBB16F542AC492BB00B48654 /* UserControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserControl.swift; sourceTree = "<group>"; };
+		EBB16F562AC492BB00B48654 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		EBB16F572AC492BB00B48654 /* DataAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf0.swift; sourceTree = "<group>"; };
+		EBB16F582AC492BB00B48654 /* DataAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataAmf3.swift; sourceTree = "<group>"; };
+		EBB16F5A2AC492BB00B48654 /* SharedObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObject.swift; sourceTree = "<group>"; };
+		EBB16F5B2AC492BB00B48654 /* SharedObjectAmf0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObjectAmf0.swift; sourceTree = "<group>"; };
+		EBB16F5C2AC492BB00B48654 /* SharedObjectAmf3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedObjectAmf3.swift; sourceTree = "<group>"; };
+		EBB16F5E2AC492BB00B48654 /* MessageType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageType.swift; sourceTree = "<group>"; };
+		EBB16F5F2AC492BB00B48654 /* BasicHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicHeader.swift; sourceTree = "<group>"; };
+		EBB16F602AC492BB00B48654 /* RtmpHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpHeader.swift; sourceTree = "<group>"; };
+		EBB16F612AC492BB00B48654 /* RtmpMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpMessage.swift; sourceTree = "<group>"; };
+		EBB16F622AC492BB00B48654 /* Abort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Abort.swift; sourceTree = "<group>"; };
+		EBB16F632AC492BB00B48654 /* Aggregate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Aggregate.swift; sourceTree = "<group>"; };
+		EBB16F642AC492BB00B48654 /* SetChunkSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetChunkSize.swift; sourceTree = "<group>"; };
+		EBB16F652AC492BB00B48654 /* SetPeerBandwidth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPeerBandwidth.swift; sourceTree = "<group>"; };
+		EBB16F662AC492BB00B48654 /* WindowAcknowledgementSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowAcknowledgementSize.swift; sourceTree = "<group>"; };
+		EBB16F672AC492BB00B48654 /* Audio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		EBB16F682AC492BB00B48654 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
+		EBB16F692AC492BB00B48654 /* Acknowledgement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acknowledgement.swift; sourceTree = "<group>"; };
+		EBB16F6B2AC492BB00B48654 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
+		EBB16F6C2AC492BB00B48654 /* RtmpClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpClient.swift; sourceTree = "<group>"; };
+		EBB16F6D2AC492BB00B48654 /* RtmpSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpSender.swift; sourceTree = "<group>"; };
+		EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtmp.swift; sourceTree = "<group>"; };
+		EBB16F702AC492BB00B48654 /* IOException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOException.swift; sourceTree = "<group>"; };
+		EBB16F712AC492BB00B48654 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSessionHistory.swift; sourceTree = "<group>"; };
+		EBB16F732AC492BB00B48654 /* RtmpConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConfig.swift; sourceTree = "<group>"; };
+		EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFlvQueue.swift; sourceTree = "<group>"; };
+		EBB16F752AC492BB00B48654 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		EBB16F772AC492BB00B48654 /* H264FlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H264FlvPacket.swift; sourceTree = "<group>"; };
+		EBB16F782AC492BB00B48654 /* VideoDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDataType.swift; sourceTree = "<group>"; };
+		EBB16F792AC492BB00B48654 /* VideoFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFormat.swift; sourceTree = "<group>"; };
+		EBB16F7A2AC492BB00B48654 /* VideoNalType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoNalType.swift; sourceTree = "<group>"; };
+		EBB16F7B2AC492BB00B48654 /* ProfileIop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileIop.swift; sourceTree = "<group>"; };
+		EBB16F7C2AC492BB00B48654 /* VideoSpecificConfigAVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoSpecificConfigAVC.swift; sourceTree = "<group>"; };
+		EBB16F7E2AC492BB00B48654 /* AacFlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AacFlvPacket.swift; sourceTree = "<group>"; };
+		EBB16F7F2AC492BB00B48654 /* AudioFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFormat.swift; sourceTree = "<group>"; };
+		EBB16F802AC492BB00B48654 /* AudioObjectType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioObjectType.swift; sourceTree = "<group>"; };
+		EBB16F812AC492BB00B48654 /* AudioSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSize.swift; sourceTree = "<group>"; };
+		EBB16F822AC492BB00B48654 /* AudioSoundRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSoundRate.swift; sourceTree = "<group>"; };
+		EBB16F832AC492BB00B48654 /* AudioSoundType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSoundType.swift; sourceTree = "<group>"; };
+		EBB16F842AC492BB00B48654 /* AudioSpecificConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSpecificConfig.swift; sourceTree = "<group>"; };
+		EBB16F862AC492BB00B48654 /* FlvPacket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlvPacket.swift; sourceTree = "<group>"; };
+		EBB16F872AC492BB00B48654 /* FlvType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlvType.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EBB16F142AC4929100B48654 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EBB16F1E2AC4929200B48654 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBB16F222AC4929200B48654 /* rtmp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EBB16F0D2AC4929100B48654 = {
+			isa = PBXGroup;
+			children = (
+				EBB16F192AC4929100B48654 /* rtmp */,
+				EBB16F252AC4929200B48654 /* rtmpTests */,
+				EBB16F182AC4929100B48654 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EBB16F182AC4929100B48654 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F172AC4929100B48654 /* rtmp.framework */,
+				EBB16F212AC4929200B48654 /* rtmpTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EBB16F192AC4929100B48654 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F492AC492BB00B48654 /* amf */,
+				EBB16F882AC492BB00B48654 /* flv */,
+				EBB16F6E2AC492BB00B48654 /* rtmp */,
+				EBB16F762AC492BB00B48654 /* utils */,
+				EBB16F1A2AC4929100B48654 /* rtmp.h */,
+				EBB16F1B2AC4929100B48654 /* rtmp.docc */,
+			);
+			path = rtmp;
+			sourceTree = "<group>";
+		};
+		EBB16F252AC4929200B48654 /* rtmpTests */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F262AC4929200B48654 /* rtmpTests.swift */,
+			);
+			path = rtmpTests;
+			sourceTree = "<group>";
+		};
+		EBB16F462AC492BB00B48654 /* v0 */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F3B2AC492BB00B48654 /* AmfData.swift */,
+				EBB16F3C2AC492BB00B48654 /* AmfType.swift */,
+				EBB16F3D2AC492BB00B48654 /* AmfBoolean.swift */,
+				EBB16F3E2AC492BB00B48654 /* AmfEcmaArray.swift */,
+				EBB16F3F2AC492BB00B48654 /* AmfNull.swift */,
+				EBB16F402AC492BB00B48654 /* AmfNumber.swift */,
+				EBB16F412AC492BB00B48654 /* AmfObject.swift */,
+				EBB16F422AC492BB00B48654 /* AmfObjectEnd.swift */,
+				EBB16F432AC492BB00B48654 /* AmfStrictArray.swift */,
+				EBB16F442AC492BB00B48654 /* AmfString.swift */,
+				EBB16F452AC492BB00B48654 /* AmfUndefined.swift */,
+			);
+			path = v0;
+			sourceTree = "<group>";
+		};
+		EBB16F482AC492BB00B48654 /* v3 */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F472AC492BB00B48654 /* Amf3Type.swift */,
+			);
+			path = v3;
+			sourceTree = "<group>";
+		};
+		EBB16F492AC492BB00B48654 /* amf */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F3A2AC492BB00B48654 /* AmfVersion.swift */,
+				EBB16F462AC492BB00B48654 /* v0 */,
+				EBB16F482AC492BB00B48654 /* v3 */,
+			);
+			path = amf;
+			sourceTree = "<group>";
+		};
+		EBB16F4D2AC492BB00B48654 /* chunk */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F4B2AC492BB00B48654 /* ChunkStreamId.swift */,
+				EBB16F4C2AC492BB00B48654 /* ChunkType.swift */,
+			);
+			path = chunk;
+			sourceTree = "<group>";
+		};
+		EBB16F512AC492BB00B48654 /* command */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F4E2AC492BB00B48654 /* Comand.swift */,
+				EBB16F4F2AC492BB00B48654 /* CommandAmf0.swift */,
+				EBB16F502AC492BB00B48654 /* CommandAmf3.swift */,
+			);
+			path = command;
+			sourceTree = "<group>";
+		};
+		EBB16F552AC492BB00B48654 /* control */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F522AC492BB00B48654 /* Event.swift */,
+				EBB16F532AC492BB00B48654 /* ControlType.swift */,
+				EBB16F542AC492BB00B48654 /* UserControl.swift */,
+			);
+			path = control;
+			sourceTree = "<group>";
+		};
+		EBB16F592AC492BB00B48654 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F562AC492BB00B48654 /* Data.swift */,
+				EBB16F572AC492BB00B48654 /* DataAmf0.swift */,
+				EBB16F582AC492BB00B48654 /* DataAmf3.swift */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		EBB16F5D2AC492BB00B48654 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F5A2AC492BB00B48654 /* SharedObject.swift */,
+				EBB16F5B2AC492BB00B48654 /* SharedObjectAmf0.swift */,
+				EBB16F5C2AC492BB00B48654 /* SharedObjectAmf3.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		EBB16F6A2AC492BB00B48654 /* message */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F512AC492BB00B48654 /* command */,
+				EBB16F552AC492BB00B48654 /* control */,
+				EBB16F592AC492BB00B48654 /* data */,
+				EBB16F5D2AC492BB00B48654 /* shared */,
+				EBB16F5E2AC492BB00B48654 /* MessageType.swift */,
+				EBB16F5F2AC492BB00B48654 /* BasicHeader.swift */,
+				EBB16F602AC492BB00B48654 /* RtmpHeader.swift */,
+				EBB16F612AC492BB00B48654 /* RtmpMessage.swift */,
+				EBB16F622AC492BB00B48654 /* Abort.swift */,
+				EBB16F632AC492BB00B48654 /* Aggregate.swift */,
+				EBB16F642AC492BB00B48654 /* SetChunkSize.swift */,
+				EBB16F652AC492BB00B48654 /* SetPeerBandwidth.swift */,
+				EBB16F662AC492BB00B48654 /* WindowAcknowledgementSize.swift */,
+				EBB16F672AC492BB00B48654 /* Audio.swift */,
+				EBB16F682AC492BB00B48654 /* Video.swift */,
+				EBB16F692AC492BB00B48654 /* Acknowledgement.swift */,
+			);
+			path = message;
+			sourceTree = "<group>";
+		};
+		EBB16F6E2AC492BB00B48654 /* rtmp */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F4A2AC492BB00B48654 /* Handshake.swift */,
+				EBB16F4D2AC492BB00B48654 /* chunk */,
+				EBB16F6A2AC492BB00B48654 /* message */,
+				EBB16F6B2AC492BB00B48654 /* CommandManager.swift */,
+				EBB16F6C2AC492BB00B48654 /* RtmpClient.swift */,
+				EBB16F6D2AC492BB00B48654 /* RtmpSender.swift */,
+			);
+			path = rtmp;
+			sourceTree = "<group>";
+		};
+		EBB16F762AC492BB00B48654 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */,
+				EBB16F702AC492BB00B48654 /* IOException.swift */,
+				EBB16F712AC492BB00B48654 /* Extensions.swift */,
+				EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */,
+				EBB16F732AC492BB00B48654 /* RtmpConfig.swift */,
+				EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */,
+				EBB16F752AC492BB00B48654 /* Socket.swift */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		EBB16F7D2AC492BB00B48654 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F772AC492BB00B48654 /* H264FlvPacket.swift */,
+				EBB16F782AC492BB00B48654 /* VideoDataType.swift */,
+				EBB16F792AC492BB00B48654 /* VideoFormat.swift */,
+				EBB16F7A2AC492BB00B48654 /* VideoNalType.swift */,
+				EBB16F7B2AC492BB00B48654 /* ProfileIop.swift */,
+				EBB16F7C2AC492BB00B48654 /* VideoSpecificConfigAVC.swift */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		EBB16F852AC492BB00B48654 /* audio */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F7E2AC492BB00B48654 /* AacFlvPacket.swift */,
+				EBB16F7F2AC492BB00B48654 /* AudioFormat.swift */,
+				EBB16F802AC492BB00B48654 /* AudioObjectType.swift */,
+				EBB16F812AC492BB00B48654 /* AudioSize.swift */,
+				EBB16F822AC492BB00B48654 /* AudioSoundRate.swift */,
+				EBB16F832AC492BB00B48654 /* AudioSoundType.swift */,
+				EBB16F842AC492BB00B48654 /* AudioSpecificConfig.swift */,
+			);
+			path = audio;
+			sourceTree = "<group>";
+		};
+		EBB16F882AC492BB00B48654 /* flv */ = {
+			isa = PBXGroup;
+			children = (
+				EBB16F7D2AC492BB00B48654 /* video */,
+				EBB16F852AC492BB00B48654 /* audio */,
+				EBB16F862AC492BB00B48654 /* FlvPacket.swift */,
+				EBB16F872AC492BB00B48654 /* FlvType.swift */,
+			);
+			path = flv;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		EBB16F122AC4929100B48654 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBB16F282AC4929200B48654 /* rtmp.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		EBB16F162AC4929100B48654 /* rtmp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EBB16F2B2AC4929200B48654 /* Build configuration list for PBXNativeTarget "rtmp" */;
+			buildPhases = (
+				EBB16F122AC4929100B48654 /* Headers */,
+				EBB16F132AC4929100B48654 /* Sources */,
+				EBB16F142AC4929100B48654 /* Frameworks */,
+				EBB16F152AC4929100B48654 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = rtmp;
+			productName = rtmp;
+			productReference = EBB16F172AC4929100B48654 /* rtmp.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		EBB16F202AC4929200B48654 /* rtmpTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EBB16F2E2AC4929200B48654 /* Build configuration list for PBXNativeTarget "rtmpTests" */;
+			buildPhases = (
+				EBB16F1D2AC4929200B48654 /* Sources */,
+				EBB16F1E2AC4929200B48654 /* Frameworks */,
+				EBB16F1F2AC4929200B48654 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EBB16F242AC4929200B48654 /* PBXTargetDependency */,
+			);
+			name = rtmpTests;
+			productName = rtmpTests;
+			productReference = EBB16F212AC4929200B48654 /* rtmpTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EBB16F0E2AC4929100B48654 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					EBB16F162AC4929100B48654 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					EBB16F202AC4929200B48654 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = EBB16F112AC4929100B48654 /* Build configuration list for PBXProject "rtmp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EBB16F0D2AC4929100B48654;
+			productRefGroup = EBB16F182AC4929100B48654 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EBB16F162AC4929100B48654 /* rtmp */,
+				EBB16F202AC4929200B48654 /* rtmpTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EBB16F152AC4929100B48654 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EBB16F1F2AC4929200B48654 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EBB16F132AC4929100B48654 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBB16F892AC4932200B48654 /* AmfVersion.swift in Sources */,
+				EBB16F8A2AC4932200B48654 /* AmfData.swift in Sources */,
+				EBB16F8B2AC4932200B48654 /* AmfType.swift in Sources */,
+				EBB16F8C2AC4932200B48654 /* AmfBoolean.swift in Sources */,
+				EBB16F8D2AC4932200B48654 /* AmfEcmaArray.swift in Sources */,
+				EBB16F8E2AC4932200B48654 /* AmfNull.swift in Sources */,
+				EBB16F8F2AC4932200B48654 /* AmfNumber.swift in Sources */,
+				EBB16F902AC4932200B48654 /* AmfObject.swift in Sources */,
+				EBB16F912AC4932200B48654 /* AmfObjectEnd.swift in Sources */,
+				EBB16F922AC4932200B48654 /* AmfStrictArray.swift in Sources */,
+				EBB16F932AC4932200B48654 /* AmfString.swift in Sources */,
+				EBB16F942AC4932200B48654 /* AmfUndefined.swift in Sources */,
+				EBB16F952AC4932200B48654 /* Amf3Type.swift in Sources */,
+				EBB16F962AC4932200B48654 /* H264FlvPacket.swift in Sources */,
+				EBB16F972AC4932200B48654 /* VideoDataType.swift in Sources */,
+				EBB16F982AC4932200B48654 /* VideoFormat.swift in Sources */,
+				EBB16F992AC4932200B48654 /* VideoNalType.swift in Sources */,
+				EBB16F9A2AC4932200B48654 /* ProfileIop.swift in Sources */,
+				EBB16F9B2AC4932200B48654 /* VideoSpecificConfigAVC.swift in Sources */,
+				EBB16F9C2AC4932200B48654 /* AacFlvPacket.swift in Sources */,
+				EBB16F9D2AC4932200B48654 /* AudioFormat.swift in Sources */,
+				EBB16F9E2AC4932200B48654 /* AudioObjectType.swift in Sources */,
+				EBB16F9F2AC4932200B48654 /* AudioSize.swift in Sources */,
+				EBB16FA02AC4932200B48654 /* AudioSoundRate.swift in Sources */,
+				EBB16FA12AC4932200B48654 /* AudioSoundType.swift in Sources */,
+				EBB16FA22AC4932200B48654 /* AudioSpecificConfig.swift in Sources */,
+				EBB16FA32AC4932200B48654 /* FlvPacket.swift in Sources */,
+				EBB16FA42AC4932200B48654 /* FlvType.swift in Sources */,
+				EBB16FA52AC4932200B48654 /* Handshake.swift in Sources */,
+				EBB16FA62AC4932200B48654 /* ChunkStreamId.swift in Sources */,
+				EBB16FA72AC4932200B48654 /* ChunkType.swift in Sources */,
+				EBB16FA82AC4932200B48654 /* Comand.swift in Sources */,
+				EBB16FA92AC4932200B48654 /* CommandAmf0.swift in Sources */,
+				EBB16FAA2AC4932200B48654 /* CommandAmf3.swift in Sources */,
+				EBB16FAB2AC4932200B48654 /* Event.swift in Sources */,
+				EBB16FAC2AC4932200B48654 /* ControlType.swift in Sources */,
+				EBB16FAD2AC4932200B48654 /* UserControl.swift in Sources */,
+				EBB16FAE2AC4932200B48654 /* Data.swift in Sources */,
+				EBB16FAF2AC4932200B48654 /* DataAmf0.swift in Sources */,
+				EBB16FB02AC4932200B48654 /* DataAmf3.swift in Sources */,
+				EBB16FB12AC4932200B48654 /* SharedObject.swift in Sources */,
+				EBB16FB22AC4932200B48654 /* SharedObjectAmf0.swift in Sources */,
+				EBB16FB32AC4932200B48654 /* SharedObjectAmf3.swift in Sources */,
+				EBB16FB42AC4932200B48654 /* MessageType.swift in Sources */,
+				EBB16FB52AC4932200B48654 /* BasicHeader.swift in Sources */,
+				EBB16FB62AC4932200B48654 /* RtmpHeader.swift in Sources */,
+				EBB16FB72AC4932200B48654 /* RtmpMessage.swift in Sources */,
+				EBB16FB82AC4932200B48654 /* Abort.swift in Sources */,
+				EBB16FB92AC4932200B48654 /* Aggregate.swift in Sources */,
+				EBB16FBA2AC4932200B48654 /* SetChunkSize.swift in Sources */,
+				EBB16FBB2AC4932200B48654 /* SetPeerBandwidth.swift in Sources */,
+				EBB16FBC2AC4932200B48654 /* WindowAcknowledgementSize.swift in Sources */,
+				EBB16FBD2AC4932200B48654 /* Audio.swift in Sources */,
+				EBB16FBE2AC4932200B48654 /* Video.swift in Sources */,
+				EBB16FBF2AC4932200B48654 /* Acknowledgement.swift in Sources */,
+				EBB16FC02AC4932200B48654 /* CommandManager.swift in Sources */,
+				EBB16FC12AC4932200B48654 /* RtmpClient.swift in Sources */,
+				EBB16FC22AC4932200B48654 /* RtmpSender.swift in Sources */,
+				EBB16FC32AC4932200B48654 /* ConnectCheckerRtmp.swift in Sources */,
+				EBB16FC42AC4932200B48654 /* IOException.swift in Sources */,
+				EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */,
+				EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */,
+				EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */,
+				EBB16FC82AC4932200B48654 /* ConcurrentFlvQueue.swift in Sources */,
+				EBB16FC92AC4932200B48654 /* Socket.swift in Sources */,
+				EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EBB16F1D2AC4929200B48654 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBB16F272AC4929200B48654 /* rtmpTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EBB16F242AC4929200B48654 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EBB16F162AC4929100B48654 /* rtmp */;
+			targetProxy = EBB16F232AC4929200B48654 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EBB16F292AC4929200B48654 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		EBB16F2A2AC4929200B48654 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		EBB16F2C2AC4929200B48654 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.rtmp;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EBB16F2D2AC4929200B48654 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.rtmp;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EBB16F2F2AC4929200B48654 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.rtmpTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EBB16F302AC4929200B48654 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.rtmpTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EBB16F112AC4929100B48654 /* Build configuration list for PBXProject "rtmp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBB16F292AC4929200B48654 /* Debug */,
+				EBB16F2A2AC4929200B48654 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EBB16F2B2AC4929200B48654 /* Build configuration list for PBXNativeTarget "rtmp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBB16F2C2AC4929200B48654 /* Debug */,
+				EBB16F2D2AC4929200B48654 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EBB16F2E2AC4929200B48654 /* Build configuration list for PBXNativeTarget "rtmpTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBB16F2F2AC4929200B48654 /* Debug */,
+				EBB16F302AC4929200B48654 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EBB16F0E2AC4929100B48654 /* Project object */;
+}

@@ -39,11 +39,11 @@ public class RtspCamera: CameraBase {
     }
     
     public override func getAacDataRtp(frame: Frame) {
-        client.sendAudio(frame: RtspFrame(buffer: frame.buffer, length: frame.length, timeStamp: frame.timeStamp, flag: frame.flag))
+        client.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
     }
 
     public override func getH264DataRtp(frame: Frame) {
-        client.sendVideo(frame: RtspFrame(buffer: frame.buffer, length: frame.length, timeStamp: frame.timeStamp, flag: frame.flag))
+        client.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
     }
 
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {

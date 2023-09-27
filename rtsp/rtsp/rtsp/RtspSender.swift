@@ -45,10 +45,10 @@ public class RtspSender {
         audioPacketizer = AacPacket(sampleRate: 44100)
     }
     
-    public func sendVideo(frame: RtspFrame) {
+    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         if (running) {
             videoPacketizer?.createAndSendPacket(
-                data: frame,
+                buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
                     queue.add(frame: rtpFrame)
                 }
@@ -56,10 +56,10 @@ public class RtspSender {
         }
     }
     
-    public func sendAudio(frame: RtspFrame) {
+    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (running) {
             audioPacketizer?.createAndSendPacket(
-                data: frame,
+                buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
                     queue.add(frame: rtpFrame)
                 }

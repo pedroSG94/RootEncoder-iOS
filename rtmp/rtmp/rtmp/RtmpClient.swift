@@ -277,15 +277,15 @@ public class RtmpClient {
         return true
     }
     
-    public func sendVideo(frame: Frame) {
+    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         if (isStreaming) {
-            rtmpSender.sendVideo(frame: frame)
+            rtmpSender.sendVideo(buffer: buffer, ts: ts)
         }
     }
     
-    public func sendAudio(frame: Frame) {
+    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (isStreaming) {
-            rtmpSender.sendAudio(frame: frame)
+            rtmpSender.sendAudio(buffer: buffer, ts: ts)
         }
     }
 }

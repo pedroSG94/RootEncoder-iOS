@@ -16,9 +16,8 @@ public class H265Packet: BasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
 
-    public override func createAndSendPacket(data: RtspFrame, callback: (RtpFrame) -> Void) {
-        var buffer = data.buffer!
-        let ts = data.timeStamp!
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
+        var buffer = buffer
         let dts = ts * 1000
         var frame = RtpFrame()
         frame.channelIdentifier = channelIdentifier
@@ -30,7 +29,7 @@ public class H265Packet: BasePacket {
         let naluLength = Int(buffer.count)
         let type: UInt8 = header[4] >> (1 & 0x3F)
 
-        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP || type == RtpConstants.CRA_NUT || data.flag == 1 {
+        if type == RtpConstants.IDR_N_LP || type == RtpConstants.IDR_W_DLP || type == RtpConstants.CRA_NUT {
             var rtpBuffer = getBuffer(size: agregationPacket!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             markPacket(buffer: &rtpBuffer)
