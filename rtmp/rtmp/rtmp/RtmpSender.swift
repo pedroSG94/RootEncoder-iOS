@@ -54,7 +54,6 @@ public class RtmpSender {
             while (self.running) {
                 let flvPacket = self.queue.dequeue()
                 if let flvPacket = flvPacket {
-                    print("1")
                     do {
                         if (flvPacket.type == FlvType.VIDEO) {
                             let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
@@ -63,14 +62,12 @@ public class RtmpSender {
                             let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
                             print("wrote Audio packet, size: \(size)")
                         }
-                        print("2")
                     } catch let error {
                         self.callback.onConnectionFailedRtmp(reason: error.localizedDescription)
                         return
                     }
                 }
             }
-            print("finished")
         }
     }
 
