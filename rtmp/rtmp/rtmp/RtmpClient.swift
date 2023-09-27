@@ -108,7 +108,7 @@ public class RtmpClient {
                     sync.leave()
                 }
             }
-            sync.wait(timeout: DispatchTime.now() + 0.1)
+            let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
             socket?.disconnect()
             commandManager.reset()
             isStreaming = false

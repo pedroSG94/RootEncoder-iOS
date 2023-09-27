@@ -56,6 +56,8 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
+        audioEncoder.start()
+        videoEncoder.start()
         microphone.start()
         cameraManager.start()
         onPreview = true

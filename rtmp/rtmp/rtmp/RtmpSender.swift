@@ -9,9 +9,9 @@ public class RtmpSender {
 
     private let h264FlvPacket = H264FlvPacket()
     private let aacFlvPacket = AacFlvPacket()
-    private let thread = DispatchQueue(label: "RtspSender")
+    private let thread = DispatchQueue(label: "RtmpSender")
     private var running = false
-    private let queue = ConcurrentFlvQueue()
+    private let queue = SynchronizedQueue<FlvPacket>(label: "RtmpSenderQueue", size: 485035840)
     private let callback: ConnectCheckerRtmp
     private let commandManager: CommandManager
     var socket: Socket? = nil
@@ -33,7 +33,7 @@ public class RtmpSender {
         h264FlvPacket.createFlvVideoPacket(
             buffer: buffer, ts: ts,
             callback: { (flvPacket) in
-                queue.add(frame: flvPacket)
+                queue.enqueue(flvPacket)
             }
         )
     }
@@ -42,35 +42,35 @@ public class RtmpSender {
         aacFlvPacket.createFlvAudioPacket(
             buffer: buffer, ts: ts,
             callback: { (flvPacket) in
-                queue.add(frame: flvPacket)
+                queue.enqueue(flvPacket)
             }
         )
     }
     
     public func start() {
         running = true
+        queue.clear()
         thread.async {
             while (self.running) {
-                let flvPacket = self.queue.poll()
-                if (flvPacket == nil) {
-                    usleep(100)
-                    continue
-                } else {
+                let flvPacket = self.queue.dequeue()
+                if let flvPacket = flvPacket {
+                    print("1")
                     do {
-                        if (flvPacket?.type == FlvType.VIDEO) {
-                            let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket!, socket: self.socket!)
+                        if (flvPacket.type == FlvType.VIDEO) {
+                            let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
                             print("wrote Video packet, size: \(size)")
                         } else {
-                            let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket!, socket: self.socket!)
+                            let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
                             print("wrote Audio packet, size: \(size)")
                         }
-
+                        print("2")
                     } catch let error {
                         self.callback.onConnectionFailedRtmp(reason: error.localizedDescription)
                         return
                     }
                 }
             }
+            print("finished")
         }
     }
 
@@ -78,5 +78,6 @@ public class RtmpSender {
         running = false
         aacFlvPacket.reset()
         h264FlvPacket.reset(resetInfo: true)
+        queue.clear()
     }
 }

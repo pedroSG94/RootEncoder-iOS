@@ -15,7 +15,7 @@
 		EBB16EFA2AC3861500B48654 /* RtpConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC4D2AC383A800AAA380 /* RtpConstants.swift */; };
 		EBB16EFB2AC3861500B48654 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC4E2AC383A800AAA380 /* Socket.swift */; };
 		EBB16EFC2AC3861500B48654 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC4F2AC383A800AAA380 /* Utils.swift */; };
-		EBB16EFD2AC3861500B48654 /* ConcurrentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC502AC383A800AAA380 /* ConcurrentQueue.swift */; };
+		EBB16EFD2AC3861500B48654 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC502AC383A800AAA380 /* SynchronizedQueue.swift */; };
 		EBB16EFE2AC3861500B48654 /* RtspClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC522AC383A800AAA380 /* RtspClient.swift */; };
 		EBB16EFF2AC3861500B48654 /* Body.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC532AC383A800AAA380 /* Body.swift */; };
 		EBB16F002AC3861500B48654 /* CommandsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC6AC542AC383A800AAA380 /* CommandsManager.swift */; };
@@ -63,7 +63,7 @@
 		EBC6AC4D2AC383A800AAA380 /* RtpConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtpConstants.swift; sourceTree = "<group>"; };
 		EBC6AC4E2AC383A800AAA380 /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		EBC6AC4F2AC383A800AAA380 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		EBC6AC502AC383A800AAA380 /* ConcurrentQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurrentQueue.swift; sourceTree = "<group>"; };
+		EBC6AC502AC383A800AAA380 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
 		EBC6AC522AC383A800AAA380 /* RtspClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtspClient.swift; sourceTree = "<group>"; };
 		EBC6AC532AC383A800AAA380 /* Body.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Body.swift; sourceTree = "<group>"; };
 		EBC6AC542AC383A800AAA380 /* CommandsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandsManager.swift; sourceTree = "<group>"; };
@@ -170,7 +170,7 @@
 				EBC6AC4D2AC383A800AAA380 /* RtpConstants.swift */,
 				EBC6AC4E2AC383A800AAA380 /* Socket.swift */,
 				EBC6AC4F2AC383A800AAA380 /* Utils.swift */,
-				EBC6AC502AC383A800AAA380 /* ConcurrentQueue.swift */,
+				EBC6AC502AC383A800AAA380 /* SynchronizedQueue.swift */,
 				EBB16F092AC3874700B48654 /* IOException.swift */,
 			);
 			path = utils;
@@ -319,7 +319,7 @@
 				EBB16EFA2AC3861500B48654 /* RtpConstants.swift in Sources */,
 				EBB16EFB2AC3861500B48654 /* Socket.swift in Sources */,
 				EBB16EFC2AC3861500B48654 /* Utils.swift in Sources */,
-				EBB16EFD2AC3861500B48654 /* ConcurrentQueue.swift in Sources */,
+				EBB16EFD2AC3861500B48654 /* SynchronizedQueue.swift in Sources */,
 				EBB16EFE2AC3861500B48654 /* RtspClient.swift in Sources */,
 				EBB16EFF2AC3861500B48654 /* Body.swift in Sources */,
 				EBB16F002AC3861500B48654 /* CommandsManager.swift in Sources */,

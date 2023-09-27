@@ -74,7 +74,7 @@
 		EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F712AC492BB00B48654 /* Extensions.swift */; };
 		EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */; };
 		EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F732AC492BB00B48654 /* RtmpConfig.swift */; };
-		EBB16FC82AC4932200B48654 /* ConcurrentFlvQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */; };
+		EBB16FC82AC4932200B48654 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */; };
 		EBB16FC92AC4932200B48654 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F752AC492BB00B48654 /* Socket.swift */; };
 /* End PBXBuildFile section */
 
@@ -142,7 +142,7 @@
 		EBB16F712AC492BB00B48654 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSessionHistory.swift; sourceTree = "<group>"; };
 		EBB16F732AC492BB00B48654 /* RtmpConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConfig.swift; sourceTree = "<group>"; };
-		EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentFlvQueue.swift; sourceTree = "<group>"; };
+		EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
 		EBB16F752AC492BB00B48654 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		EBB16F772AC492BB00B48654 /* H264FlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H264FlvPacket.swift; sourceTree = "<group>"; };
 		EBB16F782AC492BB00B48654 /* VideoDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDataType.swift; sourceTree = "<group>"; };
@@ -348,7 +348,7 @@
 				EBB16F712AC492BB00B48654 /* Extensions.swift */,
 				EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */,
 				EBB16F732AC492BB00B48654 /* RtmpConfig.swift */,
-				EBB16F742AC492BB00B48654 /* ConcurrentFlvQueue.swift */,
+				EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */,
 				EBB16F752AC492BB00B48654 /* Socket.swift */,
 			);
 			path = utils;
@@ -564,7 +564,7 @@
 				EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */,
 				EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */,
 				EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */,
-				EBB16FC82AC4932200B48654 /* ConcurrentFlvQueue.swift in Sources */,
+				EBB16FC82AC4932200B48654 /* SynchronizedQueue.swift in Sources */,
 				EBB16FC92AC4932200B48654 /* Socket.swift in Sources */,
 				EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */,
 			);

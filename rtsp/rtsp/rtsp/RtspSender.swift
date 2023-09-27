@@ -8,7 +8,7 @@ public class RtspSender {
     private var tcpReport: BaseSenderReport?
     private let thread = DispatchQueue(label: "RtspSender")
     private var running = false
-    private let queue = ConcurrentQueue()
+    private let queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: 10 * 1024 * 1024 / RtpConstants.MTU)
     private let callback: ConnectCheckerRtsp
 
     public init(callback: ConnectCheckerRtsp) {
@@ -50,7 +50,7 @@ public class RtspSender {
             videoPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
-                    queue.add(frame: rtpFrame)
+                    queue.enqueue(rtpFrame)
                 }
             )
         }
@@ -61,7 +61,7 @@ public class RtspSender {
             audioPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
-                    queue.add(frame: rtpFrame)
+                    queue.enqueue(rtpFrame)
                 }
             )
         }
@@ -74,16 +74,14 @@ public class RtspSender {
         audioPacketizer?.setSSRC(ssrc: ssrcAudio)
         tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         running = true
+        queue.clear()
         thread.async {
             while (self.running) {
-                let frame = self.queue.poll()
-                if (frame == nil) {
-                    usleep(100)
-                    continue
-                } else {
+                let frame = self.queue.dequeue()
+                if let frame = frame {
                     do {
-                        try self.tcpSocket?.sendFrame(rtpFrame: frame!)
-                        try self.tcpReport?.update(rtpFrame: frame!)
+                        try self.tcpSocket?.sendFrame(rtpFrame: frame)
+                        try self.tcpReport?.update(rtpFrame: frame)
                     } catch let error {
                         self.callback.onConnectionFailedRtsp(reason: error.localizedDescription)
                         return
@@ -96,5 +94,6 @@ public class RtspSender {
     public func stop() {
         running = false
         tcpReport?.close()
+        queue.clear()
     }
 }

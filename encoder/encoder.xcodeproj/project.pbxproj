@@ -24,6 +24,7 @@
 		EB173ABC2AC497BC00B73F4A /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA32AC4978E00B73F4A /* VideoEncoder.swift */; };
 		EB173ABD2AC497BC00B73F4A /* GetH264Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA42AC4978E00B73F4A /* GetH264Data.swift */; };
 		EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */; };
+		EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		EB173AAE2AC4978E00B73F4A /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
 		EB173AAF2AC4978E00B73F4A /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +143,7 @@
 				EB173AA82AC4978E00B73F4A /* Conversor.swift */,
 				EB173AA92AC4978E00B73F4A /* CodecUtil.swift */,
 				EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */,
+				EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -295,6 +298,7 @@
 				EB173ABD2AC497BC00B73F4A /* GetH264Data.swift in Sources */,
 				EB173A822AC4977200B73F4A /* encoder.docc in Sources */,
 				EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */,
+				EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

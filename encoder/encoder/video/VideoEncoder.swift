@@ -32,6 +32,8 @@ public class VideoEncoder {
     private var running = false
     private var forceKey = false
     private var codec = CodecUtil.H264
+    private let thread = DispatchQueue(label: "VideoEncoder")
+    private let syncQueue = SynchronizedQueue<CMSampleBuffer>(label: "VideoEncodeQueue", size: 60)
 
     private var session: VTCompressionSession?
     private let callback: GetH264Data
@@ -67,12 +69,35 @@ public class VideoEncoder {
                 kVTCompressionPropertyKey_AllowFrameReordering: true
             ] as CFDictionary)
             VTCompressionSessionPrepareToEncodeFrames(sess)
-            initTs = Date().millisecondsSince1970
             print("prepare video success")
-            running = true
             return true
         }else{
             return false
+        }
+    }
+    
+    public func start() {
+        initTs = Date().millisecondsSince1970
+        running = true
+        syncQueue.clear()
+        thread.async {
+            while (self.running) {
+                let buffer = self.syncQueue.dequeue()
+                if let buffer = buffer {
+                    guard let session = self.session else { return }
+                    guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
+                    let time = CMSampleBufferGetPresentationTimeStamp(buffer)
+                    var properties: Dictionary<String, Any>?
+                    if (self.forceKey) {
+                        self.forceKey = false
+                        properties = [
+                            kVTEncodeFrameOptionKey_ForceKeyFrame as String: true
+                        ];
+                    }
+                    var flag:VTEncodeInfoFlags = VTEncodeInfoFlags()
+                    VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: properties as CFDictionary?, sourceFrameRefcon: nil, infoFlagsOut: &flag)
+                }
+            }
         }
     }
 
@@ -86,18 +111,7 @@ public class VideoEncoder {
 
     public func encodeFrame(buffer: CMSampleBuffer) {
         if (running) {
-            guard let session = session else { return }
-            guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
-            let time = CMSampleBufferGetPresentationTimeStamp(buffer)
-            var properties: Dictionary<String, Any>?
-            if (forceKey) {
-                forceKey = false
-                properties = [
-                    kVTEncodeFrameOptionKey_ForceKeyFrame as String: true
-                ];
-            }
-            var flag:VTEncodeInfoFlags = VTEncodeInfoFlags()
-            VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: properties as CFDictionary?, sourceFrameRefcon: nil, infoFlagsOut: &flag)
+            syncQueue.enqueue(buffer)
         }
     }
 
@@ -107,6 +121,7 @@ public class VideoEncoder {
         VTCompressionSessionInvalidate(session)
         isSpsAndPpsSend = false
         forceKey = false
+        syncQueue.clear()
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?,
