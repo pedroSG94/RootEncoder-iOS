@@ -22,7 +22,7 @@ public class CommandManager {
     var akamaiTs = false
     var startTs: Int64 = 0
     var readChunkSize = RtmpConfig.DEFAULT_CHUNK_SIZE
-    var audioDisabled = false
+    var audioDisabled = true
     var videoDisabled = false
 
     private var width = 640

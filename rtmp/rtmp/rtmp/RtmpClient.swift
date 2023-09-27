@@ -278,13 +278,13 @@ public class RtmpClient {
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        if (isStreaming) {
+        if (isStreaming && !commandManager.videoDisabled) {
             rtmpSender.sendVideo(buffer: buffer, ts: ts)
         }
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
-        if (isStreaming) {
+        if (isStreaming && !commandManager.audioDisabled) {
             rtmpSender.sendAudio(buffer: buffer, ts: ts)
         }
     }

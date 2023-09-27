@@ -31,13 +31,13 @@ public class H264FlvPacket {
     }
     
     func createFlvVideoPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
-        let ts = ts / 1000
+        let timeStamp = ts / 1000
         let cts = 0
         header[2] = UInt8(cts >> 16)
         header[3] = UInt8(cts >> 8)
         header[4] = UInt8(cts)
         
-        var buffer = [UInt8]()
+        var packetBuffer = [UInt8]()
         
         if !configSend {
             header[0] = UInt8((Int(VideoDataType.KEYFRAME.rawValue) << 4) | VideoFormat.AVC.rawValue)
@@ -45,15 +45,15 @@ public class H264FlvPacket {
             
             if let sps = self.sps, let pps = self.pps {
                 let config = VideoSpecificConfigAVC(sps: sps, pps: pps, profileIop: profileIop)
-                buffer = [UInt8](repeating: 0, count: config.size + header.count)
-                config.write(buffer: &buffer, offset: header.count)
+                packetBuffer = [UInt8](repeating: 0, count: config.size + header.count)
+                config.write(buffer: &packetBuffer, offset: header.count)
             } else {
                 print("\(TAG): waiting for a valid sps and pps")
                 return
             }
             
-            buffer[0..<header.count] = header[0..<header.count]
-            callback(FlvPacket(buffer: buffer, timeStamp: Int64(ts), length: buffer.count, type: .VIDEO))
+            packetBuffer[0..<header.count] = header[0..<header.count]
+            callback(FlvPacket(buffer: packetBuffer, timeStamp: Int64(timeStamp), length: packetBuffer.count, type: .VIDEO))
             configSend = true
         }
         
@@ -65,7 +65,7 @@ public class H264FlvPacket {
         
         let validBuffer = removeHeader(byteBuffer: buffer, size: headerSize)
         let size = validBuffer.count
-        buffer = [UInt8](repeating: 0, count: header.count + size + naluSize)
+        packetBuffer = [UInt8](repeating: 0, count: header.count + size + naluSize)
         
         let type: Int = Int(validBuffer[0]) & 0x1F
         var nalType = VideoDataType.INTER_FRAME.rawValue
@@ -78,14 +78,11 @@ public class H264FlvPacket {
         
         header[0] = UInt8((Int(nalType) << 4) | VideoFormat.AVC.rawValue)
         header[1] = VideoType.NALU.rawValue
-        writeNaluSize(buffer: &buffer, offset: header.count, size: size)
+        writeNaluSize(buffer: &packetBuffer, offset: header.count, size: size)
         
-        for i in 0..<size {
-            buffer[header.count + naluSize + i] = validBuffer[i]
-        }
-        
-        buffer[0..<header.count] = header[0..<header.count]
-        callback(FlvPacket(buffer: buffer, timeStamp: Int64(ts), length: buffer.count, type: .VIDEO))
+        packetBuffer[header.count + naluSize..<packetBuffer.count] = validBuffer[0..<validBuffer.count]
+        packetBuffer[0..<header.count] = header[0..<header.count]
+        callback(FlvPacket(buffer: packetBuffer, timeStamp: Int64(timeStamp), length: packetBuffer.count, type: .VIDEO))
     }
     
     private func getHeaderSize(byteBuffer: [UInt8]) -> Int {

@@ -44,22 +44,21 @@ public class AacFlvPacket {
         header[0] |= (soundRate.rawValue << 2)
         header[0] |= (AudioFormat.AAC.rawValue << 4)
                 
-        var buffer: [UInt8]
+        var packetBuffer: [UInt8]
         if !configSend {
             let config = AudioSpecificConfig(type: objectType.rawValue, sampleRate: sampleRate, channels: isStereo ? 2 : 1)
-            buffer = [UInt8](repeating: 0, count: config.size + header.count)
+            packetBuffer = [UInt8](repeating: 0, count: config.size + header.count)
             header[1] = AudioType.SEQUENCE.rawValue
-            config.write(buffer: &buffer, offset: header.count)
+            config.write(buffer: &packetBuffer, offset: header.count)
             configSend = true
         } else {
-            let dataSize = Int(length)
-            buffer = [UInt8](repeating: 0, count: dataSize + header.count)
+            packetBuffer = [UInt8](repeating: 0, count: length + header.count)
             header[1] = AudioType.RAW.rawValue
-            buffer[header.count..<dataSize] = buffer[0..<dataSize]
+            packetBuffer[header.count..<packetBuffer.count] = buffer[0..<length]
         }
-        buffer[0..<header.count] = header[0..<header.count]
-        let ts = ts / 1000
-        callback(FlvPacket(buffer: buffer, timeStamp: Int64(ts), length: buffer.count, type: .AUDIO))
+        packetBuffer[0..<header.count] = header[0..<header.count]
+        let timeStamp = ts / 1000
+        callback(FlvPacket(buffer: packetBuffer, timeStamp: Int64(timeStamp), length: packetBuffer.count, type: .AUDIO))
     }
     
     func reset() {
