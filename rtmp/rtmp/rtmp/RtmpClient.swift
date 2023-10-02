@@ -112,6 +112,7 @@ public class RtmpClient {
             socket?.disconnect()
             commandManager.reset()
             isStreaming = false
+            publishPermitted = false
             connectCheckerRtmp.onDisconnectRtmp()
         }
     }

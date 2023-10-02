@@ -49,7 +49,6 @@ public class RtmpSender {
     
     public func start() {
         running = true
-        queue.clear()
         thread.async {
             while (self.running) {
                 let flvPacket = self.queue.dequeue()
@@ -75,6 +74,5 @@ public class RtmpSender {
         running = false
         aacFlvPacket.reset()
         h264FlvPacket.reset(resetInfo: true)
-        queue.clear()
     }
 }
