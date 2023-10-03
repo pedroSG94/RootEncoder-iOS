@@ -73,8 +73,8 @@ public class RtspSender {
         videoPacketizer?.setSSRC(ssrc: ssrcVideo)
         audioPacketizer?.setSSRC(ssrc: ssrcAudio)
         tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
-        running = true
         queue.clear()
+        running = true
         thread.async {
             while (self.running) {
                 let frame = self.queue.dequeue()

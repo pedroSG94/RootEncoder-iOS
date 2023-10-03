@@ -26,6 +26,7 @@ public class CommandsManager {
     var videoClientPorts = [5002, 5003]
     var audioServerPorts = [5004, 5005]
     var videoServerPorts = [5006, 5007]
+    private let commandParser = CommandParser()
     
     public init() {
         let time = Date().millisecondsSince1970
@@ -45,27 +46,36 @@ public class CommandsManager {
     }
     
     public func createOptions() -> String {
-        "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        let options = "OPTIONS rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        print(options)
+        return options
     }
     
     public func createRecord() -> String {
-        "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())\r\n"
+        let record = "RECORD rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\nRange: npt=0.000-\r\n\(addHeader())\r\n"
+        print(record)
+        return record
     }
     
     public func createTeardown() -> String {
-        "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        let teardown = "TEARDOWN rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())\r\n"
+        print(teardown)
+        return teardown
     }
     
     public func createSetup(track: Int) -> String {
         let ports = track == RtpConstants.trackVideo ? videoClientPorts : audioClientPorts
         let params = mProtocol == .TCP ? "TCP;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
-        return "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
+        let setup = "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
+        print(setup)
+        return setup
     }
     
     public func createAnnounce() -> String {
         let body = createBody()
         let result = "ANNOUNCE rtsp://\(host!):\(port!)\(path!) RTSP/1.0\r\n\(addHeader())Content-Length: \(body.utf8.count)\r\nContent-Type: application/sdp\r\n\r\n\(body)"
         cSeq += 1
+        print(result)
         return result
     }
 
@@ -105,7 +115,7 @@ public class CommandsManager {
     }
     
     private func createBody() -> String {
-        let body = Body()
+        let body = SdpBody()
         var videoBody = ""
         if (!videoDisabled) {
             videoBody = createVideoBody(body: body)
@@ -117,11 +127,11 @@ public class CommandsManager {
         return "v=0\r\no=- \(timeStamp!) \(timeStamp!) IN IP4 127.0.0.1\r\ns=Unnamed\r\ni=N/A\r\nc=IN IP4 \(host!)\r\nt=0 0\r\na=recvonly\r\n\(videoBody)\(audioBody)"
     }
     
-    private func createAudioBody(body: Body) -> String {
+    private func createAudioBody(body: SdpBody) -> String {
         body.createAACBody(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
     }
     
-    private func createVideoBody(body: Body) -> String {
+    private func createVideoBody(body: SdpBody) -> String {
         let spsString = Data(sps!).base64EncodedString()
         let ppsString = Data(pps!).base64EncodedString()
         let vpsString = vps != nil ? Data(vps!).base64EncodedString() : nil
@@ -150,33 +160,18 @@ public class CommandsManager {
         self.vps = vps
     }
     
-    public func getResponse(response: String, isAudio: Bool) -> Int {
-        let sessionResults = response.groups(for: "Session: (\\w+)")
-        if sessionResults.count > 0 {
-            sessionId = sessionResults[0][1]
-        }
-        
-        let serverPortsResults = response.groups(for: "server_port=([0-9]+)-([0-9]+)")
-        if serverPortsResults.count > 0 {
-            if isAudio {
-                audioServerPorts[0] = Int(serverPortsResults[0][1])!
-                audioServerPorts[1] = Int(serverPortsResults[0][2])!
-            } else {
-                videoServerPorts[0] = Int(serverPortsResults[0][1])!
-                videoServerPorts[1] = Int(serverPortsResults[0][2])!
-            }
-        }
-        let status = getResponseStatus(response: response)
-        return status
-    }
-    
-    private func getResponseStatus(response: String) -> Int {
-        let statusResults = response.groups(for: "RTSP/\\d.\\d (\\d+) (\\w+)")
-        if statusResults.count > 0 {
-            let status = Int(statusResults[0][1])!
-            return status
+    public func getResponse(socket: Socket, method: Method = Method.UNKNOWN) throws -> Command {
+        let response = try socket.readString()
+        print(response)
+        if (method == Method.UNKNOWN) {
+            return commandParser.parseCommand(commandText: response)
         } else {
-            return -1
+            let command = commandParser.parseResponse(method: method, responseText: response)
+            sessionId = commandParser.getSessionId(command: command)
+            if (command.method == Method.SETUP && mProtocol == Protocol.UDP) {
+                commandParser.loadServerPorts(command: command, protocol: mProtocol, audioClientPorts: audioClientPorts, videoClientPorts: videoClientPorts, audioServerPorts: &audioServerPorts, videoServerPorts: &videoServerPorts)
+            }
+            return command
         }
     }
     

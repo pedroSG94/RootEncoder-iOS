@@ -30,24 +30,29 @@ public class RtmpSender {
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        h264FlvPacket.createFlvVideoPacket(
-            buffer: buffer, ts: ts,
-            callback: { (flvPacket) in
-                queue.enqueue(flvPacket)
-            }
-        )
+        if (running) {
+            h264FlvPacket.createFlvVideoPacket(
+                buffer: buffer, ts: ts,
+                callback: { (flvPacket) in
+                    queue.enqueue(flvPacket)
+                }
+            )
+        }
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
-        aacFlvPacket.createFlvAudioPacket(
-            buffer: buffer, ts: ts,
-            callback: { (flvPacket) in
-                queue.enqueue(flvPacket)
-            }
-        )
+        if (running) {
+            aacFlvPacket.createFlvAudioPacket(
+                buffer: buffer, ts: ts,
+                callback: { (flvPacket) in
+                    queue.enqueue(flvPacket)
+                }
+            )
+        }
     }
     
     public func start() {
+        queue.clear()
         running = true
         thread.async {
             while (self.running) {
@@ -74,5 +79,6 @@ public class RtmpSender {
         running = false
         aacFlvPacket.reset()
         h264FlvPacket.reset(resetInfo: true)
+        queue.clear()
     }
 }

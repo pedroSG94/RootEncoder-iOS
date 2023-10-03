@@ -72,7 +72,7 @@ public class Socket: NSObject, StreamDelegate {
                 break
             }
         }
-        connection?.start(queue: .main)
+        connection?.start(queue: .global())
         sync.wait()
         if (messageError != nil) {
             throw IOException.runtimeError(messageError!)
@@ -119,7 +119,6 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     public func write(data: String) throws {
-        print("\(data)")
         let buffer = [UInt8](data.utf8)
         try self.write(buffer: buffer)
     }
@@ -136,7 +135,6 @@ public class Socket: NSObject, StreamDelegate {
     public func readString() throws -> String {
         let data: Data = try read()
         let message = String(data: data, encoding: String.Encoding.utf8)!
-        print(message)
         return message
     }
 

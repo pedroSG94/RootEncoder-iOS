@@ -1,6 +1,6 @@
 import Foundation
 
-public class Body {
+public class SdpBody {
     
     private let audioSamplesRates = [
         96000, // 0
