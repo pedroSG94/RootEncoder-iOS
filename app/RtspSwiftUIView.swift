@@ -25,6 +25,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
         print("connection failed: \(reason)")
         rtspCamera.stopStream()
         bStreamText = "Start stream"
+        bitrateText = ""
         toastText = "connection failed: \(reason)"
         isShowingToast = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -34,6 +35,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     
     func onNewBitrateRtsp(bitrate: UInt64) {
         print("new bitrate: \(bitrate)")
+        bitrateText = "bitrate: \(bitrate) bps"
     }
     
     func onDisconnectRtsp() {
@@ -68,6 +70,8 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     @State private var bStreamText = "Start stream"
     @State private var isShowingToast = false
     @State private var toastText = ""
+    @State private var bitrateText = ""
+
     @State private var rtspCamera: RtspCamera!
     
     var body: some View {
@@ -98,7 +102,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
                     .padding(.top, 24)
                     .padding(.horizontal)
                     .keyboardType(.default)
-                
+                Text(bitrateText).foregroundColor(Color.blue)
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bStreamText) {
@@ -111,6 +115,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
                         } else {
                             rtspCamera.stopStream()
                             bStreamText = "Start stream"
+                            bitrateText = ""
                         }
                     }
                     Button("Switch camera") {
