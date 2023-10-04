@@ -9,6 +9,11 @@ public class RtspClient {
     private var tlsEnabled = false
     private let rtspSender: RtspSender
     private var semaphore = DispatchSemaphore(value: 0)
+    private var checkServerAlive = false
+    private var doingRetry = false
+    private var numRetry = 0
+    private var reTries = 0
+
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -198,5 +203,71 @@ public class RtspClient {
         if (!commandsManager.audioDisabled) {
             rtspSender.sendAudio(buffer: buffer, ts: ts)
         }
+    }
+    
+    public func setRetries(reTries: Int) {
+        numRetry = reTries
+        self.reTries = reTries
+    }
+    
+    public func shouldRetry(reason: String) -> Bool {
+        let validReason = doingRetry && !reason.contains("Endpoint malformed")
+        return validReason && reTries > 0
+    }
+    
+    public func reconnect(delay: Int, backupUrl: String? = nil) {
+        
+    }
+    
+    public func setCheckServerAlive(enabled: Bool) {
+        checkServerAlive = enabled
+    }
+    
+    public func hasCongestion() -> Bool {
+        return rtspSender.hasCongestion()
+    }
+    
+    public func setLogs(enabled: Bool) {
+        rtspSender.isEnableLogs = enabled
+    }
+    
+    public func resizeCache(newSize: Int) {
+        rtspSender.resizeCache(newSize: newSize)
+    }
+
+    public func getCacheSize() -> Int {
+        return rtspSender.cacheSize
+    }
+
+    public func getSentAudioFrames() -> Int {
+        return rtspSender.audioFramesSent
+    }
+
+    public func getSentVideoFrames() -> Int {
+        return rtspSender.videoFramesSent
+    }
+
+    public func getDroppedAudioFrames() -> Int {
+        return rtspSender.droppedAudioFrames
+    }
+
+    public func getDroppedVideoFrames() -> Int {
+        return rtspSender.droppedVideoFrames
+    }
+
+    public func resetSentAudioFrames() {
+        rtspSender.audioFramesSent = 0
+    }
+
+    public func resetSentVideoFrames() {
+        rtspSender.videoFramesSent = 0
+    }
+
+    public func resetDroppedAudioFrames() {
+        rtspSender.droppedAudioFrames = 0
+    }
+
+    public func resetDroppedVideoFrames() {
+        rtspSender.droppedVideoFrames = 0
     }
 }

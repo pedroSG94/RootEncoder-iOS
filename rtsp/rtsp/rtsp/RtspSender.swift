@@ -8,11 +8,21 @@ public class RtspSender {
     private var tcpReport: BaseSenderReport?
     private let thread = DispatchQueue(label: "RtspSender")
     private var running = false
-    private let queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: 10 * 1024 * 1024 / RtpConstants.MTU)
+    var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
+    private let queue: SynchronizedQueue<RtpFrame>
     private let callback: ConnectCheckerRtsp
 
+    var audioFramesSent = 0
+    var videoFramesSent = 0
+    var droppedAudioFrames = 0
+    var droppedVideoFrames = 0
+    private let bitrateManager: BitrateManager
+    var isEnableLogs = true
+    
     public init(callback: ConnectCheckerRtsp) {
         self.callback = callback
+        queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: cacheSize)
+        bitrateManager = BitrateManager(connectCheckerRtsp: callback)
     }
 
     public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>, videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) {
@@ -50,7 +60,10 @@ public class RtspSender {
             videoPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
-                    queue.enqueue(rtpFrame)
+                    if (!queue.enqueue(rtpFrame)) {
+                        print("Video frame discarded")
+                        droppedVideoFrames += 1
+                    }
                 }
             )
         }
@@ -61,7 +74,10 @@ public class RtspSender {
             audioPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
                 callback: { (rtpFrame) in
-                    queue.enqueue(rtpFrame)
+                    if (!queue.enqueue(rtpFrame)) {
+                        print("Audio frame discarded")
+                        droppedAudioFrames += 1
+                    }
                 }
             )
         }
@@ -76,12 +92,33 @@ public class RtspSender {
         queue.clear()
         running = true
         thread.async {
+            let isTcp = self.tcpSocket is RtpSocketTcp
             while (self.running) {
                 let frame = self.queue.dequeue()
                 if let frame = frame {
                     do {
-                        try self.tcpSocket?.sendFrame(rtpFrame: frame)
-                        try self.tcpReport?.update(rtpFrame: frame)
+                        try self.tcpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        if (frame.channelIdentifier == RtpConstants.trackVideo) {
+                            self.videoFramesSent += 1
+                        } else {
+                            self.audioFramesSent += 1
+                        }
+                        let packetSize = if (isTcp) {
+                            4 + (frame.length ?? 0)
+                        } else {
+                            (frame.length ?? 0)
+                        }
+                        self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
+                        let updated = try self.tcpReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        if (updated ?? false) {
+                            //bytes to bits (4 is tcp header length)
+                            let reportSize = if (isTcp) {
+                                self.tcpReport?.PACKET_LENGTH ?? (0 + 4)
+                            } else {
+                                self.tcpReport?.PACKET_LENGTH ?? 0
+                            }
+                            self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
+                        }
                     } catch let error {
                         self.callback.onConnectionFailedRtsp(reason: error.localizedDescription)
                         return
@@ -95,5 +132,20 @@ public class RtspSender {
         running = false
         tcpReport?.close()
         queue.clear()
+        videoFramesSent = 0
+        audioFramesSent = 0
+        droppedVideoFrames = 0
+        droppedAudioFrames = 0
+    }
+    
+    public func hasCongestion() -> Bool {
+        let size = queue.itemsCount()
+        let remaining = queue.remaining()
+        let capacity = size + remaining
+        return Double(size) >= Double(capacity) * 0.2 //more than 20% queue used. You could have congestion
+    }
+    
+    public func resizeCache(newSize: Int) {
+        queue.resizeSize(size: newSize)
     }
 }

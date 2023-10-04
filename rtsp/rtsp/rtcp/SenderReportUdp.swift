@@ -31,7 +31,7 @@ public class SenderReportUdp: BaseSenderReport {
         audioSocket.disconnect()
     }
 
-    public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64) throws {
+    public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64, isEnableLogs: Bool) throws {
         let isAudio = rtpFrame.channelIdentifier == RtpConstants.trackAudio
         var port = 0
         if (isAudio) {
@@ -41,7 +41,9 @@ public class SenderReportUdp: BaseSenderReport {
             try videoSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
             port = videoPorts[1]
         }
-        let type = isAudio ? "Audio" : "Video"
-        print("send \(type) report, packets: \(packets), octet: \(octet), port: \(port)")
+        if (isEnableLogs) {
+            let type = isAudio ? "Audio" : "Video"
+            print("send \(type) report, packets: \(packets), octet: \(octet), port: \(port)")
+        }
     }
 }
