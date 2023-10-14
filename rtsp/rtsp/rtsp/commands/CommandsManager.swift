@@ -175,11 +175,15 @@ public class CommandsManager {
         }
     }
     
-    public func reset() {
-        cSeq = 0
-        sessionId = nil
-        sps = nil
-        pps = nil
-        vps = nil
+    public func clear() {
+      sps = nil
+      pps = nil
+      vps = nil
+      retryClear()
+    }
+
+    public func retryClear() {
+      cSeq = 0
+      sessionId = nil
     }
 }

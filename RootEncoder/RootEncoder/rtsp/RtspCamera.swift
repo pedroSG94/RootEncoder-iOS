@@ -26,6 +26,20 @@ public class RtspCamera: CameraBase {
         videoEncoder.setCodec(codec: codec)
     }
 
+    public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
+        let result = client.shouldRetry(reason: reason)
+        print("r: \(result)")
+        if (result) {
+            videoEncoder.forceKeyFrame()
+            client.reconnect(delay: delay, backupUrl: backUrl)
+        }
+        return result
+    }
+    
+    public func setRetries(reTries: Int) {
+        client.setRetries(reTries: reTries)
+    }
+    
     public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
         super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
         client.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)

@@ -48,6 +48,11 @@ public class Socket: NSObject, StreamDelegate {
                 break
             case .waiting(_):
                 print("waiting")
+                messageError = "connection failed"
+                if (shouldLeave) {
+                    sync.leave()
+                    shouldLeave = false
+                }
                 break
             case .preparing:
                 print("preparing")

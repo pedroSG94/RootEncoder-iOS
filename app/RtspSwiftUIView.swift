@@ -23,13 +23,22 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     
     func onConnectionFailedRtsp(reason: String) {
         print("connection failed: \(reason)")
-        rtspCamera.stopStream()
-        bStreamText = "Start stream"
-        bitrateText = ""
-        toastText = "connection failed: \(reason)"
-        isShowingToast = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isShowingToast = false
+        if (rtspCamera.reTry(delay: 5000, reason: reason)) {
+            print("retry")
+            toastText = "Retry"
+            isShowingToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                isShowingToast = false
+            }
+        } else {
+            rtspCamera.stopStream()
+            bStreamText = "Start stream"
+            bitrateText = ""
+            toastText = "connection failed: \(reason)"
+            isShowingToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                isShowingToast = false
+            }
         }
     }
     
@@ -66,7 +75,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     }
     
     
-    @State private var endpoint = "rtsp://192.168.0.177:8554/live/pedro"
+    @State private var endpoint = "rtsp://192.168.0.178:8554/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var isShowingToast = false
     @State private var toastText = ""
@@ -82,6 +91,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
             
             camera.onAppear {
                 rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+                rtspCamera.setRetries(reTries: 10)
                 //rtspCamera.setCodec(codec: CodecUtil.H265)
                 rtspCamera.startPreview()
             }

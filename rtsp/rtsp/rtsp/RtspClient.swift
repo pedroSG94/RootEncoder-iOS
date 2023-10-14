@@ -3,7 +3,7 @@ import Foundation
 public class RtspClient {
     
     private var socket: Socket?
-    private var connectCheckerRtsp: ConnectCheckerRtsp?
+    private let connectCheckerRtsp: ConnectCheckerRtsp
     private var streaming = false
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
@@ -13,6 +13,8 @@ public class RtspClient {
     private var doingRetry = false
     private var numRetry = 0
     private var reTries = 0
+    private var url: String? = nil
+
 
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
@@ -62,10 +64,20 @@ public class RtspClient {
         semaphore.signal()
     }
     
-    public func connect(url: String) {
-        let thread = DispatchQueue(label: "RtspClient")
-        thread.async {
-            if !self.streaming {
+    public func connect(url: String?, isRetry: Bool = false) {
+        if (!isRetry) {
+            self.doingRetry = true
+        }
+        print("connect: \(isRetry)")
+        if (!self.streaming || isRetry) {
+            self.streaming = true
+            let thread = DispatchQueue(label: "RtspClient")
+            thread.async {
+                guard let url = url else {
+                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
+                    return
+                }
+                self.url = url
                 let urlResults = url.groups(for: "^rtsps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
                 if urlResults.count > 0 {
                     let groups = urlResults[0]
@@ -86,7 +98,7 @@ public class RtspClient {
                                 print("waiting for sps and pps")
                                 let _ = self.semaphore.wait(timeout: DispatchTime.now() + 5)
                                 if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
-                                    self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "sps or pps is null")
+                                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "sps or pps is null")
                                     return
                                 } else {
                                     self.rtspSender.setVideoInfo(sps: self.commandsManager.sps!, pps: self.commandsManager.pps!, vps: self.commandsManager.vps)
@@ -103,32 +115,32 @@ public class RtspClient {
                         try self.socket?.write(data: self.commandsManager.createAnnounce())
                         let announceResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                         if announceResponse.status == 403 {
-                            self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
+                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
                         } else if announceResponse.status == 401 {
                             if (self.commandsManager.canAuth()) {
                                 //Announce with auth
                                 try self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
                                 let authResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                                 if authResponse.status == 401 {
-                                    self.connectCheckerRtsp?.onAuthErrorRtsp()
+                                    self.connectCheckerRtsp.onAuthErrorRtsp()
                                 } else if authResponse.status == 200 {
-                                    self.connectCheckerRtsp?.onAuthSuccessRtsp()
+                                    self.connectCheckerRtsp.onAuthSuccessRtsp()
                                 } else {
-                                    self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(authResponse.status)")
+                                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(authResponse.status)")
                                 }
                             } else {
-                                self.connectCheckerRtsp?.onAuthErrorRtsp()
+                                self.connectCheckerRtsp.onAuthErrorRtsp()
                                 return
                             }
                         } else if announceResponse.status != 200 {
-                            self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(announceResponse.status)")
+                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(announceResponse.status)")
                         }
                         if !self.commandsManager.videoDisabled {
                             //Setup video
                             try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                             let setupVideoStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupVideoStatus != 200) {
-                                self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
+                                self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
                                 return
                             }
                         }
@@ -137,7 +149,7 @@ public class RtspClient {
                             try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
                             let setupAudioStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupAudioStatus != 200) {
-                                self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
+                                self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
                                 return
                             }
                         }
@@ -145,22 +157,21 @@ public class RtspClient {
                         try self.socket?.write(data: self.commandsManager.createRecord())
                         let recordStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
                         if (recordStatus != 200) {
-                            self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
+                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
                             return
                         }
-                        self.streaming = true
 
                         self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
                                 videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
                                 videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
                         self.rtspSender.start()
-                        self.connectCheckerRtsp?.onConnectionSuccessRtsp()
+                        self.connectCheckerRtsp.onConnectionSuccessRtsp()
                     } catch let error {
-                        self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: error.localizedDescription)
+                        self.connectCheckerRtsp.onConnectionFailedRtsp(reason: error.localizedDescription)
                         return
                     }
                 } else {
-                    self.connectCheckerRtsp?.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
+                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
                 }
             }
@@ -171,25 +182,31 @@ public class RtspClient {
         streaming
     }
     
-    public func disconnect() {
+    public func disconnect(clear: Bool = true) {
         let thread = DispatchQueue(label: "RtspClient.disconnect")
         if streaming {
             rtspSender.stop()
-            let sync = DispatchGroup()
-            sync.enter()
-            thread.async {
-                do {
-                    try self.socket?.write(data: self.commandsManager.createTeardown())
-                    sync.leave()
-                } catch {
-                    sync.leave()
-                }
+        }
+        let sync = DispatchGroup()
+        sync.enter()
+        thread.async {
+            do {
+                try self.socket?.write(data: self.commandsManager.createTeardown())
+                sync.leave()
+            } catch {
+                sync.leave()
             }
-            sync.wait(timeout: DispatchTime.now() + 0.1)
-            socket?.disconnect()
-            commandsManager.reset()
+        }
+        let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
+        socket?.disconnect()
+        if (clear) {
+            commandsManager.clear()
+            reTries = numRetry
+            doingRetry = false
             streaming = false
-            connectCheckerRtsp?.onDisconnectRtsp()
+            connectCheckerRtsp.onDisconnectRtsp()
+        } else {
+            commandsManager.retryClear()
         }
     }
     
@@ -216,7 +233,14 @@ public class RtspClient {
     }
     
     public func reconnect(delay: Int, backupUrl: String? = nil) {
-        
+        let thread = DispatchQueue(label: "RtspClientRetry")
+        thread.async {
+            self.reTries -= 1
+            self.disconnect(clear: false)
+            Thread.sleep(forTimeInterval: Double(delay / 1000))
+            let reconnectUrl = backupUrl == nil ? self.url : backupUrl
+            self.connect(url: reconnectUrl, isRetry: true)
+        }
     }
     
     public func setCheckServerAlive(enabled: Bool) {
