@@ -75,10 +75,10 @@ public class RtmpSender {
         }
     }
 
-    public func stop() {
+    public func stop(clear: Bool = true) {
         running = false
         aacFlvPacket.reset()
-        h264FlvPacket.reset(resetInfo: true)
+        h264FlvPacket.reset(resetInfo: clear)
         queue.clear()
     }
 }

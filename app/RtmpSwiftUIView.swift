@@ -23,12 +23,20 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
     func onConnectionFailedRtmp(reason: String) {
         print("connection failed: \(reason)")
-        rtmpCamera.stopStream()
-        bStreamText = "Start stream"
-        toastText = "connection failed: \(reason)"
-        isShowingToast = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isShowingToast = false
+        if (rtmpCamera.reTry(delay: 5000, reason: reason)) {
+            toastText = "Retry"
+            isShowingToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                isShowingToast = false
+            }
+        } else {
+            rtmpCamera.stopStream()
+            bStreamText = "Start stream"
+            toastText = "connection failed: \(reason)"
+            isShowingToast = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                isShowingToast = false
+            }
         }
     }
     
@@ -64,11 +72,11 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     }
     
     
-    @State private var endpoint = "rtmp://192.168.0.177:1935/live/pedro"
+    @State private var endpoint = "rtmp://192.168.0.178:1935/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var isShowingToast = false
     @State private var toastText = ""
-    @State private var rtmpCamera: CameraBase!
+    @State private var rtmpCamera: RtmpCamera!
     
     var body: some View {
         ZStack {
@@ -78,6 +86,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
             
             camera.onAppear {
                 rtmpCamera = RtmpCamera(view: cameraView, connectChecker: self)
+                rtmpCamera.setRetries(reTries: 10)
                 rtmpCamera.startPreview()
             }
             camera.onDisappear {

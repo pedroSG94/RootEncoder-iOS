@@ -68,7 +68,6 @@ public class RtspClient {
         if (!isRetry) {
             self.doingRetry = true
         }
-        print("connect: \(isRetry)")
         if (!self.streaming || isRetry) {
             self.streaming = true
             let thread = DispatchQueue(label: "RtspClient")

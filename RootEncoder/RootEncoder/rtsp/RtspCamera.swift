@@ -28,7 +28,6 @@ public class RtspCamera: CameraBase {
 
     public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
         let result = client.shouldRetry(reason: reason)
-        print("r: \(result)")
         if (result) {
             videoEncoder.forceKeyFrame()
             client.reconnect(delay: delay, backupUrl: backUrl)

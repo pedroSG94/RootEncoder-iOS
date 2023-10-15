@@ -14,6 +14,10 @@ public class RtmpClient {
     var isStreaming = false
     private var publishPermitted = false
     private var tlsEnabled = false
+    private var doingRetry = false
+    private var numRetry = 0
+    private var reTries = 0
+    private var url: String? = nil
 
     public init(connectCheckerRtmp: ConnectCheckerRtmp) {
         self.connectCheckerRtmp = connectCheckerRtmp
@@ -51,10 +55,19 @@ public class RtmpClient {
         commandManager.setVideoResolution(width: width, height: height)
     }
 
-    public func connect(url: String, isRetry: Bool = false) {
-        let thread = DispatchQueue(label: "RtmpClient")
-        thread.async {
-            if !self.isStreaming {
+    public func connect(url: String?, isRetry: Bool = false) {
+        if (!isRetry) {
+            self.doingRetry = true
+        }
+        if (!self.isStreaming || isRetry) {
+            self.isStreaming = true
+            let thread = DispatchQueue(label: "RtmpClient")
+            thread.async {
+                guard let url = url else {
+                    self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
+                    return
+                }
+                self.url = url
                 let urlResults = url.groups(for: "^rtmps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
                 if urlResults.count > 0 {
                     let groups = urlResults[0]
@@ -69,8 +82,6 @@ public class RtmpClient {
                     self.commandManager.streamName = self.getStreamName(name: groups[4])
                     let tcUrlIndex = groups[0].index(groups[0].startIndex, offsetBy: groups[0].count - self.commandManager.streamName.count)
                     self.commandManager.tcUrl = self.getTcUrl(url: groups[0].substring(to: tcUrlIndex))
-
-                    self.isStreaming = true
                     do {
                         if (try !self.establishConnection()) {
                             self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Handshake failed")
@@ -85,7 +96,7 @@ public class RtmpClient {
                             try self.handleMessages()
                         }
                     } catch {
-
+                        self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Connection failed: \(error)")
                     }
                 }
             }
@@ -93,30 +104,55 @@ public class RtmpClient {
     }
 
     public func disconnect(clear: Bool = true) {
-        let thread = DispatchQueue(label: "RtmpClient.disconnect")
         if isStreaming {
-            rtmpSender.stop()
-            let sync = DispatchGroup()
-            sync.enter()
-            thread.async {
-                do {
-                    if let socket = self.socket {
-                        try self.commandManager.sendClose(socket: socket)
-                    }
-                    sync.leave()
-                } catch {
-                    sync.leave()
+            rtmpSender.stop(clear: clear)
+        }
+        let thread = DispatchQueue(label: "RtmpClient.disconnect")
+        let sync = DispatchGroup()
+        sync.enter()
+        thread.async {
+            do {
+                if let socket = self.socket {
+                    try self.commandManager.sendClose(socket: socket)
                 }
+                sync.leave()
+            } catch {
+                sync.leave()
             }
-            let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
-            socket?.disconnect()
-            commandManager.reset()
+        }
+        
+        let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
+        closeConnection()
+        if (clear) {
+            reTries = numRetry
+            doingRetry = false
             isStreaming = false
-            publishPermitted = false
             connectCheckerRtmp.onDisconnectRtmp()
         }
+        publishPermitted = false
     }
 
+    public func setRetries(reTries: Int) {
+        numRetry = reTries
+        self.reTries = reTries
+    }
+    
+    public func shouldRetry(reason: String) -> Bool {
+        let validReason = doingRetry && !reason.contains("Endpoint malformed")
+        return validReason && reTries > 0
+    }
+    
+    public func reconnect(delay: Int, backupUrl: String? = nil) {
+        let thread = DispatchQueue(label: "RtmpClientRetry")
+        thread.async {
+            self.reTries -= 1
+            self.disconnect(clear: false)
+            Thread.sleep(forTimeInterval: Double(delay / 1000))
+            let reconnectUrl = backupUrl == nil ? self.url : backupUrl
+            self.connect(url: reconnectUrl, isRetry: true)
+        }
+    }
+    
     private func getAppName(app: String, name: String) -> String {
         if (!name.contains("/")) {
             return app

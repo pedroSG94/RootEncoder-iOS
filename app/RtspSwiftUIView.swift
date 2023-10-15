@@ -24,7 +24,6 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     func onConnectionFailedRtsp(reason: String) {
         print("connection failed: \(reason)")
         if (rtspCamera.reTry(delay: 5000, reason: reason)) {
-            print("retry")
             toastText = "Retry"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
