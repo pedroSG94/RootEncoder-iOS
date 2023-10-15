@@ -169,7 +169,7 @@ public class CommandsManager {
             let command = commandParser.parseResponse(method: method, responseText: response)
             sessionId = commandParser.getSessionId(command: command)
             if (command.method == Method.SETUP && mProtocol == Protocol.UDP) {
-                commandParser.loadServerPorts(command: command, protocol: mProtocol, audioClientPorts: audioClientPorts, videoClientPorts: videoClientPorts, audioServerPorts: &audioServerPorts, videoServerPorts: &videoServerPorts)
+                _ = commandParser.loadServerPorts(command: command, protocol: mProtocol, audioClientPorts: audioClientPorts, videoClientPorts: videoClientPorts, audioServerPorts: &audioServerPorts, videoServerPorts: &videoServerPorts)
             }
             return command
         }

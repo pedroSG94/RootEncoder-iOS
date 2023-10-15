@@ -138,11 +138,11 @@ public class RtspSender {
         droppedAudioFrames = 0
     }
     
-    public func hasCongestion() -> Bool {
+    public func hasCongestion(percentUsed: Float) -> Bool {
         let size = queue.itemsCount()
         let remaining = queue.remaining()
         let capacity = size + remaining
-        return Double(size) >= Double(capacity) * 0.2 //more than 20% queue used. You could have congestion
+        return Double(size) >= Double(capacity) * Double(percentUsed) / 100 //more than 20% queue used. You could have congestion
     }
     
     public func resizeCache(newSize: Int) {

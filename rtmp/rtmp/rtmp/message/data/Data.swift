@@ -33,7 +33,7 @@ public class DataMessage: RtmpMessage {
     override func readBody(body: inout [UInt8]) throws {
         bodySize = 0
         let amfString = AmfString()
-        try amfString.readHeader(buffer: &body)
+        try _ = amfString.readHeader(buffer: &body)
         try amfString.readBody(buffer: &body)
         bodySize += amfString.getSize() + 1
         while (bodySize < header.messageLength) {

@@ -81,7 +81,7 @@ public class RtmpClient {
                     self.commandManager.appName = self.getAppName(app: groups[3], name: groups[4])
                     self.commandManager.streamName = self.getStreamName(name: groups[4])
                     let tcUrlIndex = groups[0].index(groups[0].startIndex, offsetBy: groups[0].count - self.commandManager.streamName.count)
-                    self.commandManager.tcUrl = self.getTcUrl(url: groups[0].substring(to: tcUrlIndex))
+                    self.commandManager.tcUrl = self.getTcUrl(url: String(groups[0].prefix(upTo: tcUrlIndex)))
                     do {
                         if (try !self.establishConnection()) {
                             self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Handshake failed")
@@ -157,7 +157,7 @@ public class RtmpClient {
         if (!name.contains("/")) {
             return app
         } else {
-            return "\(app)/\(name.substring(to: name.firstIndex(of: "/")!))"
+            return "\(app)/\(String(name.prefix(upTo: name.firstIndex(of: "/")!)))"
         }
     }
 
@@ -166,7 +166,7 @@ public class RtmpClient {
             return name
         } else {
             let index = name.index(name.firstIndex(of: "/")!, offsetBy: 1)
-            return name.substring(with: name.startIndex..<index)
+            return String(name[name.startIndex..<index])
         }
     }
 
@@ -195,9 +195,9 @@ public class RtmpClient {
                 commandManager.readChunkSize = setChunkSize.chunkSize
                 print("chunk size configured to \(setChunkSize.chunkSize)")
             case .ABORT:
-                let abort = message as! Abort
+                let _ = message as! Abort
             case .ACKNOWLEDGEMENT:
-                let acknowledgement = message as! Acknowledgement
+                let _ = message as! Acknowledgement
             case .USER_CONTROL:
                 let userControl = message as! UserControl
                 if (userControl.type == ControlType.PING_REQUEST) {
@@ -209,7 +209,7 @@ public class RtmpClient {
                 let windowAcknowledgementSize = message as! WindowAcknowledgementSize
                 RtmpConfig.acknowledgementWindowSize = windowAcknowledgementSize.acknowledgementWindowSize
             case .SET_PEER_BANDWIDTH:
-                let setPeerBandwidth = message as! SetPeerBandwidth
+                let _ = message as! SetPeerBandwidth
                 try commandManager.sendWindowAcknowledgementSize(socket: socket)
             case .COMMAND_AMF0, .COMMAND_AMF3:
                 let command = message as! Command
@@ -239,7 +239,7 @@ public class RtmpClient {
                                         && description.contains("challenge=") && description.contains("salt=") //adobe response
                                         || description.contains("nonce="))  { //llnw response
                                     closeConnection()
-                                    try establishConnection()
+                                    try _ = establishConnection()
                                     if (self.socket == nil) {
                                         throw IOException.runtimeError("Invalid socket, Connection failed")
                                     } else {
@@ -254,7 +254,7 @@ public class RtmpClient {
                                 } else if (description.contains("code=403")) {
                                     if (description.contains("authmod=adobe")) {
                                         closeConnection()
-                                        try establishConnection()
+                                        try _ = establishConnection()
                                         if (self.socket == nil) {
                                             throw IOException.runtimeError("Invalid socket, Connection failed")
                                         } else {
@@ -290,7 +290,7 @@ public class RtmpClient {
                         print("unknown \(command.name) response received from \(commandName ?? "unknown command")")
                 }
             case .AGGREGATE:
-                let aggregate = message as! Aggregate
+            _ = message as! Aggregate
             default:
                 print("unimplemented response for \(message.getType()). Ignored")
         }

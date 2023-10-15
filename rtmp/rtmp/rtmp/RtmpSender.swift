@@ -11,7 +11,7 @@ public class RtmpSender {
     private let aacFlvPacket = AacFlvPacket()
     private let thread = DispatchQueue(label: "RtmpSender")
     private var running = false
-    private let queue = SynchronizedQueue<FlvPacket>(label: "RtmpSenderQueue", size: 485035840)
+    private let queue = SynchronizedQueue<FlvPacket>(label: "RtmpSenderQueue", size: 200)
     private let callback: ConnectCheckerRtmp
     private let commandManager: CommandManager
     var socket: Socket? = nil

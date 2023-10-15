@@ -86,7 +86,7 @@ public class H264FlvPacket {
     }
     
     private func getHeaderSize(byteBuffer: [UInt8]) -> Int {
-        guard let sps = self.sps, let pps = self.pps else {
+        guard let _ = self.sps, let _ = self.pps else {
             return 0
         }
         

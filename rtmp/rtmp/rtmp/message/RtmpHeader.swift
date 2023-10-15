@@ -127,6 +127,6 @@ public class RtmpHeader: CustomStringConvertible {
     }
 
     public var description: String {
-        "RtmpHeader(basicHeader: \(basicHeader), timeStamp: \(timeStamp), messageLength: \(messageLength), messageType: \(messageType), messageStreamId: \(messageStreamId))"
+        "RtmpHeader(basicHeader: \(basicHeader), timeStamp: \(timeStamp), messageLength: \(messageLength), messageType: \(String(describing: messageType)), messageStreamId: \(messageStreamId))"
     }
 }

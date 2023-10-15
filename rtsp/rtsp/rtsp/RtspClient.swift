@@ -246,8 +246,8 @@ public class RtspClient {
         checkServerAlive = enabled
     }
     
-    public func hasCongestion() -> Bool {
-        return rtspSender.hasCongestion()
+    public func hasCongestion(percentUsed: Float) -> Bool {
+        return rtspSender.hasCongestion(percentUsed: percentUsed)
     }
     
     public func setLogs(enabled: Bool) {
