@@ -107,11 +107,16 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         prevLayer = AVCaptureVideoPreviewLayer(session: session!)
         prevLayer?.frame.size = cameraView.frame.size
         prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        prevLayer?.connection?.videoOrientation = transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+        if let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
+            let orientation = UIInterfaceOrientation(rawValue: interfaceOrientation.rawValue)!
+            prevLayer?.connection?.videoOrientation = transformOrientation(orientation: orientation)
+        }
         cameraView.layer.addSublayer(prevLayer!)
 
         session?.commitConfiguration()
-        session?.startRunning()
+        thread.async {
+            self.session?.startRunning()
+        }
         running = true
     }
     

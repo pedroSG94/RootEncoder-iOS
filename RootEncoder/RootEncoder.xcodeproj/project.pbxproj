@@ -16,9 +16,6 @@
 		EB9B4D7E2AC4998B00F427C5 /* FpsListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6562412AC498B500DD8958 /* FpsListener.swift */; };
 		EB9B4D7F2AC4998B00F427C5 /* RecordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6562422AC498B500DD8958 /* RecordController.swift */; };
 		EB9B4D802AC4998B00F427C5 /* RtmpCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB65623F2AC498B500DD8958 /* RtmpCamera.swift */; };
-		EB9B4D812AC499E100F427C5 /* encoder.framework in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4D6F2AC498F300F427C5 /* encoder.framework */; };
-		EB9B4D822AC499E100F427C5 /* rtmp.framework in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4D702AC498F300F427C5 /* rtmp.framework */; };
-		EB9B4D832AC499E100F427C5 /* rtsp.framework in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4D712AC498F300F427C5 /* rtsp.framework */; };
 		EB9B4D872AC49AD000F427C5 /* encoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D842AC49AD000F427C5 /* encoder.framework */; };
 		EB9B4D882AC49AD000F427C5 /* encoder.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D842AC49AD000F427C5 /* encoder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB9B4D892AC49AD000F427C5 /* rtmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D852AC49AD000F427C5 /* rtmp.framework */; };
@@ -293,9 +290,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB9B4D812AC499E100F427C5 /* encoder.framework in Sources */,
-				EB9B4D822AC499E100F427C5 /* rtmp.framework in Sources */,
-				EB9B4D832AC499E100F427C5 /* rtsp.framework in Sources */,
 				EB9B4D7C2AC4998B00F427C5 /* CameraBase.swift in Sources */,
 				EB9B4D7D2AC4998B00F427C5 /* RtspCamera.swift in Sources */,
 				EB9B4DA82AC4BFBF00F427C5 /* Extensions.swift in Sources */,

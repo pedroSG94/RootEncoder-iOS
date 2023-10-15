@@ -75,7 +75,7 @@ public class RtmpClient {
                     let host = groups[1]
                     let defaultPort = groups.count == 3
                     let port = defaultPort ? self.tlsEnabled ? 443 : 1935 : Int(groups[2])!
-                    let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
+                    let _ = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])" //path
                     self.commandManager.host = host
                     self.commandManager.port = port
                     self.commandManager.appName = self.getAppName(app: groups[3], name: groups[4])

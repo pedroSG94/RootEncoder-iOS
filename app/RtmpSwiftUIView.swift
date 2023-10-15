@@ -125,7 +125,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                         rtmpCamera.switchCamera()
                     }
                 }).padding(.bottom, 24)
-            }.frame(width: .infinity, height: .infinity, alignment: .bottom)
+            }.frame(alignment: .bottom)
         }.showToast(text: toastText, isShowing: $isShowingToast)
     }
 }

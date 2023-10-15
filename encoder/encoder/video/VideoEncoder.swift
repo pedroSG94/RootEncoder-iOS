@@ -250,7 +250,6 @@ public class VideoEncoder {
                 bufferOffset += Int(naluLength)
 
                 var rawH264 = [UInt8](data)
-                let type: UInt8 = rawH264[0] >> (1 & 0x3F)
                 rawH264.insert(contentsOf: startCode, at: 0)
                 
                 var frame = Frame()
