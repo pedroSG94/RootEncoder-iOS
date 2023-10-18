@@ -21,7 +21,7 @@ public class RtmpSender {
     var droppedAudioFrames = 0
     var droppedVideoFrames = 0
     private let bitrateManager: BitrateManager
-    var isEnableLogs = false
+    var isEnableLogs = true
 
     public init(callback: ConnectCheckerRtmp, commandManager: CommandManager) {
         self.callback = callback
