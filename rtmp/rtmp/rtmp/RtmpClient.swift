@@ -10,6 +10,7 @@ public class RtmpClient {
     private let connectCheckerRtmp: ConnectCheckerRtmp
     private var socket: Socket? = nil
     private let commandManager = CommandManager()
+    private var checkServerAlive = false
     private let rtmpSender: RtmpSender
     var isStreaming = false
     private var publishPermitted = false
@@ -95,6 +96,8 @@ public class RtmpClient {
                         while (!self.publishPermitted) {
                             try self.handleMessages()
                         }
+                        
+                        self.handleServerCommands()
                     } catch {
                         self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Connection failed: \(error)")
                     }
@@ -178,6 +181,14 @@ public class RtmpClient {
         }
     }
 
+    private func handleServerCommands() {
+        do {
+            try handleServerPackets()
+        } catch {
+            
+        }
+    }
+    
     private func handleServerPackets() throws {
         while (isStreaming) {
             try handleMessages()
@@ -189,6 +200,7 @@ public class RtmpClient {
             throw IOException.runtimeError("Invalid socket, Connection failed")
         }
         let message = try commandManager.readMessageResponse(socket: socket)
+        try commandManager.checkAndSendAcknowledgement(socket: socket)
         switch message.getType() {
             case .SET_CHUNK_SIZE:
                 let setChunkSize = message as! SetChunkSize
@@ -324,5 +336,61 @@ public class RtmpClient {
         if (isStreaming && !commandManager.audioDisabled) {
             rtmpSender.sendAudio(buffer: buffer, ts: ts)
         }
+    }
+    
+    public func setCheckServerAlive(enabled: Bool) {
+        checkServerAlive = enabled
+    }
+    
+    public func hasCongestion(percentUsed: Float) -> Bool {
+        return rtmpSender.hasCongestion(percentUsed: percentUsed)
+    }
+    
+    public func setLogs(enabled: Bool) {
+        rtmpSender.isEnableLogs = enabled
+    }
+    
+    public func resizeCache(newSize: Int) {
+        rtmpSender.resizeCache(newSize: newSize)
+    }
+
+    public func getCacheSize() -> Int {
+        return rtmpSender.getCacheSize()
+    }
+
+    public func clearCache() {
+        rtmpSender.clearCache()
+    }
+    
+    public func getSentAudioFrames() -> Int {
+        return rtmpSender.audioFramesSent
+    }
+
+    public func getSentVideoFrames() -> Int {
+        return rtmpSender.videoFramesSent
+    }
+
+    public func getDroppedAudioFrames() -> Int {
+        return rtmpSender.droppedAudioFrames
+    }
+
+    public func getDroppedVideoFrames() -> Int {
+        return rtmpSender.droppedVideoFrames
+    }
+
+    public func resetSentAudioFrames() {
+        rtmpSender.audioFramesSent = 0
+    }
+
+    public func resetSentVideoFrames() {
+        rtmpSender.videoFramesSent = 0
+    }
+
+    public func resetDroppedAudioFrames() {
+        rtmpSender.droppedAudioFrames = 0
+    }
+
+    public func resetDroppedVideoFrames() {
+        rtmpSender.droppedVideoFrames = 0
     }
 }

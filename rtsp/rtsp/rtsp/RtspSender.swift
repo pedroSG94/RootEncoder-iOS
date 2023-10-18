@@ -8,7 +8,7 @@ public class RtspSender {
     private var tcpReport: BaseSenderReport?
     private let thread = DispatchQueue(label: "RtspSender")
     private var running = false
-    var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
+    private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
     private let queue: SynchronizedQueue<RtpFrame>
     private let callback: ConnectCheckerRtsp
 
@@ -147,5 +147,13 @@ public class RtspSender {
     
     public func resizeCache(newSize: Int) {
         queue.resizeSize(size: newSize)
+    }
+    
+    public func getCacheSize() -> Int {
+        return cacheSize
+    }
+    
+    public func clearCache() {
+        queue.clear()
     }
 }

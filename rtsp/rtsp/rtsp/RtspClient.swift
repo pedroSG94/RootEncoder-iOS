@@ -14,8 +14,6 @@ public class RtspClient {
     private var numRetry = 0
     private var reTries = 0
     private var url: String? = nil
-
-
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -165,6 +163,8 @@ public class RtspClient {
                                 videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
                         self.rtspSender.start()
                         self.connectCheckerRtsp.onConnectionSuccessRtsp()
+                        
+                        self.handleServerCommands()
                     } catch let error {
                         self.connectCheckerRtsp.onConnectionFailedRtsp(reason: error.localizedDescription)
                         return
@@ -176,6 +176,20 @@ public class RtspClient {
             }
         }
     }
+    
+    private func handleServerCommands() {
+        //Read and print server commands received each 2 seconds
+        while (streaming) {
+            guard let socket = socket else {
+                return
+            }
+            do {
+                let _ = try commandsManager.getResponse(socket: socket)
+                //Do something depend of command if required
+            } catch {
+            }
+        }
+      }
     
     public func isStreaming() -> Bool {
         streaming
@@ -259,9 +273,13 @@ public class RtspClient {
     }
 
     public func getCacheSize() -> Int {
-        return rtspSender.cacheSize
+        return rtspSender.getCacheSize()
     }
 
+    public func clearCache() {
+        rtspSender.clearCache()
+    }
+    
     public func getSentAudioFrames() -> Int {
         return rtspSender.audioFramesSent
     }

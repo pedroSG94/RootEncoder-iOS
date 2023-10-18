@@ -8,5 +8,5 @@ import Foundation
 public struct RtmpConfig {
     public static let DEFAULT_CHUNK_SIZE = 128
     public static var writeChunkSize = DEFAULT_CHUNK_SIZE
-    public static var acknowledgementWindowSize = 0
+    public static var acknowledgementWindowSize = Int.max
 }

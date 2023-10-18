@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB450F102AE0740A0081CE4D /* BitrateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */; };
 		EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F1B2AC4929100B48654 /* rtmp.docc */; };
 		EBB16F222AC4929200B48654 /* rtmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBB16F172AC4929100B48654 /* rtmp.framework */; };
 		EBB16F272AC4929200B48654 /* rtmpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F262AC4929200B48654 /* rtmpTests.swift */; };
@@ -89,6 +90,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitrateManager.swift; sourceTree = "<group>"; };
 		EBB16F172AC4929100B48654 /* rtmp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = rtmp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBB16F1A2AC4929100B48654 /* rtmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
 		EBB16F1B2AC4929100B48654 /* rtmp.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = rtmp.docc; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 				EBB16F732AC492BB00B48654 /* RtmpConfig.swift */,
 				EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */,
 				EBB16F752AC492BB00B48654 /* Socket.swift */,
+				EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -546,6 +549,7 @@
 				EBB16FB32AC4932200B48654 /* SharedObjectAmf3.swift in Sources */,
 				EBB16FB42AC4932200B48654 /* MessageType.swift in Sources */,
 				EBB16FB52AC4932200B48654 /* BasicHeader.swift in Sources */,
+				EB450F102AE0740A0081CE4D /* BitrateManager.swift in Sources */,
 				EBB16FB62AC4932200B48654 /* RtmpHeader.swift in Sources */,
 				EBB16FB72AC4932200B48654 /* RtmpMessage.swift in Sources */,
 				EBB16FB82AC4932200B48654 /* Abort.swift in Sources */,

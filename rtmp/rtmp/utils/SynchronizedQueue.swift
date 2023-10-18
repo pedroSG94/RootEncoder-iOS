@@ -12,20 +12,21 @@ class SynchronizedQueue<T> {
     private var elements = [T]()
     private let semaphore = DispatchSemaphore(value: 0)
     private let queue: DispatchQueue
-    private let size: Int
+    private var size: Int
     
     init(label: String, size: Int) {
         queue = DispatchQueue(label: label)
         self.size = size
     }
 
-    func enqueue(_ element: T) {
+    func enqueue(_ element: T) -> Bool {
         queue.sync {
             if (elements.count >= size) {
-                print("\(queue.label) is full, element discarted")
+                return false
             } else {
                 elements.append(element)
                 semaphore.signal()
+                return true
             }
         }
     }
@@ -46,4 +47,17 @@ class SynchronizedQueue<T> {
             elements.removeAll()
         }
     }
+    
+    func resizeSize(size: Int) {
+        self.size = size
+    }
+    
+    func itemsCount() -> Int {
+        return elements.count
+    }
+    
+    func remaining() -> Int {
+        return size - elements.count
+    }
 }
+

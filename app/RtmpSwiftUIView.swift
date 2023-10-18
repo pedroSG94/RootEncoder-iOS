@@ -32,6 +32,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
         } else {
             rtmpCamera.stopStream()
             bStreamText = "Start stream"
+            bitrateText = ""
             toastText = "connection failed: \(reason)"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -42,6 +43,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
     func onNewBitrateRtmp(bitrate: UInt64) {
         print("new bitrate: \(bitrate)")
+        bitrateText = "bitrate: \(bitrate) bps"
     }
     
     func onDisconnectRtmp() {
@@ -76,6 +78,8 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     @State private var bStreamText = "Start stream"
     @State private var isShowingToast = false
     @State private var toastText = ""
+    @State private var bitrateText = ""
+
     @State private var rtmpCamera: RtmpCamera!
     
     var body: some View {
@@ -106,7 +110,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                     .padding(.top, 24)
                     .padding(.horizontal)
                     .keyboardType(.default)
-                
+                Text(bitrateText).foregroundColor(Color.blue)
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bStreamText) {
@@ -119,6 +123,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                         } else {
                             rtmpCamera.stopStream()
                             bStreamText = "Start stream"
+                            bitrateText = ""
                         }
                     }
                     Button("Switch camera") {

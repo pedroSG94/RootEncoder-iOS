@@ -7,6 +7,7 @@ public class Socket: NSObject, StreamDelegate {
     private var connection: NWConnection? = nil
     private var bufferAppend: [UInt8]? = nil
     private let lock = DispatchQueue(label: "com.pedro.Socket.sync")
+    private let readLock = DispatchQueue(label: "com.pedro.Socket.sync.read")
 
     /**
         TCP or TCP/TLS socket
@@ -157,7 +158,7 @@ public class Socket: NSObject, StreamDelegate {
     }
     
     private func readUntil(length: Int) throws -> Data {
-        try lock.sync {
+        try readLock.sync {
             var result = Data()
             var messageError: String? = nil
             let sync = DispatchGroup()

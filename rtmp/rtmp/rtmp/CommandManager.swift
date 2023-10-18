@@ -24,12 +24,15 @@ public class CommandManager {
     var readChunkSize = RtmpConfig.DEFAULT_CHUNK_SIZE
     var audioDisabled = false
     var videoDisabled = false
+    private let writeSync = DispatchQueue(label: "com.pedro.rtmp.CommandManager")
 
     private var width = 640
     private var height = 480
     private var fps = 30
     private var sampleRate = 44100
     private var isStereo = true
+    private var bytesRead = 0
+    private var acknowledgementSequence = 0
 
     public func setVideoResolution(width: Int, height: Int) {
         self.width = width
@@ -55,172 +58,206 @@ public class CommandManager {
     }
 
     public func sendChunkSize(socket: Socket) throws {
-        if (RtmpConfig.writeChunkSize != RtmpConfig.DEFAULT_CHUNK_SIZE) {
-            let chunkSize = SetChunkSize(chunkSize: RtmpConfig.writeChunkSize)
-            chunkSize.header.timeStamp = getCurrentTimestamp()
-            chunkSize.header.messageStreamId = streamId
-            try chunkSize.writeHeader(socket: socket)
-            try chunkSize.writeBody(socket: socket)
-        } else {
-            print("using default write chunk size \(RtmpConfig.writeChunkSize)")
+        try writeSync.sync {
+            if (RtmpConfig.writeChunkSize != RtmpConfig.DEFAULT_CHUNK_SIZE) {
+                let chunkSize = SetChunkSize(chunkSize: RtmpConfig.writeChunkSize)
+                chunkSize.header.timeStamp = getCurrentTimestamp()
+                chunkSize.header.messageStreamId = streamId
+                try chunkSize.writeHeader(socket: socket)
+                try chunkSize.writeBody(socket: socket)
+            } else {
+                print("using default write chunk size \(RtmpConfig.writeChunkSize)")
+            }
         }
     }
 
+    func checkAndSendAcknowledgement(socket: Socket) throws {
+        try writeSync.sync {
+            if (bytesRead >= RtmpConfig.acknowledgementWindowSize) {
+                acknowledgementSequence += bytesRead
+                bytesRead -= RtmpConfig.acknowledgementWindowSize
+                let acknowledgement = Acknowledgement(sequenceNUmber: acknowledgementSequence)
+                try acknowledgement.writeHeader(socket: socket)
+                try acknowledgement.writeBody(socket: socket)
+                print("send \(acknowledgement)")
+            }
+        }
+    }
+    
     public func sendConnect(auth: String, socket: Socket) throws {
-        commandId += 1
-        let connect = CommandAmf0(name: "connect", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
-        let connectInfo = AmfObject()
-        connectInfo.setProperty(name: "app", data: appName + auth)
-        connectInfo.setProperty(name: "flashVer", data: "FMLE/3.0 (compatible; Lavf57.56.101)")
-        connectInfo.setProperty(name: "swfUrl", data: "")
-        connectInfo.setProperty(name: "tcUrl", data: tcUrl + auth)
-        connectInfo.setProperty(name: "fpad", data: false)
-        connectInfo.setProperty(name: "capabilities", data: 239)
-        if (!audioDisabled) {
-            connectInfo.setProperty(name: "audioCodecs", data: 3191)
+        try writeSync.sync {
+            commandId += 1
+            let connect = CommandAmf0(name: "connect", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
+            let connectInfo = AmfObject()
+            connectInfo.setProperty(name: "app", data: appName + auth)
+            connectInfo.setProperty(name: "flashVer", data: "FMLE/3.0 (compatible; Lavf57.56.101)")
+            connectInfo.setProperty(name: "swfUrl", data: "")
+            connectInfo.setProperty(name: "tcUrl", data: tcUrl + auth)
+            connectInfo.setProperty(name: "fpad", data: false)
+            connectInfo.setProperty(name: "capabilities", data: 239)
+            if (!audioDisabled) {
+                connectInfo.setProperty(name: "audioCodecs", data: 3191)
+            }
+            if (!videoDisabled) {
+                connectInfo.setProperty(name: "videoCodecs", data: 252)
+                connectInfo.setProperty(name: "videoFunction", data: 1)
+            }
+            connectInfo.setProperty(name: "pageUrl", data: "")
+            connectInfo.setProperty(name: "objectEncoding", data: 0)
+            connect.addData(amfData: connectInfo)
+            try connect.writeHeader(socket: socket)
+            try connect.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "connect")
+            print("send connect: \(connect)")
         }
-        if (!videoDisabled) {
-            connectInfo.setProperty(name: "videoCodecs", data: 252)
-            connectInfo.setProperty(name: "videoFunction", data: 1)
-        }
-        connectInfo.setProperty(name: "pageUrl", data: "")
-        connectInfo.setProperty(name: "objectEncoding", data: 0)
-        connect.addData(amfData: connectInfo)
-        try connect.writeHeader(socket: socket)
-        try connect.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "connect")
-        print("send connect: \(connect)")
     }
 
     public func createStream(socket: Socket) throws {
-        commandId += 1
-        let releaseStream = CommandAmf0(name: "releaseStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
-        releaseStream.addData(amfData: AmfNull())
-        releaseStream.addData(amfData: AmfString(value: streamName))
+        try writeSync.sync {
+            commandId += 1
+            let releaseStream = CommandAmf0(name: "releaseStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
+            releaseStream.addData(amfData: AmfNull())
+            releaseStream.addData(amfData: AmfString(value: streamName))
 
-        try releaseStream.writeHeader(socket: socket)
-        try releaseStream.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "releaseStream")
+            try releaseStream.writeHeader(socket: socket)
+            try releaseStream.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "releaseStream")
 
-        commandId += 1
-        let fcPublish = CommandAmf0(name: "FCPublish", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
-        fcPublish.addData(amfData: AmfNull())
-        fcPublish.addData(amfData: AmfString(value: streamName))
+            commandId += 1
+            let fcPublish = CommandAmf0(name: "FCPublish", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
+            fcPublish.addData(amfData: AmfNull())
+            fcPublish.addData(amfData: AmfString(value: streamName))
 
-        try fcPublish.writeHeader(socket: socket)
-        try fcPublish.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "FCPublish")
+            try fcPublish.writeHeader(socket: socket)
+            try fcPublish.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "FCPublish")
 
-        commandId += 1
-        let createStream = CommandAmf0(name: "createStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
-        createStream.addData(amfData: AmfNull())
+            commandId += 1
+            let createStream = CommandAmf0(name: "createStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
+            createStream.addData(amfData: AmfNull())
 
-        try createStream.writeHeader(socket: socket)
-        try createStream.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "createStream")
-        print("send createStream")
+            try createStream.writeHeader(socket: socket)
+            try createStream.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "createStream")
+            print("send createStream")
+        }
     }
 
     public func readMessageResponse(socket: Socket) throws -> RtmpMessage {
         let message = try RtmpMessage.getMessage(socket: socket, chunkSize: readChunkSize, commandSessionHistory: sessionHistory)
         sessionHistory.setReadHeader(header: message.header)
         print("read message: \(message)")
+        bytesRead += message.header.getPacketLength()
         return message
     }
 
     public func sendMetadata(socket: Socket) throws {
-        let metadata = DataAmf0(name: "@setDataFrame", timeStamp: getCurrentTimestamp(), streamId: streamId)
-        metadata.addData(amfData: AmfString(value: "onMetaData"))
-        let amfEcmaArray = AmfEcmaArray()
-        amfEcmaArray.setProperty(name: "duration", data: 0.0)
-        if (!videoDisabled) {
-            amfEcmaArray.setProperty(name: "width", data: Double(width))
-            amfEcmaArray.setProperty(name: "height", data: Double(height))
-            amfEcmaArray.setProperty(name: "videocodecid", data: 7.0)
-            amfEcmaArray.setProperty(name: "framerate", data: Double(fps))
-            amfEcmaArray.setProperty(name: "videodatarate", data: 0.0)
-        }
-        if (!audioDisabled) {
-            amfEcmaArray.setProperty(name: "audiocodecid", data: 10.0)
-            amfEcmaArray.setProperty(name: "audiosamplerate", data: Double(sampleRate))
-            amfEcmaArray.setProperty(name: "audiosamplesize", data: 16.0)
-            amfEcmaArray.setProperty(name: "audiodatarate", data: 0.0)
-            amfEcmaArray.setProperty(name: "stereo", data: isStereo)
-        }
-        amfEcmaArray.setProperty(name: "filesize", data: 0.0)
-        metadata.addData(amfData: amfEcmaArray)
+        try writeSync.sync {
+            let metadata = DataAmf0(name: "@setDataFrame", timeStamp: getCurrentTimestamp(), streamId: streamId)
+            metadata.addData(amfData: AmfString(value: "onMetaData"))
+            let amfEcmaArray = AmfEcmaArray()
+            amfEcmaArray.setProperty(name: "duration", data: 0.0)
+            if (!videoDisabled) {
+                amfEcmaArray.setProperty(name: "width", data: Double(width))
+                amfEcmaArray.setProperty(name: "height", data: Double(height))
+                amfEcmaArray.setProperty(name: "videocodecid", data: 7.0)
+                amfEcmaArray.setProperty(name: "framerate", data: Double(fps))
+                amfEcmaArray.setProperty(name: "videodatarate", data: 0.0)
+            }
+            if (!audioDisabled) {
+                amfEcmaArray.setProperty(name: "audiocodecid", data: 10.0)
+                amfEcmaArray.setProperty(name: "audiosamplerate", data: Double(sampleRate))
+                amfEcmaArray.setProperty(name: "audiosamplesize", data: 16.0)
+                amfEcmaArray.setProperty(name: "audiodatarate", data: 0.0)
+                amfEcmaArray.setProperty(name: "stereo", data: isStereo)
+            }
+            amfEcmaArray.setProperty(name: "filesize", data: 0.0)
+            metadata.addData(amfData: amfEcmaArray)
 
-        try metadata.writeHeader(socket: socket)
-        try metadata.writeBody(socket: socket)
+            try metadata.writeHeader(socket: socket)
+            try metadata.writeBody(socket: socket)
+        }
     }
 
     public func sendPublish(socket: Socket) throws {
-        commandId += 1
-        let closeStream = CommandAmf0(name: "publish", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
-        closeStream.addData(amfData: AmfNull())
-        closeStream.addData(amfData: AmfString(value: streamName))
-        closeStream.addData(amfData: AmfString(value: "live"))
+        try writeSync.sync {
+            commandId += 1
+            let closeStream = CommandAmf0(name: "publish", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
+            closeStream.addData(amfData: AmfNull())
+            closeStream.addData(amfData: AmfString(value: streamName))
+            closeStream.addData(amfData: AmfString(value: "live"))
 
-        try closeStream.writeHeader(socket: socket)
-        try closeStream.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "publish")
+            try closeStream.writeHeader(socket: socket)
+            try closeStream.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "publish")
+        }
     }
 
     public func sendWindowAcknowledgementSize(socket: Socket) throws {
-        let windowAcknowledgementSize = WindowAcknowledgementSize(acknowledgementWindowSize: RtmpConfig.acknowledgementWindowSize, timeStamp: getCurrentTimestamp())
-        try windowAcknowledgementSize.writeHeader(socket: socket)
-        try windowAcknowledgementSize.writeBody(socket: socket)
-        print("send windowAcknowledgementSize: \(windowAcknowledgementSize.description)")
+        try writeSync.sync {
+            let windowAcknowledgementSize = WindowAcknowledgementSize(acknowledgementWindowSize: RtmpConfig.acknowledgementWindowSize, timeStamp: getCurrentTimestamp())
+            try windowAcknowledgementSize.writeHeader(socket: socket)
+            try windowAcknowledgementSize.writeBody(socket: socket)
+            print("send windowAcknowledgementSize: \(windowAcknowledgementSize.description)")
+        }
     }
 
     public func sendPong(event: Event, socket: Socket) throws {
-        let pong = UserControl(type: ControlType.PONG_REPLY, event: event)
-        try pong.writeHeader(socket: socket)
-        try pong.writeBody(socket: socket)
+        try writeSync.sync {
+            let pong = UserControl(type: ControlType.PONG_REPLY, event: event)
+            try pong.writeHeader(socket: socket)
+            try pong.writeBody(socket: socket)
+        }
     }
 
     public func sendClose(socket: Socket) throws {
-        commandId += 1
-        let closeStream = CommandAmf0(name: "closeStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
-                basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
-        closeStream.addData(amfData: AmfNull())
+        try writeSync.sync {
+            commandId += 1
+            let closeStream = CommandAmf0(name: "closeStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
+                    basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
+            closeStream.addData(amfData: AmfNull())
 
-        try closeStream.writeHeader(socket: socket)
-        try closeStream.writeBody(socket: socket)
-        sessionHistory.setPacket(id: commandId, name: "closeStream")
+            try closeStream.writeHeader(socket: socket)
+            try closeStream.writeBody(socket: socket)
+            sessionHistory.setPacket(id: commandId, name: "closeStream")
+        }
     }
 
     public func sendVideoPacket(flvPacket: FlvPacket, socket: Socket) throws -> Int {
-        let video: Video
-        if (akamaiTs) {
-            var packet = flvPacket
-            packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
-            video = Video(flvPacket: packet, streamId: streamId)
-        } else {
-            video = Video(flvPacket: flvPacket, streamId: streamId)
+        try writeSync.sync {
+            let video: Video
+            if (akamaiTs) {
+                var packet = flvPacket
+                packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
+                video = Video(flvPacket: packet, streamId: streamId)
+            } else {
+                video = Video(flvPacket: flvPacket, streamId: streamId)
+            }
+            try video.writeHeader(socket: socket)
+            try video.writeBody(socket: socket)
+            return video.header.getPacketLength()
         }
-        try video.writeHeader(socket: socket)
-        try video.writeBody(socket: socket)
-        return video.header.getPacketLength()
     }
 
     public func sendAudioPacket(flvPacket: FlvPacket, socket: Socket) throws -> Int {
-        let audio: Audio
-        if (akamaiTs) {
-            var packet = flvPacket
-            packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
-            audio = Audio(flvPacket: packet, streamId: streamId)
-        } else {
-            audio = Audio(flvPacket: flvPacket, streamId: streamId)
+        try writeSync.sync {
+            let audio: Audio
+            if (akamaiTs) {
+                var packet = flvPacket
+                packet.timeStamp = ((Date().millisecondsSince1970 * 1000) - startTs) / 1000
+                audio = Audio(flvPacket: packet, streamId: streamId)
+            } else {
+                audio = Audio(flvPacket: flvPacket, streamId: streamId)
+            }
+            try audio.writeHeader(socket: socket)
+            try audio.writeBody(socket: socket)
+            return audio.header.getPacketLength()
         }
-        try audio.writeHeader(socket: socket)
-        try audio.writeBody(socket: socket)
-        return audio.header.getPacketLength()
     }
 
     public func reset() {
@@ -228,6 +265,9 @@ public class CommandManager {
         timestamp = 0
         streamId = 0
         commandId = 0
+        readChunkSize = RtmpConfig.DEFAULT_CHUNK_SIZE
         sessionHistory.reset()
+        acknowledgementSequence = 0
+        bytesRead = 0
     }
 }
