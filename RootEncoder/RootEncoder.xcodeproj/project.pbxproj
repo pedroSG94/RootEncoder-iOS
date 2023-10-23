@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB445A942AE725A600E338B4 /* DisplayRtmp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A932AE725A600E338B4 /* DisplayRtmp.swift */; };
+		EB445A962AE7262300E338B4 /* DisplayBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A952AE7262300E338B4 /* DisplayBase.swift */; };
+		EB445A982AE72E3B00E338B4 /* DisplayRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */; };
 		EB65621D2AC498A600DD8958 /* RootEncoder.docc in Sources */ = {isa = PBXBuildFile; fileRef = EB65621C2AC498A600DD8958 /* RootEncoder.docc */; };
 		EB6562232AC498A700DD8958 /* RootEncoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6562182AC498A600DD8958 /* RootEncoder.framework */; };
 		EB6562282AC498A700DD8958 /* RootEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6562272AC498A700DD8958 /* RootEncoderTests.swift */; };
@@ -52,6 +55,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EB445A932AE725A600E338B4 /* DisplayRtmp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtmp.swift; sourceTree = "<group>"; };
+		EB445A952AE7262300E338B4 /* DisplayBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayBase.swift; sourceTree = "<group>"; };
+		EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtsp.swift; sourceTree = "<group>"; };
 		EB6562182AC498A600DD8958 /* RootEncoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RootEncoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB65621B2AC498A600DD8958 /* RootEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootEncoder.h; sourceTree = "<group>"; };
 		EB65621C2AC498A600DD8958 /* RootEncoder.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = RootEncoder.docc; sourceTree = "<group>"; };
@@ -137,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				EB65623B2AC498B500DD8958 /* RtspCamera.swift */,
+				EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */,
 			);
 			path = rtsp;
 			sourceTree = "<group>";
@@ -145,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				EB65623D2AC498B500DD8958 /* CameraBase.swift */,
+				EB445A952AE7262300E338B4 /* DisplayBase.swift */,
 			);
 			path = base;
 			sourceTree = "<group>";
@@ -153,6 +161,7 @@
 			isa = PBXGroup;
 			children = (
 				EB65623F2AC498B500DD8958 /* RtmpCamera.swift */,
+				EB445A932AE725A600E338B4 /* DisplayRtmp.swift */,
 			);
 			path = rtmp;
 			sourceTree = "<group>";
@@ -291,10 +300,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB9B4D7C2AC4998B00F427C5 /* CameraBase.swift in Sources */,
+				EB445A962AE7262300E338B4 /* DisplayBase.swift in Sources */,
 				EB9B4D7D2AC4998B00F427C5 /* RtspCamera.swift in Sources */,
 				EB9B4DA82AC4BFBF00F427C5 /* Extensions.swift in Sources */,
 				EB9B4D7E2AC4998B00F427C5 /* FpsListener.swift in Sources */,
 				EB9B4D7F2AC4998B00F427C5 /* RecordController.swift in Sources */,
+				EB445A942AE725A600E338B4 /* DisplayRtmp.swift in Sources */,
+				EB445A982AE72E3B00E338B4 /* DisplayRtsp.swift in Sources */,
 				EB9B4D802AC4998B00F427C5 /* RtmpCamera.swift in Sources */,
 				EB65621D2AC498A600DD8958 /* RootEncoder.docc in Sources */,
 			);

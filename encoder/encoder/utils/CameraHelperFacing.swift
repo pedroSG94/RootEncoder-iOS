@@ -17,6 +17,7 @@ public enum CameraHelper {
         case vga640x480
         case hd1280x720
         case fhd1920x1080
+        case fhd1920x1440
         case uhd3840x2160
 
         var width: Int {
@@ -28,6 +29,8 @@ public enum CameraHelper {
             case .hd1280x720:
                 return 1280
             case .fhd1920x1080:
+                return 1920
+            case .fhd1920x1440:
                 return 1920
             case .uhd3840x2160:
                 return 3840
@@ -44,6 +47,8 @@ public enum CameraHelper {
                 return 720
             case .fhd1920x1080:
                 return 1080
+            case .fhd1920x1440:
+                return 1440
             case .uhd3840x2160:
                 return 2160
             }
@@ -58,6 +63,8 @@ public enum CameraHelper {
             case .hd1280x720:
                 return .hd1280x720
             case .fhd1920x1080:
+                return .hd1920x1080
+            case .fhd1920x1440:
                 return .hd1920x1080
             case .uhd3840x2160:
                 return .hd4K3840x2160

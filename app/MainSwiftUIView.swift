@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct MainSwiftUIView: View {
+        
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
