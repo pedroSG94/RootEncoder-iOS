@@ -22,7 +22,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     private var fpsListener = FpsListener()
 
     public init(view: UIView) {
-        cameraManager = ScreenManager(cameraView: view, callbackVideo: self, callbackAudio: self)
+        cameraManager = ScreenManager(cameraView: view, callbackVideo: self, callbackAudio: nil)
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(callback: self)
