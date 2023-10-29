@@ -9,7 +9,7 @@ public class RtmpSender {
 
     private let h264FlvPacket = H264FlvPacket()
     private let aacFlvPacket = AacFlvPacket()
-    private let thread = DispatchQueue(label: "RtmpSender")
+    private var thread: Task<(), Never>? = nil
     private var running = false
     private var cacheSize = 200
     private let queue: SynchronizedQueue<FlvPacket>
@@ -69,20 +69,20 @@ public class RtmpSender {
     public func start() {
         queue.clear()
         running = true
-        thread.async {
+        thread = Task {
             while (self.running) {
                 let flvPacket = self.queue.dequeue()
                 if let flvPacket = flvPacket {
                     do {
                         if (flvPacket.type == FlvType.VIDEO) {
-                            let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
+                            let size = try await self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
                             if (self.isEnableLogs) {
                                 print("wrote Video packet, size: \(size)")
                             }
                             self.videoFramesSent += 1
                             self.bitrateManager.calculateBitrate(size: Int64(size * 8))
                         } else {
-                            let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
+                            let size = try await self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
                             if (self.isEnableLogs) {
                                 print("wrote Audio packet, size: \(size)")
                             }
@@ -100,6 +100,8 @@ public class RtmpSender {
 
     public func stop(clear: Bool = true) {
         running = false
+        thread?.cancel()
+        thread = nil
         aacFlvPacket.reset()
         h264FlvPacket.reset(resetInfo: clear)
         queue.clear()

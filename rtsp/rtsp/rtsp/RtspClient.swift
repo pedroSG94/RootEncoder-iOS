@@ -81,7 +81,7 @@ public class RtspClient {
                     self.tlsEnabled = groups[0].hasPrefix("rtsps")
                     let host = groups[1]
                     let defaultPort = groups.count == 3
-                    let port = defaultPort ? 554 : Int(groups[2])!
+                    let port = defaultPort ? 554 : Int(groups[2]) ?? 554
                     let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     do {

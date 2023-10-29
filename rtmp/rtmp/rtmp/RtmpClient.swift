@@ -62,8 +62,7 @@ public class RtmpClient {
         }
         if (!self.isStreaming || isRetry) {
             self.isStreaming = true
-            let thread = DispatchQueue(label: "RtmpClient")
-            thread.async {
+            let _ = Task {
                 guard let url = url else {
                     self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
@@ -75,7 +74,7 @@ public class RtmpClient {
                     self.tlsEnabled = groups[0].hasPrefix("rtmps")
                     let host = groups[1]
                     let defaultPort = groups.count == 3
-                    let port = defaultPort ? self.tlsEnabled ? 443 : 1935 : Int(groups[2])!
+                    let port = defaultPort ? self.tlsEnabled ? 443 : 1935 : Int(groups[2]) ?? 1935
                     let _ = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])" //path
                     self.commandManager.host = host
                     self.commandManager.port = port
@@ -84,20 +83,20 @@ public class RtmpClient {
                     let tcUrlIndex = groups[0].index(groups[0].startIndex, offsetBy: groups[0].count - self.commandManager.streamName.count)
                     self.commandManager.tcUrl = self.getTcUrl(url: String(groups[0].prefix(upTo: tcUrlIndex)))
                     do {
-                        if (try !self.establishConnection()) {
+                        if (try await !self.establishConnection()) {
                             self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Handshake failed")
                             return
                         }
                         guard let socket = self.socket else {
                             throw IOException.runtimeError("Invalid socket, Connection failed")
                         }
-                        try self.commandManager.sendChunkSize(socket: socket)
-                        try self.commandManager.sendConnect(auth: "", socket: socket)
+                        try await self.commandManager.sendChunkSize(socket: socket)
+                        try await self.commandManager.sendConnect(auth: "", socket: socket)
                         while (!self.publishPermitted) {
-                            try self.handleMessages()
+                            try await self.handleMessages()
                         }
                         
-                        self.handleServerCommands()
+                        await self.handleServerCommands()
                     } catch {
                         self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Connection failed: \(error)")
                     }
@@ -110,13 +109,12 @@ public class RtmpClient {
         if isStreaming {
             rtmpSender.stop(clear: clear)
         }
-        let thread = DispatchQueue(label: "RtmpClient.disconnect")
         let sync = DispatchGroup()
         sync.enter()
-        thread.async {
+        let _ = Task {
             do {
                 if let socket = self.socket {
-                    try self.commandManager.sendClose(socket: socket)
+                    try await self.commandManager.sendClose(socket: socket)
                 }
                 sync.leave()
             } catch {
@@ -181,26 +179,26 @@ public class RtmpClient {
         }
     }
 
-    private func handleServerCommands() {
+    private func handleServerCommands() async {
         do {
-            try handleServerPackets()
+            try await handleServerPackets()
         } catch {
             
         }
     }
     
-    private func handleServerPackets() throws {
+    private func handleServerPackets() async throws {
         while (isStreaming) {
-            try handleMessages()
+            try await handleMessages()
         }
     }
 
-    private func handleMessages() throws {
+    private func handleMessages() async throws {
         guard var socket =  socket else {
             throw IOException.runtimeError("Invalid socket, Connection failed")
         }
-        let message = try commandManager.readMessageResponse(socket: socket)
-        try commandManager.checkAndSendAcknowledgement(socket: socket)
+        let message = try await commandManager.readMessageResponse(socket: socket)
+        try await commandManager.checkAndSendAcknowledgement(socket: socket)
         switch message.getType() {
             case .SET_CHUNK_SIZE:
                 let setChunkSize = message as! SetChunkSize
@@ -213,7 +211,7 @@ public class RtmpClient {
             case .USER_CONTROL:
                 let userControl = message as! UserControl
                 if (userControl.type == ControlType.PING_REQUEST) {
-                    try commandManager.sendPong(event: userControl.event, socket: socket)
+                    try await commandManager.sendPong(event: userControl.event, socket: socket)
                 } else {
                     print("user control command \(userControl.type) ignored")
                 }
@@ -222,7 +220,7 @@ public class RtmpClient {
                 RtmpConfig.acknowledgementWindowSize = windowAcknowledgementSize.acknowledgementWindowSize
             case .SET_PEER_BANDWIDTH:
                 let _ = message as! SetPeerBandwidth
-                try commandManager.sendWindowAcknowledgementSize(socket: socket)
+                try await commandManager.sendWindowAcknowledgementSize(socket: socket)
             case .COMMAND_AMF0, .COMMAND_AMF3:
                 let command = message as! Command
                 let commandName = commandManager.sessionHistory.getName(id: command.commandId)
@@ -234,10 +232,10 @@ public class RtmpClient {
                                     connectCheckerRtmp.onAuthSuccessRtmp()
                                     commandManager.onAuth = false
                                 }
-                                try commandManager.createStream(socket: socket)
+                                try await commandManager.createStream(socket: socket)
                             case "createStream":
                                 commandManager.streamId = Int((command.data[3] as! AmfNumber).value)
-                                try commandManager.sendPublish(socket: socket)
+                                try await commandManager.sendPublish(socket: socket)
                             default:
                                 print("success response received from \(commandName ?? "unknown command")")
                         }
@@ -251,7 +249,7 @@ public class RtmpClient {
                                         && description.contains("challenge=") && description.contains("salt=") //adobe response
                                         || description.contains("nonce="))  { //llnw response
                                     closeConnection()
-                                    try _ = establishConnection()
+                                    try _ = await establishConnection()
                                     if (self.socket == nil) {
                                         throw IOException.runtimeError("Invalid socket, Connection failed")
                                     } else {
@@ -266,17 +264,17 @@ public class RtmpClient {
                                 } else if (description.contains("code=403")) {
                                     if (description.contains("authmod=adobe")) {
                                         closeConnection()
-                                        try _ = establishConnection()
+                                        try _ = await establishConnection()
                                         if (self.socket == nil) {
                                             throw IOException.runtimeError("Invalid socket, Connection failed")
                                         } else {
                                             socket = self.socket!
                                         }
                                         print("sending auth mode adobe")
-                                        try commandManager.sendConnect(auth: "?authmod=adobe&user=\(commandManager.user ?? "")", socket: socket)
+                                        try await commandManager.sendConnect(auth: "?authmod=adobe&user=\(commandManager.user ?? "")", socket: socket)
                                     } else if (description.contains("authmod=llnw")) {
                                         print("sending auth mode llnw")
-                                        try commandManager.sendConnect(auth: "?authmod=llnw&user=\(commandManager.user ?? "")", socket: socket)
+                                        try await commandManager.sendConnect(auth: "?authmod=llnw&user=\(commandManager.user ?? "")", socket: socket)
                                     }
                                 } else {
                                     connectCheckerRtmp.onAuthErrorRtmp()
@@ -288,7 +286,7 @@ public class RtmpClient {
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value
                         switch (code) {
                             case "NetStream.Publish.Start":
-                                try commandManager.sendMetadata(socket: socket)
+                                try await commandManager.sendMetadata(socket: socket)
                                 connectCheckerRtmp.onConnectionSuccessRtmp()
                                 rtmpSender.socket = socket
                                 rtmpSender.start()
@@ -308,17 +306,17 @@ public class RtmpClient {
         }
     }
 
-    public func closeConnection() {
+    private func closeConnection() {
         socket?.disconnect()
         commandManager.reset()
     }
 
-    public func establishConnection() throws -> Bool {
+    public func establishConnection() async throws -> Bool {
         socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port)
-        try socket?.connect()
+        try await socket?.connect()
         let timeStamp = Date().millisecondsSince1970 / 1000
         let handshake = Handshake()
-        if (try !handshake.sendHandshake(socket: socket!)) {
+        if (try await !handshake.sendHandshake(socket: socket!)) {
             return false
         }
         commandManager.timestamp = Int(timeStamp)
