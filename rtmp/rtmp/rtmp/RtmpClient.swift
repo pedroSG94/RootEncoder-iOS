@@ -111,7 +111,7 @@ public class RtmpClient {
         }
         let sync = DispatchGroup()
         sync.enter()
-        let _ = Task {
+        let task = Task {
             do {
                 if let socket = self.socket {
                     try await self.commandManager.sendClose(socket: socket)
@@ -123,6 +123,7 @@ public class RtmpClient {
         }
         
         let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
+        task.cancel()
         closeConnection()
         if (clear) {
             reTries = numRetry

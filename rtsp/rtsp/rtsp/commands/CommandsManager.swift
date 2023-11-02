@@ -160,8 +160,8 @@ public class CommandsManager {
         self.vps = vps
     }
     
-    public func getResponse(socket: Socket, method: Method = Method.UNKNOWN) throws -> Command {
-        let response = try socket.readString()
+    public func getResponse(socket: Socket, method: Method = Method.UNKNOWN) async throws -> Command {
+        let response = try await socket.readString()
         print(response)
         if (method == Method.UNKNOWN) {
             return commandParser.parseCommand(commandText: response)

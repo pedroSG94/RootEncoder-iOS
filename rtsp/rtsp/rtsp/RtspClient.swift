@@ -68,8 +68,7 @@ public class RtspClient {
         }
         if (!self.streaming || isRetry) {
             self.streaming = true
-            let thread = DispatchQueue(label: "RtspClient")
-            thread.async {
+            let thread = Task {
                 guard let url = url else {
                     self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
@@ -86,7 +85,7 @@ public class RtspClient {
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     do {
                         self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port)
-                        try self.socket?.connect()
+                        try await self.socket?.connect()
                         if (!self.commandsManager.audioDisabled) {
                             self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
                         }
@@ -105,19 +104,19 @@ public class RtspClient {
                             }
                         }
                         //Options
-                        try self.socket?.write(data: self.commandsManager.createOptions())
-                        let _ = try self.commandsManager.getResponse(socket: self.socket!, method: Method.OPTIONS)
+                        try await self.socket?.write(data: self.commandsManager.createOptions())
+                        let _ = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.OPTIONS)
 
                         //Announce
-                        try self.socket?.write(data: self.commandsManager.createAnnounce())
-                        let announceResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
+                        try await self.socket?.write(data: self.commandsManager.createAnnounce())
+                        let announceResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                         if announceResponse.status == 403 {
                             self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
                         } else if announceResponse.status == 401 {
                             if (self.commandsManager.canAuth()) {
                                 //Announce with auth
-                                try self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
-                                let authResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
+                                try await self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
+                                let authResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                                 if authResponse.status == 401 {
                                     self.connectCheckerRtsp.onAuthErrorRtsp()
                                 } else if authResponse.status == 200 {
@@ -134,8 +133,8 @@ public class RtspClient {
                         }
                         if !self.commandsManager.videoDisabled {
                             //Setup video
-                            try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
-                            let setupVideoStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
+                            try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
+                            let setupVideoStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupVideoStatus != 200) {
                                 self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
                                 return
@@ -143,28 +142,28 @@ public class RtspClient {
                         }
                         if !self.commandsManager.audioDisabled {
                             //Setup audio
-                            try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
-                            let setupAudioStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
+                            try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
+                            let setupAudioStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupAudioStatus != 200) {
                                 self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
                                 return
                             }
                         }
                         //Record
-                        try self.socket?.write(data: self.commandsManager.createRecord())
-                        let recordStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
+                        try await self.socket?.write(data: self.commandsManager.createRecord())
+                        let recordStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
                         if (recordStatus != 200) {
                             self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
                             return
                         }
 
-                        self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
+                        await self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
                                 videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
                                 videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
                         self.rtspSender.start()
                         self.connectCheckerRtsp.onConnectionSuccessRtsp()
                         
-                        self.handleServerCommands()
+                        await self.handleServerCommands()
                     } catch let error {
                         self.connectCheckerRtsp.onConnectionFailedRtsp(reason: error.localizedDescription)
                         return
@@ -177,14 +176,14 @@ public class RtspClient {
         }
     }
     
-    private func handleServerCommands() {
+    private func handleServerCommands() async {
         //Read and print server commands received each 2 seconds
         while (streaming) {
             guard let socket = socket else {
                 return
             }
             do {
-                let _ = try commandsManager.getResponse(socket: socket)
+                let _ = try await commandsManager.getResponse(socket: socket)
                 //Do something depend of command if required
             } catch {
             }
@@ -196,21 +195,21 @@ public class RtspClient {
     }
     
     public func disconnect(clear: Bool = true) {
-        let thread = DispatchQueue(label: "RtspClient.disconnect")
         if streaming {
             rtspSender.stop()
         }
         let sync = DispatchGroup()
         sync.enter()
-        thread.async {
+        let task = Task {
             do {
-                try self.socket?.write(data: self.commandsManager.createTeardown())
+                try await self.socket?.write(data: self.commandsManager.createTeardown())
                 sync.leave()
             } catch {
                 sync.leave()
             }
         }
         let _ = sync.wait(timeout: DispatchTime.now() + 0.1)
+        task.cancel()
         socket?.disconnect()
         if (clear) {
             commandsManager.clear()

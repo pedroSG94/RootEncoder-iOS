@@ -12,14 +12,14 @@ public class RtpSocketUdp: BaseRtpSocket {
     private var videoPorts: Array<Int>
     private var audioPorts: Array<Int>
 
-    public init(callback: ConnectCheckerRtsp, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) {
+    public init(callback: ConnectCheckerRtsp, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) async {
         self.videoPorts = videoPorts
         self.audioPorts = audioPorts
         videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1])
         audioSocket = Socket(host: host, localPort: audioPorts[0], port: audioPorts[1])
         do {
-            try videoSocket.connect()
-            try audioSocket.connect()
+            try await videoSocket.connect()
+            try await audioSocket.connect()
         } catch let error {
             callback.onConnectionFailedRtsp(reason: error.localizedDescription)
         }
@@ -31,14 +31,14 @@ public class RtpSocketUdp: BaseRtpSocket {
         audioSocket.disconnect()
     }
 
-    public override func sendFrame(rtpFrame: RtpFrame, isEnableLogs: Bool) throws {
+    public override func sendFrame(rtpFrame: RtpFrame, isEnableLogs: Bool) async throws {
         let isAudio = rtpFrame.channelIdentifier == RtpConstants.trackAudio
         var port = 0
         if (isAudio) {
-            try audioSocket.write(buffer: rtpFrame.buffer!)
+            try await audioSocket.write(buffer: rtpFrame.buffer!)
             port = audioPorts[1]
         } else {
-            try videoSocket.write(buffer: rtpFrame.buffer!)
+            try await videoSocket.write(buffer: rtpFrame.buffer!)
             port = videoPorts[1]
         }
         if (isEnableLogs) {
