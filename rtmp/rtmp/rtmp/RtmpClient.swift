@@ -19,6 +19,7 @@ public class RtmpClient {
     private var numRetry = 0
     private var reTries = 0
     private var url: String? = nil
+    private var thread: Task<(), Error>? = nil
 
     public init(connectCheckerRtmp: ConnectCheckerRtmp) {
         self.connectCheckerRtmp = connectCheckerRtmp
@@ -62,7 +63,7 @@ public class RtmpClient {
         }
         if (!self.isStreaming || isRetry) {
             self.isStreaming = true
-            let _ = Task {
+            thread = Task {
                 guard let url = url else {
                     self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
@@ -132,6 +133,8 @@ public class RtmpClient {
             connectCheckerRtmp.onDisconnectRtmp()
         }
         publishPermitted = false
+        thread?.cancel()
+        thread = nil
     }
 
     public func setRetries(reTries: Int) {

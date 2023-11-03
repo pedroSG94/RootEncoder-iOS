@@ -18,6 +18,11 @@ public class RtspCamera: CameraBase {
         super.init(view: view)
     }
 
+    public init(view: MetalView, connectChecker: ConnectCheckerRtsp) {
+        client = RtspClient(connectCheckerRtsp: connectChecker)
+        super.init(view: view)
+    }
+    
     public func setAuth(user: String, password: String) {
         client.setAuth(user: user, password: password)
     }

@@ -8,12 +8,13 @@ public class RtspClient {
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
     private let rtspSender: RtspSender
-    private var semaphore = DispatchSemaphore(value: 0)
     private var checkServerAlive = false
     private var doingRetry = false
     private var numRetry = 0
     private var reTries = 0
     private var url: String? = nil
+    private var semaphore: Task<Bool, Error>? = nil
+    private var thread: Task<(), Error>? = nil
     
     public init(connectCheckerRtsp: ConnectCheckerRtsp) {
         self.connectCheckerRtsp = connectCheckerRtsp
@@ -59,7 +60,7 @@ public class RtspClient {
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         commandsManager.setVideoConfig(sps: sps, pps: pps, vps: vps)
-        semaphore.signal()
+        semaphore?.cancel()
     }
     
     public func connect(url: String?, isRetry: Bool = false) {
@@ -68,7 +69,7 @@ public class RtspClient {
         }
         if (!self.streaming || isRetry) {
             self.streaming = true
-            let thread = Task {
+            thread = Task {
                 guard let url = url else {
                     self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
@@ -92,7 +93,11 @@ public class RtspClient {
                         if (!self.commandsManager.videoDisabled) {
                             if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
                                 print("waiting for sps and pps")
-                                let _ = self.semaphore.wait(timeout: DispatchTime.now() + 5)
+                                semaphore = Task {
+                                    try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
+                                    return true
+                                }
+                                let _ = await semaphore?.result
                                 if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
                                     self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "sps or pps is null")
                                     return
@@ -220,6 +225,8 @@ public class RtspClient {
         } else {
             commandsManager.retryClear()
         }
+        thread?.cancel()
+        thread = nil
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {

@@ -18,6 +18,11 @@ public class RtmpCamera: CameraBase {
         super.init(view: view)
     }
 
+    public init(view: MetalView, connectChecker: ConnectCheckerRtmp) {
+        client = RtmpClient(connectCheckerRtmp: connectChecker)
+        super.init(view: view)
+    }
+    
     public func setAuth(user: String, password: String) {
         //client.setAuth(user: user, password: password)
     }

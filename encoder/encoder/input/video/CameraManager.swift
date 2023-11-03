@@ -19,21 +19,21 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var output: AVCaptureVideoDataOutput?
     var prevLayer: AVCaptureVideoPreviewLayer?
     var videoOutput: AVCaptureVideoDataOutput?
-    var cameraView: UIView!
+    var cameraView: UIView? = nil
 
     private var facing = CameraHelper.Facing.BACK
+    //TODO fix use different resolution in startPreview and in prepareVideo
     private var resolution: CameraHelper.Resolution = .vga640x480
     private(set) var running = false
-    private(set) var onPreview = false
     private var callback: GetCameraData
     
     public init(cameraView: UIView, callback: GetCameraData) {
         self.cameraView = cameraView
         self.callback = callback
     }
-
-    public func stopSend() {
-        onPreview = true
+    
+    public init(callback: GetCameraData) {
+        self.callback = callback
     }
 
     public func stop() {
@@ -41,19 +41,18 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         session?.removeOutput(output!)
         session?.removeInput(input!)
         running = false
-        onPreview = false
     }
 
     public func prepare(resolution: CameraHelper.Resolution) {
         self.resolution = resolution
     }
 
-    public func start(onPreview: Bool = false) {
-        start(facing: facing, resolution: resolution, onPreview: onPreview)
+    public func start() {
+        start(facing: facing, resolution: resolution)
     }
 
-    public func start(onPreview: Bool = false, resolution: CameraHelper.Resolution) {
-        start(facing: facing, resolution: resolution, onPreview: onPreview)
+    public func start(resolution: CameraHelper.Resolution) {
+        start(facing: facing, resolution: resolution)
     }
 
     public func switchCamera() {
@@ -64,13 +63,12 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (running) {
             stop()
-            start(facing: facing, resolution: resolution, onPreview: onPreview)
+            start(facing: facing, resolution: resolution)
         }
     }
     
-    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, onPreview: Bool) {
+    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution) {
         self.facing = facing
-        self.onPreview = onPreview
         if (running) {
             if (resolution != self.resolution) {
                 stop()
@@ -105,14 +103,17 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         session?.addOutput(output!)
 
         prevLayer = AVCaptureVideoPreviewLayer(session: session!)
-        prevLayer?.frame.size = cameraView.frame.size
+        if (cameraView != nil) {
+            prevLayer?.frame.size = cameraView!.frame.size
+        }
         prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         if let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
             let orientation = UIInterfaceOrientation(rawValue: interfaceOrientation.rawValue)!
             prevLayer?.connection?.videoOrientation = transformOrientation(orientation: orientation)
         }
-        cameraView.layer.addSublayer(prevLayer!)
-
+        if (cameraView != nil) {
+            cameraView!.layer.addSublayer(prevLayer!)
+        }
         session?.commitConfiguration()
         thread.async {
             self.session?.startRunning()
@@ -144,10 +145,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         thread.async {
-            //TODO render OpenGlView/MetalView using CMSampleBuffer to draw preview and filters
-            if (!self.onPreview) {
-                self.callback.getYUVData(from: sampleBuffer)
-            }
+            self.callback.getYUVData(from: sampleBuffer)
         }
     }
 }

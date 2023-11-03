@@ -7,17 +7,17 @@
 //
 
 import SwiftUI
+import RootEncoder
 
 struct CameraUIView: UIViewRepresentable {
     
-    let view = UIView()
+    let view = UIView(frame: .zero)
+    //let view = MetalView(frame: .zero)
     
     public func makeUIView(context: Context) -> UIView {
-        view.backgroundColor = .black // Puedes cambiar el color de fondo según tus preferencias
         return view
     }
 
     public func updateUIView(_ uiView: UIView, context: Context) {
-        // Aquí puedes realizar cualquier actualización necesaria en la UIView
     }
 }

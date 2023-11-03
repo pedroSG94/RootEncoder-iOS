@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB34F4CB2AF5979C00567E51 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4CA2AF5979C00567E51 /* MetalView.swift */; };
 		EB445A942AE725A600E338B4 /* DisplayRtmp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A932AE725A600E338B4 /* DisplayRtmp.swift */; };
 		EB445A962AE7262300E338B4 /* DisplayBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A952AE7262300E338B4 /* DisplayBase.swift */; };
 		EB445A982AE72E3B00E338B4 /* DisplayRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */; };
@@ -55,6 +56,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EB34F4CA2AF5979C00567E51 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		EB445A932AE725A600E338B4 /* DisplayRtmp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtmp.swift; sourceTree = "<group>"; };
 		EB445A952AE7262300E338B4 /* DisplayBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayBase.swift; sourceTree = "<group>"; };
 		EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtsp.swift; sourceTree = "<group>"; };
@@ -99,6 +101,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EB34F4C92AF5978800567E51 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				EB34F4CA2AF5979C00567E51 /* MetalView.swift */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
 		EB65620E2AC498A600DD8958 = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +131,7 @@
 		EB65621A2AC498A600DD8958 /* RootEncoder */ = {
 			isa = PBXGroup;
 			children = (
+				EB34F4C92AF5978800567E51 /* view */,
 				EB65623E2AC498B500DD8958 /* base */,
 				EB65623C2AC498B500DD8958 /* rtsp */,
 				EB6562432AC498B500DD8958 /* utils */,
@@ -305,6 +316,7 @@
 				EB9B4DA82AC4BFBF00F427C5 /* Extensions.swift in Sources */,
 				EB9B4D7E2AC4998B00F427C5 /* FpsListener.swift in Sources */,
 				EB9B4D7F2AC4998B00F427C5 /* RecordController.swift in Sources */,
+				EB34F4CB2AF5979C00567E51 /* MetalView.swift in Sources */,
 				EB445A942AE725A600E338B4 /* DisplayRtmp.swift in Sources */,
 				EB445A982AE72E3B00E338B4 /* DisplayRtsp.swift in Sources */,
 				EB9B4D802AC4998B00F427C5 /* RtmpCamera.swift in Sources */,

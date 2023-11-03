@@ -18,9 +18,18 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private var streaming = false
     private var onPreview = false
     private var fpsListener = FpsListener()
+    private var metalView: MetalView? = nil
 
     public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
+        microphone = MicrophoneManager(callback: self)
+        videoEncoder = VideoEncoder(callback: self)
+        audioEncoder = AudioEncoder(callback: self)
+    }
+    
+    public init(view: MetalView) {
+        self.metalView = view
+        cameraManager = CameraManager(callback: self)
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(callback: self)
@@ -69,7 +78,6 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func stopStream() {
         microphone.stop()
-        cameraManager.stopSend()
         audioEncoder.stop()
         videoEncoder.stop()
         stopStreamRtp()
@@ -91,14 +99,14 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK) {
         if (!isOnPreview()) {
-            cameraManager.start(facing: facing, resolution: resolution, onPreview: true)
+            cameraManager.start(facing: facing, resolution: resolution)
             onPreview = true
         }
     }
 
     public func startPreview() {
         if (!isOnPreview()) {
-            cameraManager.start(onPreview: true)
+            cameraManager.start()
             onPreview = true
         }
     }
@@ -121,6 +129,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
+        metalView?.update(buffer: buffer)
         videoEncoder.encodeFrame(buffer: buffer)
     }
 
