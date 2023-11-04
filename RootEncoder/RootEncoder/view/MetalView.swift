@@ -13,7 +13,6 @@ import encoder
 public class MetalView: MTKView {
     
     private let aspectRatioMode = AspectRatioMode.ADJUST
-    private let sizeCalculator = SizeCalculator()
     private var buffer: CMSampleBuffer? = nil
     private var context: CIContext? = nil
     private lazy var render: (any MTLCommandQueue)? = {
@@ -102,7 +101,7 @@ extension MetalView: MTKViewDelegate {
             streamImage = filter.draw(image: streamImage)
         }
         
-        let viewport = sizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: streamImage.extent.width, streamHeight: streamImage.extent.height, previewWidth: drawableSize.width, previewHeight: drawableSize.height)
+        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: streamImage.extent.width, streamHeight: streamImage.extent.height, previewWidth: drawableSize.width, previewHeight: drawableSize.height)
         let previewImage = streamImage.transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY)).transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
         
         let bounds = CGRect(origin: .zero, size: drawableSize)
