@@ -12,6 +12,10 @@ import encoder
 
 public class MetalView: MTKView {
     
+    private var isPreviewHorizontalFlip = false
+    private var isPreviewVerticalFlip = false
+    private var isStreamHorizontalFlip = false
+    private var isStreamVerticalFlip = false
     private let aspectRatioMode = AspectRatioMode.ADJUST
     private var buffer: CMSampleBuffer? = nil
     private var context: CIContext? = nil
@@ -102,7 +106,30 @@ extension MetalView: MTKViewDelegate {
         }
         
         let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: streamImage.extent.width, streamHeight: streamImage.extent.height, previewWidth: drawableSize.width, previewHeight: drawableSize.height)
-        let previewImage = streamImage.transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY)).transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
+        
+        var previewImage = streamImage
+            .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
+            .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
+        if (isPreviewVerticalFlip) {
+            previewImage = previewImage
+                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
+                .transformed(by: CGAffineTransform(translationX: 0, y: drawableSize.height))
+        }
+        if (isPreviewHorizontalFlip) {
+            previewImage = previewImage
+                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+                .transformed(by: CGAffineTransform(translationX: drawableSize.width, y: 0))
+        }
+        if (isStreamVerticalFlip) {
+            streamImage = streamImage
+                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
+                .transformed(by: CGAffineTransform(translationX: 0, y: streamImage.extent.height))
+        }
+        if (isStreamHorizontalFlip) {
+            streamImage = streamImage
+                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+                .transformed(by: CGAffineTransform(translationX: streamImage.extent.width, y: 0))
+        }
         
         let bounds = CGRect(origin: .zero, size: drawableSize)
         context.render(previewImage, to: currentDrawable.texture, commandBuffer: render, bounds: bounds, colorSpace: colorSpace)
