@@ -23,6 +23,9 @@
 		EB173ABB2AC497BC00B73F4A /* CodecUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA92AC4978E00B73F4A /* CodecUtil.swift */; };
 		EB173ABC2AC497BC00B73F4A /* VideoEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA32AC4978E00B73F4A /* VideoEncoder.swift */; };
 		EB173ABD2AC497BC00B73F4A /* GetH264Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA42AC4978E00B73F4A /* GetH264Data.swift */; };
+		EB34F4D22AF6BFC000567E51 /* VideoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D12AF6BFC000567E51 /* VideoFrame.swift */; };
+		EB34F4D52AF6C2E100567E51 /* BaseFilterRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D42AF6C2E100567E51 /* BaseFilterRender.swift */; };
+		EB34F4D82AF6C37800567E51 /* GreyScaleFilterRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */; };
 		EB445A8A2AE70CFA00E338B4 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A892AE70CFA00E338B4 /* ScreenManager.swift */; };
 		EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */; };
 		EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */; };
@@ -56,6 +59,9 @@
 		EB173AAC2AC4978E00B73F4A /* MicrophoneManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MicrophoneManager.swift; sourceTree = "<group>"; };
 		EB173AAE2AC4978E00B73F4A /* GetCameraData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetCameraData.swift; sourceTree = "<group>"; };
 		EB173AAF2AC4978E00B73F4A /* CameraManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		EB34F4D12AF6BFC000567E51 /* VideoFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFrame.swift; sourceTree = "<group>"; };
+		EB34F4D42AF6C2E100567E51 /* BaseFilterRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterRender.swift; sourceTree = "<group>"; };
+		EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreyScaleFilterRender.swift; sourceTree = "<group>"; };
 		EB445A892AE70CFA00E338B4 /* ScreenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 		EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
@@ -133,6 +139,7 @@
 			children = (
 				EB173AA32AC4978E00B73F4A /* VideoEncoder.swift */,
 				EB173AA42AC4978E00B73F4A /* GetH264Data.swift */,
+				EB34F4D12AF6BFC000567E51 /* VideoFrame.swift */,
 			);
 			path = video;
 			sourceTree = "<group>";
@@ -172,10 +179,28 @@
 		EB173AB12AC4978E00B73F4A /* input */ = {
 			isa = PBXGroup;
 			children = (
+				EB34F4D32AF6C2BD00567E51 /* metal */,
 				EB173AAD2AC4978E00B73F4A /* audio */,
 				EB173AB02AC4978E00B73F4A /* video */,
 			);
 			path = input;
+			sourceTree = "<group>";
+		};
+		EB34F4D32AF6C2BD00567E51 /* metal */ = {
+			isa = PBXGroup;
+			children = (
+				EB34F4D62AF6C33B00567E51 /* filter */,
+				EB34F4D42AF6C2E100567E51 /* BaseFilterRender.swift */,
+			);
+			path = metal;
+			sourceTree = "<group>";
+		};
+		EB34F4D62AF6C33B00567E51 /* filter */ = {
+			isa = PBXGroup;
+			children = (
+				EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */,
+			);
+			path = filter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -299,10 +324,13 @@
 				EB445A8A2AE70CFA00E338B4 /* ScreenManager.swift in Sources */,
 				EB173ABB2AC497BC00B73F4A /* CodecUtil.swift in Sources */,
 				EB173ABC2AC497BC00B73F4A /* VideoEncoder.swift in Sources */,
+				EB34F4D22AF6BFC000567E51 /* VideoFrame.swift in Sources */,
 				EB173ABD2AC497BC00B73F4A /* GetH264Data.swift in Sources */,
+				EB34F4D52AF6C2E100567E51 /* BaseFilterRender.swift in Sources */,
 				EB173A822AC4977200B73F4A /* encoder.docc in Sources */,
 				EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */,
 				EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */,
+				EB34F4D82AF6C37800567E51 /* GreyScaleFilterRender.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

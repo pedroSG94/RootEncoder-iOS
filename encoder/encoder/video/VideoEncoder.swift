@@ -33,7 +33,7 @@ public class VideoEncoder {
     private var forceKey = false
     private var codec = CodecUtil.H264
     private let thread = DispatchQueue(label: "VideoEncoder")
-    private let syncQueue = SynchronizedQueue<CMSampleBuffer>(label: "VideoEncodeQueue", size: 60)
+    private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
 
     private var session: VTCompressionSession?
     private let callback: GetH264Data
@@ -85,8 +85,6 @@ public class VideoEncoder {
                 let buffer = self.syncQueue.dequeue()
                 if let buffer = buffer {
                     guard let session = self.session else { return }
-                    guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
-                    let time = CMSampleBufferGetPresentationTimeStamp(buffer)
                     var properties: Dictionary<String, Any>?
                     if (self.forceKey) {
                         self.forceKey = false
@@ -95,7 +93,7 @@ public class VideoEncoder {
                         ];
                     }
                     var flag:VTEncodeInfoFlags = VTEncodeInfoFlags()
-                    VTCompressionSessionEncodeFrame(session, imageBuffer: px, presentationTimeStamp: time, duration: time, frameProperties: properties as CFDictionary?, sourceFrameRefcon: nil, infoFlagsOut: &flag)
+                    VTCompressionSessionEncodeFrame(session, imageBuffer: buffer.pixelBuffer, presentationTimeStamp: buffer.pts, duration: buffer.pts, frameProperties: properties as CFDictionary?, sourceFrameRefcon: nil, infoFlagsOut: &flag)
                 }
             }
         }
@@ -111,7 +109,17 @@ public class VideoEncoder {
 
     public func encodeFrame(buffer: CMSampleBuffer) {
         if (running) {
-            syncQueue.enqueue(buffer)
+            guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
+            let time = CMSampleBufferGetPresentationTimeStamp(buffer)
+            let frame = VideoFrame(pixelBuffer: px, pts: time)
+            syncQueue.enqueue(frame)
+        }
+    }
+    
+    public func encodeFrame(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+        if (running) {
+            let frame = VideoFrame(pixelBuffer: pixelBuffer, pts: pts)
+            syncQueue.enqueue(frame)
         }
     }
 
@@ -124,8 +132,7 @@ public class VideoEncoder {
         syncQueue.clear()
     }
     
-    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?,
-                                                               status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
+    private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
         guard let sampleBuffer = sampleBuffer else {
             print("nil buffer")
             return

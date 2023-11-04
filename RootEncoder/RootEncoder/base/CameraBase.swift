@@ -8,7 +8,7 @@ import AVFoundation
 import UIKit
 import encoder
 
-public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
+public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data, MetalViewCallback {
 
     private var microphone: MicrophoneManager!
     private var cameraManager: CameraManager!
@@ -69,6 +69,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         videoEncoder.start()
         microphone.start()
         cameraManager.start()
+        metalView?.setCallback(callback: self)
         onPreview = true
         streaming = true
         startStreamRtp(endpoint: endpoint)
@@ -77,6 +78,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func stopStreamRtp() {}
 
     public func stopStream() {
+        metalView?.setCallback(callback: nil)
         microphone.stop()
         audioEncoder.stop()
         videoEncoder.stop()
@@ -129,10 +131,17 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
-        metalView?.update(buffer: buffer)
-        videoEncoder.encodeFrame(buffer: buffer)
+        guard let metalView = metalView else {
+            videoEncoder.encodeFrame(buffer: buffer)
+            return
+        }
+        metalView.update(buffer: buffer)
     }
 
+    public func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+        videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
+    }
+    
     public func getAacData(frame: Frame) {
         getAacDataRtp(frame: frame)
     }

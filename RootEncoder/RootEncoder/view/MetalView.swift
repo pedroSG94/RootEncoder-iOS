@@ -8,6 +8,7 @@
 import Foundation
 import MetalKit
 import CoreMedia
+import encoder
 
 public class MetalView: MTKView {
     
@@ -17,6 +18,9 @@ public class MetalView: MTKView {
         return device?.makeCommandQueue()
     }()
     private let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
+    private let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
+    private var callback: MetalViewCallback? = nil
+    private var filters = [BaseFilterRender]()
     
     public init() {
         super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
@@ -53,6 +57,22 @@ public class MetalView: MTKView {
             }
         }
     }
+    
+    public func setCallback(callback: MetalViewCallback?) {
+        self.callback = callback
+    }
+    
+    public func addFilter(filter: BaseFilterRender) {
+        filters.append(filter)
+    }
+    
+    public func removeFilter(position: Int) {
+        filters.remove(at: position)
+    }
+    
+    public func clearFilters() {
+        filters.removeAll()
+    }
 }
 
 extension MetalView: MTKViewDelegate {
@@ -72,17 +92,40 @@ extension MetalView: MTKViewDelegate {
             render.commit()
             return
         }
-        var displayImage = CIImage(cvPixelBuffer: image)
-        let bounds = CGRect(origin: .zero, size: drawableSize)
+        //this image will be modified acording with filters
+        var streamImage = CIImage(cvPixelBuffer: image)
+        
+        //apply filters
+        for filter in filters {
+            streamImage = filter.draw(image: streamImage)
+        }
         
         //full screen mode
-        let scaleX = drawableSize.width / displayImage.extent.width
-        let scaleY = drawableSize.height / displayImage.extent.height
+        let scaleX = drawableSize.width / streamImage.extent.width
+        let scaleY = drawableSize.height / streamImage.extent.height
         
-        displayImage = displayImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
+        let previewImage = streamImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         
-        context.render(displayImage, to: currentDrawable.texture, commandBuffer: render, bounds: bounds, colorSpace: colorSpace)
+        let bounds = CGRect(origin: .zero, size: drawableSize)
+        context.render(previewImage, to: currentDrawable.texture, commandBuffer: render, bounds: bounds, colorSpace: colorSpace)
         render.present(currentDrawable)
         render.commit()
+        
+        guard let callback = callback else { return }
+        let pixelBuffer = toPixelBuffer(image: streamImage)
+        context.render(_:streamImage, to: pixelBuffer!)
+        let pts = CMSampleBufferGetPresentationTimeStamp(buffer!)
+        callback.getVideoData(pixelBuffer: pixelBuffer!, pts: pts)
+    }
+    
+    private func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
+        var pixelBuffer : CVPixelBuffer?
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(image.extent.width), Int(image.extent.height), kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
+
+        guard (status == kCVReturnSuccess) else {
+            return nil
+        }
+
+        return pixelBuffer
     }
 }
