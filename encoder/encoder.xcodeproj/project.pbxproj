@@ -26,6 +26,9 @@
 		EB34F4D22AF6BFC000567E51 /* VideoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D12AF6BFC000567E51 /* VideoFrame.swift */; };
 		EB34F4D52AF6C2E100567E51 /* BaseFilterRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D42AF6C2E100567E51 /* BaseFilterRender.swift */; };
 		EB34F4D82AF6C37800567E51 /* GreyScaleFilterRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */; };
+		EB34F4DE2AF6D37300567E51 /* SizeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4DD2AF6D37300567E51 /* SizeCalculator.swift */; };
+		EB34F4E22AF6D3D900567E51 /* AspectRatioMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4E12AF6D3D900567E51 /* AspectRatioMode.swift */; };
+		EB34F4E42AF6D40B00567E51 /* MetalViewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */; };
 		EB445A8A2AE70CFA00E338B4 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A892AE70CFA00E338B4 /* ScreenManager.swift */; };
 		EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */; };
 		EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */; };
@@ -62,6 +65,9 @@
 		EB34F4D12AF6BFC000567E51 /* VideoFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFrame.swift; sourceTree = "<group>"; };
 		EB34F4D42AF6C2E100567E51 /* BaseFilterRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFilterRender.swift; sourceTree = "<group>"; };
 		EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreyScaleFilterRender.swift; sourceTree = "<group>"; };
+		EB34F4DD2AF6D37300567E51 /* SizeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeCalculator.swift; sourceTree = "<group>"; };
+		EB34F4E12AF6D3D900567E51 /* AspectRatioMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectRatioMode.swift; sourceTree = "<group>"; };
+		EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalViewport.swift; sourceTree = "<group>"; };
 		EB445A892AE70CFA00E338B4 /* ScreenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 		EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
@@ -153,6 +159,9 @@
 				EB173AA92AC4978E00B73F4A /* CodecUtil.swift */,
 				EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */,
 				EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */,
+				EB34F4DD2AF6D37300567E51 /* SizeCalculator.swift */,
+				EB34F4E12AF6D3D900567E51 /* AspectRatioMode.swift */,
+				EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -313,6 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB173AB22AC497BC00B73F4A /* AudioEncoder.swift in Sources */,
+				EB34F4E42AF6D40B00567E51 /* MetalViewport.swift in Sources */,
 				EB173AB32AC497BC00B73F4A /* GetAacData.swift in Sources */,
 				EB173AB42AC497BC00B73F4A /* GetMicrophoneData.swift in Sources */,
 				EB173AB52AC497BC00B73F4A /* MicrophoneManager.swift in Sources */,
@@ -320,10 +330,12 @@
 				EB173AB72AC497BC00B73F4A /* CameraManager.swift in Sources */,
 				EB173AB82AC497BC00B73F4A /* CameraHelperFacing.swift in Sources */,
 				EB173AB92AC497BC00B73F4A /* Frame.swift in Sources */,
+				EB34F4DE2AF6D37300567E51 /* SizeCalculator.swift in Sources */,
 				EB173ABA2AC497BC00B73F4A /* Conversor.swift in Sources */,
 				EB445A8A2AE70CFA00E338B4 /* ScreenManager.swift in Sources */,
 				EB173ABB2AC497BC00B73F4A /* CodecUtil.swift in Sources */,
 				EB173ABC2AC497BC00B73F4A /* VideoEncoder.swift in Sources */,
+				EB34F4E22AF6D3D900567E51 /* AspectRatioMode.swift in Sources */,
 				EB34F4D22AF6BFC000567E51 /* VideoFrame.swift in Sources */,
 				EB173ABD2AC497BC00B73F4A /* GetH264Data.swift in Sources */,
 				EB34F4D52AF6C2E100567E51 /* BaseFilterRender.swift in Sources */,

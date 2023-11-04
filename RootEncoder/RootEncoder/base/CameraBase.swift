@@ -19,6 +19,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private var onPreview = false
     private var fpsListener = FpsListener()
     private var metalView: MetalView? = nil
+    private var previewResolution = CameraHelper.Resolution.vga640x480
 
     public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
@@ -49,12 +50,15 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
+        if (previewResolution != resolution) {
+            cameraManager.stop()
+        }
         cameraManager.prepare(resolution: resolution)
         return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+        prepareVideo(resolution: .hd1280x720, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -102,15 +106,13 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK) {
         if (!isOnPreview()) {
             cameraManager.start(facing: facing, resolution: resolution)
+            previewResolution = resolution
             onPreview = true
         }
     }
 
     public func startPreview() {
-        if (!isOnPreview()) {
-            cameraManager.start()
-            onPreview = true
-        }
+        startPreview(resolution: CameraHelper.Resolution.hd1280x720, facing: CameraHelper.Facing.BACK)
     }
 
     public func stopPreview() {
