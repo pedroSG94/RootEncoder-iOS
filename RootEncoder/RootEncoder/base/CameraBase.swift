@@ -58,7 +58,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .hd1280x720, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -112,7 +112,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func startPreview() {
-        startPreview(resolution: CameraHelper.Resolution.hd1280x720, facing: CameraHelper.Facing.BACK)
+        startPreview(resolution: CameraHelper.Resolution.vga640x480, facing: CameraHelper.Facing.BACK)
     }
 
     public func stopPreview() {
