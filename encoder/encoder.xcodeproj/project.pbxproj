@@ -17,7 +17,7 @@
 		EB173AB52AC497BC00B73F4A /* MicrophoneManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AAC2AC4978E00B73F4A /* MicrophoneManager.swift */; };
 		EB173AB62AC497BC00B73F4A /* GetCameraData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AAE2AC4978E00B73F4A /* GetCameraData.swift */; };
 		EB173AB72AC497BC00B73F4A /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AAF2AC4978E00B73F4A /* CameraManager.swift */; };
-		EB173AB82AC497BC00B73F4A /* CameraHelperFacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA62AC4978E00B73F4A /* CameraHelperFacing.swift */; };
+		EB173AB82AC497BC00B73F4A /* CameraHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA62AC4978E00B73F4A /* CameraHelper.swift */; };
 		EB173AB92AC497BC00B73F4A /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA72AC4978E00B73F4A /* Frame.swift */; };
 		EB173ABA2AC497BC00B73F4A /* Conversor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA82AC4978E00B73F4A /* Conversor.swift */; };
 		EB173ABB2AC497BC00B73F4A /* CodecUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173AA92AC4978E00B73F4A /* CodecUtil.swift */; };
@@ -54,7 +54,7 @@
 		EB173AA12AC4978E00B73F4A /* GetAacData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetAacData.swift; sourceTree = "<group>"; };
 		EB173AA32AC4978E00B73F4A /* VideoEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEncoder.swift; sourceTree = "<group>"; };
 		EB173AA42AC4978E00B73F4A /* GetH264Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetH264Data.swift; sourceTree = "<group>"; };
-		EB173AA62AC4978E00B73F4A /* CameraHelperFacing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraHelperFacing.swift; sourceTree = "<group>"; };
+		EB173AA62AC4978E00B73F4A /* CameraHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraHelper.swift; path = ../../utils/CameraHelper.swift; sourceTree = "<group>"; };
 		EB173AA72AC4978E00B73F4A /* Frame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		EB173AA82AC4978E00B73F4A /* Conversor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversor.swift; sourceTree = "<group>"; };
 		EB173AA92AC4978E00B73F4A /* CodecUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodecUtil.swift; sourceTree = "<group>"; };
@@ -153,7 +153,6 @@
 		EB173AAA2AC4978E00B73F4A /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				EB173AA62AC4978E00B73F4A /* CameraHelperFacing.swift */,
 				EB173AA72AC4978E00B73F4A /* Frame.swift */,
 				EB173AA82AC4978E00B73F4A /* Conversor.swift */,
 				EB173AA92AC4978E00B73F4A /* CodecUtil.swift */,
@@ -178,6 +177,7 @@
 		EB173AB02AC4978E00B73F4A /* video */ = {
 			isa = PBXGroup;
 			children = (
+				EB173AA62AC4978E00B73F4A /* CameraHelper.swift */,
 				EB173AAE2AC4978E00B73F4A /* GetCameraData.swift */,
 				EB173AAF2AC4978E00B73F4A /* CameraManager.swift */,
 				EB445A892AE70CFA00E338B4 /* ScreenManager.swift */,
@@ -328,7 +328,7 @@
 				EB173AB52AC497BC00B73F4A /* MicrophoneManager.swift in Sources */,
 				EB173AB62AC497BC00B73F4A /* GetCameraData.swift in Sources */,
 				EB173AB72AC497BC00B73F4A /* CameraManager.swift in Sources */,
-				EB173AB82AC497BC00B73F4A /* CameraHelperFacing.swift in Sources */,
+				EB173AB82AC497BC00B73F4A /* CameraHelper.swift in Sources */,
 				EB173AB92AC497BC00B73F4A /* Frame.swift in Sources */,
 				EB34F4DE2AF6D37300567E51 /* SizeCalculator.swift in Sources */,
 				EB173ABA2AC497BC00B73F4A /* Conversor.swift in Sources */,

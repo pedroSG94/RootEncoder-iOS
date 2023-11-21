@@ -49,16 +49,16 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         prepareAudio(bitrate: 64 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
-        if (previewResolution != resolution) {
+    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
+        if (previewResolution != resolution || rotation != cameraManager.rotation) {
             cameraManager.stop()
         }
-        cameraManager.prepare(resolution: resolution)
-        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
+        cameraManager.prepare(resolution: resolution, rotation: rotation)
+        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation())
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -103,16 +103,16 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         cameraManager.switchCamera()
     }
 
-    public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK) {
+    public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK, rotation: Int) {
         if (!isOnPreview()) {
-            cameraManager.start(facing: facing, resolution: resolution)
+            cameraManager.start(facing: facing, resolution: resolution, rotation: rotation)
             previewResolution = resolution
             onPreview = true
         }
     }
 
     public func startPreview() {
-        startPreview(resolution: CameraHelper.Resolution.vga640x480, facing: CameraHelper.Facing.BACK)
+        startPreview(resolution: CameraHelper.Resolution.vga640x480, facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation())
     }
 
     public func stopPreview() {

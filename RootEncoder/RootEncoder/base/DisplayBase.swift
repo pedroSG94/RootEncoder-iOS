@@ -41,12 +41,12 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         prepareAudio(bitrate: 64 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
-        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
+    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
+        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .fhd1920x1440, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+        prepareVideo(resolution: .fhd1920x1440, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: 0)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {

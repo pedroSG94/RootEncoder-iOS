@@ -31,6 +31,7 @@ public class VideoEncoder {
     private var isSpsAndPpsSend = false
     private var running = false
     private var forceKey = false
+    private var rotation = 0
     private var codec = CodecUtil.H264
     private let thread = DispatchQueue(label: "VideoEncoder")
     private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
@@ -43,11 +44,21 @@ public class VideoEncoder {
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval)
+        prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int) -> Bool {
-        let err = VTCompressionSessionCreate(allocator: nil, width: Int32(resolution.width), height: Int32(resolution.height),
+    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
+        let w = if (rotation == 90 || rotation == 270) {
+            resolution.height
+        } else  {
+            resolution.width
+        }
+        let h = if (rotation == 90 || rotation == 270) {
+            resolution.width
+        } else  {
+            resolution.height
+        }
+        let err = VTCompressionSessionCreate(allocator: nil, width: Int32(w), height: Int32(h),
                 codecType: codec.value, encoderSpecification: nil, imageBufferAttributes: nil,
                 compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(),
                 compressionSessionOut: &session)

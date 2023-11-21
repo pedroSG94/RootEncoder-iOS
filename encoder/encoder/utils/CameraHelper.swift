@@ -5,8 +5,26 @@
 
 import Foundation
 import AVFoundation
+import UIKit
 
-public enum CameraHelper {
+public class CameraHelper {
+    
+    public static func getCameraOrientation() -> Int {
+        let value = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .landscapeLeft
+        switch value {
+        case .portrait:
+            return 90
+        case .portraitUpsideDown:
+            return 270
+        case .landscapeLeft:
+            return 0
+        case .landscapeRight:
+            return 180
+        default:
+            return 0
+        }
+    }
+    
     public enum Facing {
         case BACK
         case FRONT

@@ -24,6 +24,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var facing = CameraHelper.Facing.BACK
     //TODO fix use different resolution in startPreview and in prepareVideo
     private var resolution: CameraHelper.Resolution = .vga640x480
+    public var rotation: Int = 0
     private(set) var running = false
     private var callback: GetCameraData
     
@@ -43,16 +44,17 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         running = false
     }
 
-    public func prepare(resolution: CameraHelper.Resolution) {
+    public func prepare(resolution: CameraHelper.Resolution, rotation: Int) {
         self.resolution = resolution
+        self.rotation = rotation
     }
 
     public func start() {
-        start(facing: facing, resolution: resolution)
+        start(facing: facing, resolution: resolution, rotation: rotation)
     }
 
     public func start(resolution: CameraHelper.Resolution) {
-        start(facing: facing, resolution: resolution)
+        start(facing: facing, resolution: resolution, rotation: rotation)
     }
 
     public func switchCamera() {
@@ -63,19 +65,21 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (running) {
             stop()
-            start(facing: facing, resolution: resolution)
+            start(facing: facing, resolution: resolution, rotation: rotation)
         }
     }
     
-    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution) {
+    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, rotation: Int) {
         self.facing = facing
         if (running) {
-            if (resolution != self.resolution) {
+            if (resolution != self.resolution || rotation != self.rotation) {
                 stop()
             } else {
                 return
             }
         }
+        self.rotation = rotation
+        self.resolution = resolution
         session = AVCaptureSession()
         let preset: AVCaptureSession.Preset = resolution.value
         session?.sessionPreset = preset
@@ -98,7 +102,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         let thread = DispatchQueue.global()
         output?.setSampleBufferDelegate(self, queue: thread)
         output?.alwaysDiscardsLateVideoFrames = true
-        output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange)]
+        output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
 
         session?.addOutput(output!)
 
@@ -113,6 +117,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (cameraView != nil) {
             cameraView!.layer.addSublayer(prevLayer!)
+        }
+        output?.connections.filter { $0.isVideoOrientationSupported }.forEach {
+            $0.videoOrientation = getOrientation(value: rotation)
         }
         session?.commitConfiguration()
         thread.async {
@@ -146,6 +153,21 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         thread.async {
             self.callback.getYUVData(from: sampleBuffer)
+        }
+    }
+    
+    private func getOrientation(value: Int) -> AVCaptureVideoOrientation {
+        switch value {
+        case 90:
+            return .portrait
+        case 270:
+            return .portraitUpsideDown
+        case 0:
+            return .landscapeLeft
+        case 180:
+            return .landscapeRight
+        default:
+            return .landscapeLeft
         }
     }
 }
