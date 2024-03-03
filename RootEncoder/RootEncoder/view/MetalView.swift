@@ -26,6 +26,7 @@ public class MetalView: MTKView {
     private let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
     private var callback: MetalViewCallback? = nil
     private var filters = [BaseFilterRender]()
+    private let initialOrientation = UIDevice.current.orientation
     
     public init() {
         super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
@@ -105,11 +106,22 @@ extension MetalView: MTKViewDelegate {
             streamImage = filter.draw(image: streamImage)
         }
         
-        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: streamImage.extent.width, streamHeight: streamImage.extent.height, previewWidth: drawableSize.width, previewHeight: drawableSize.height)
+        var w = streamImage.extent.width
+        var h = streamImage.extent.height
+        var orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
+        
+        if (drawableSize.width > drawableSize.height && h > w || drawableSize.height > drawableSize.width && w > h) {
+            w = streamImage.extent.height
+            h = streamImage.extent.width
+        }
+        
+        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: drawableSize.width, previewHeight: drawableSize.height)
         
         var previewImage = streamImage
+            .oriented(orientation)
             .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
             .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
+            
         if (isPreviewVerticalFlip) {
             previewImage = previewImage
                 .transformed(by: CGAffineTransform(scaleX: 1, y: -1))

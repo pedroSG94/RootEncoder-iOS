@@ -6,10 +6,71 @@
 //
 
 import Foundation
+import MetalKit
+
 
 public class SizeCalculator {
     
     public init() { }
+    
+    public static func processMatrix(initialOrientation: UIDeviceOrientation) -> CGImagePropertyOrientation {
+        switch initialOrientation {
+        case .landscapeLeft:
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                return .up
+            case .landscapeRight:
+                return .down
+            case .portrait:
+                return .right
+            case .portraitUpsideDown:
+                return .left
+            default:
+                return .up
+            }
+        case .landscapeRight:
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                return .down
+            case .landscapeRight:
+                return .up
+            case .portrait:
+                return .left
+            case .portraitUpsideDown:
+                return .right
+            default:
+                return .up
+            }
+        case .portrait:
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                return .left
+            case .landscapeRight:
+                return .right
+            case .portrait:
+                return .up
+            case .portraitUpsideDown:
+                return .down
+            default:
+                return .up
+            }
+        case .portraitUpsideDown:
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                return .right
+            case .landscapeRight:
+                return .left
+            case .portrait:
+                return .down
+            case .portraitUpsideDown:
+                return .up
+            default:
+                return .up
+            }
+        default:
+            return .up
+        }
+    }
     
     public static func getViewPort(mode: AspectRatioMode, streamWidth: CGFloat, streamHeight: CGFloat, previewWidth: CGFloat, previewHeight: CGFloat) -> MetalViewport  {
         if (mode != AspectRatioMode.NONE) {
