@@ -93,7 +93,8 @@ extension MetalView: MTKViewDelegate {
             let render = self.render?.makeCommandBuffer() else {
                 return
             }
-        guard let image = self.buffer?.imageBuffer else {
+        guard let buffer = buffer else { return }
+        guard let image = buffer.imageBuffer else {
             render.present(currentDrawable)
             render.commit()
             return
@@ -108,9 +109,12 @@ extension MetalView: MTKViewDelegate {
         
         var w = streamImage.extent.width
         var h = streamImage.extent.height
-        var orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
+        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
         
-        if (drawableSize.width > drawableSize.height && h > w || drawableSize.height > drawableSize.width && w > h) {
+        let rotated = drawableSize.width > drawableSize.height && h > w 
+            || drawableSize.height > drawableSize.width && w > h
+        
+        if (rotated) {
             w = streamImage.extent.height
             h = streamImage.extent.width
         }
@@ -148,16 +152,43 @@ extension MetalView: MTKViewDelegate {
         render.present(currentDrawable)
         render.commit()
         
+        var rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: streamImage.extent.height)
+        
+        if (rotated) {
+            //TODO offset to center image
+            if (streamImage.extent.height > streamImage.extent.width) { //portrait
+                let factor = streamImage.extent.width / streamImage.extent.height
+                let scaledHeight = streamImage.extent.width * factor
+                let scaleY = scaledHeight / streamImage.extent.height
+                
+                streamImage = streamImage.oriented(orientation)
+                    .transformed(by: CGAffineTransform(scaleX: 1, y: 1 - scaleY))
+                rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: scaledHeight)
+            } else { //landscape
+                let factor = streamImage.extent.height / streamImage.extent.width
+                let scaledWidth = streamImage.extent.height * factor
+                let scaleX = scaledWidth / streamImage.extent.width
+                
+                streamImage = streamImage.oriented(orientation)
+                    .transformed(by: CGAffineTransform(scaleX: 1 - scaleX, y: 1))
+                rect = CGRect(x: 0, y: 0, width: scaledWidth, height: streamImage.extent.height)
+            }
+            
+        }
+        
         guard let callback = callback else { return }
-        let pixelBuffer = toPixelBuffer(image: streamImage)
-        context.render(_:streamImage, to: pixelBuffer!)
-        let pts = CMSampleBufferGetPresentationTimeStamp(buffer!)
-        callback.getVideoData(pixelBuffer: pixelBuffer!, pts: pts)
+        guard let pixelBuffer = toPixelBuffer(width: Int(rect.width), height: Int(rect.height)) else { return }
+        
+//        context.render(_:streamImage, to: pixelBuffer, bounds: rect, colorSpace: colorSpace)
+        context.render(_:streamImage, to: pixelBuffer)
+
+        let pts = CMSampleBufferGetPresentationTimeStamp(buffer)
+        callback.getVideoData(pixelBuffer: pixelBuffer, pts: pts)
     }
     
-    private func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
+    private func toPixelBuffer(width: Int, height: Int) -> CVPixelBuffer? {
         var pixelBuffer : CVPixelBuffer?
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int(image.extent.width), Int(image.extent.height), kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height, kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
 
         guard (status == kCVReturnSuccess) else {
             return nil
