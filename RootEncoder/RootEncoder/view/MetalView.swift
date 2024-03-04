@@ -160,17 +160,21 @@ extension MetalView: MTKViewDelegate {
                 let factor = streamImage.extent.width / streamImage.extent.height
                 let scaledHeight = streamImage.extent.width * factor
                 let scaleY = scaledHeight / streamImage.extent.height
-                
+                let offset = (streamImage.extent.height - scaledHeight) / 2
+
                 streamImage = streamImage.oriented(orientation)
                     .transformed(by: CGAffineTransform(scaleX: 1, y: 1 - scaleY))
+                    .transformed(by: CGAffineTransform(translationX: 0, y: offset * scaleY))
                 rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: scaledHeight)
             } else { //landscape
                 let factor = streamImage.extent.height / streamImage.extent.width
                 let scaledWidth = streamImage.extent.height * factor
                 let scaleX = scaledWidth / streamImage.extent.width
+                let offset = (streamImage.extent.width - scaledWidth) / 2
                 
                 streamImage = streamImage.oriented(orientation)
                     .transformed(by: CGAffineTransform(scaleX: 1 - scaleX, y: 1))
+                    .transformed(by: CGAffineTransform(translationX: offset * scaleX, y: 0))
                 rect = CGRect(x: 0, y: 0, width: scaledWidth, height: streamImage.extent.height)
             }
             
