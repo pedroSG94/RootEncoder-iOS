@@ -115,6 +115,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bStreamText) {
                         let endpoint = endpoint
+                        /*
                         if (!rtmpCamera.isStreaming()) {
                             if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
                                 rtmpCamera.startStream(endpoint: endpoint)
@@ -125,10 +126,33 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                             bStreamText = "Start stream"
                             bitrateText = ""
                         }
-                    }
+                         */
+                        if (!rtmpCamera.isRecording()) {
+                            if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
+                                let currentDate = Date()
+                                let dateFormatter = DateFormatter()
+                                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                                let fileName = dateFormatter.string(from: currentDate)
+                                guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                                    print("Error: No se pudo acceder a la carpeta de documentos")
+                                    return
+                                }
+
+                                let outputURL = documentsDirectory.appendingPathComponent("\(fileName).mp4")
+                                /*let outputPath = NSTemporaryDirectory().appending("\(fileName).mp4")
+                                let outputURL = URL(fileURLWithPath: outputPath)*/
+                                rtmpCamera.startRecord(path: outputURL)
+                                bStreamText = "Stop stream"
+                            }
+                        } else {
+                            rtmpCamera.stopRecord()
+                            bStreamText = "Start stream"
+                            bitrateText = ""
+                        }
+                    }.font(.system(size: 24, weight: Font.Weight.bold))
                     Button("Switch camera") {
                         rtmpCamera.switchCamera()
-                    }
+                    }.font(.system(size: 24, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
         }.showToast(text: toastText, isShowing: $isShowingToast)

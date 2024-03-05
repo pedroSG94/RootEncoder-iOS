@@ -11,6 +11,10 @@ import UIKit
 import encoder
 
 public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
+    public func onVideoSample(buffer: CMSampleBuffer) {
+        
+    }
+    
 
     private var microphone: MicrophoneManager!
     private var cameraManager: ScreenManager!

@@ -38,7 +38,7 @@ public class CameraHelper {
         case fhd1920x1440
         case uhd3840x2160
 
-        var width: Int {
+        public var width: Int {
             switch self {
             case .cif352x288:
                  return 352
@@ -55,7 +55,7 @@ public class CameraHelper {
             }
         }
 
-        var height: Int {
+        public var height: Int {
             switch self {
             case .cif352x288:
                 return 288
