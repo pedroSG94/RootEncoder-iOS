@@ -25,6 +25,7 @@
 		EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */; };
 		EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD42ABA62E500249638 /* CameraUIView.swift */; };
 		EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */; };
+		EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC318B52B9E79BF003C7526 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		EBA4FFD42ABA62E500249638 /* CameraUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspSwiftUIView.swift; sourceTree = "<group>"; };
 		EBB16F312AC4929200B48654 /* rtmp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rtmp.xcodeproj; path = rtmp/rtmp.xcodeproj; sourceTree = "<group>"; };
+		EBC318B52B9E79BF003C7526 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		EBC6AC392AC3839200AAA380 /* rtsp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rtsp.xcodeproj; path = rtsp/rtsp.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -198,6 +200,7 @@
 		044138332501A02300732969 /* app */ = {
 			isa = PBXGroup;
 			children = (
+				EBC318AC2B9E79AE003C7526 /* utils */,
 				EB07EC4B2B0D51FD0001309D /* Info.plist */,
 				EBA400152ABBAF3400249638 /* components */,
 				044138342501A02300732969 /* StreamerApp.swift */,
@@ -268,6 +271,14 @@
 				EBB16F392AC4929200B48654 /* rtmpTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		EBC318AC2B9E79AE003C7526 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				EBC318B52B9E79BF003C7526 /* Utils.swift */,
+			);
+			path = utils;
 			sourceTree = "<group>";
 		};
 		EBC6AC3A2AC3839200AAA380 /* Products */ = {
@@ -491,6 +502,7 @@
 				044138352501A02300732969 /* StreamerApp.swift in Sources */,
 				EBA400102ABA6A1600249638 /* MainSwiftUIView.swift in Sources */,
 				EBA400122ABA7AED00249638 /* ToastView.swift in Sources */,
+				EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */,
 				EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */,
 				EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */,
 				EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */,

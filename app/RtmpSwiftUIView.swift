@@ -9,6 +9,7 @@
 import SwiftUI
 import RootEncoder
 import rtmp
+import Photos
 
 struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
@@ -76,9 +77,11 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
     
     @State private var endpoint = "rtmp://192.168.0.160:1935/live/pedro"
     @State private var bStreamText = "Start stream"
+    @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
     @State private var toastText = ""
     @State private var bitrateText = ""
+    @State private var filePath: URL? = nil
 
     @State private var rtmpCamera: RtmpCamera!
     
@@ -113,9 +116,26 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                 Text(bitrateText).foregroundColor(Color.blue)
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
+                    Button(bRecordText) {
+                        if (!rtmpCamera.isRecording()) {
+                            if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
+                                let url = getVideoUrl()
+                                if (url != nil) {
+                                    rtmpCamera.startRecord(path: url!)
+                                    bStreamText = "Stop record"
+                                }
+                            }
+                        } else {
+                            rtmpCamera.stopRecord()
+                            if (filePath != nil) {
+                                saveVideoToGallery(videoURL: filePath!)
+                                filePath = nil
+                            }
+                            bRecordText = "Start record"
+                        }
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button(bStreamText) {
                         let endpoint = endpoint
-                        /*
                         if (!rtmpCamera.isStreaming()) {
                             if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
                                 rtmpCamera.startStream(endpoint: endpoint)
@@ -126,33 +146,10 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                             bStreamText = "Start stream"
                             bitrateText = ""
                         }
-                         */
-                        if (!rtmpCamera.isRecording()) {
-                            if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
-                                let currentDate = Date()
-                                let dateFormatter = DateFormatter()
-                                dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                                let fileName = dateFormatter.string(from: currentDate)
-                                guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                                    print("Error: No se pudo acceder a la carpeta de documentos")
-                                    return
-                                }
-
-                                let outputURL = documentsDirectory.appendingPathComponent("\(fileName).mp4")
-                                /*let outputPath = NSTemporaryDirectory().appending("\(fileName).mp4")
-                                let outputURL = URL(fileURLWithPath: outputPath)*/
-                                rtmpCamera.startRecord(path: outputURL)
-                                bStreamText = "Stop stream"
-                            }
-                        } else {
-                            rtmpCamera.stopRecord()
-                            bStreamText = "Start stream"
-                            bitrateText = ""
-                        }
-                    }.font(.system(size: 24, weight: Font.Weight.bold))
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
                         rtmpCamera.switchCamera()
-                    }.font(.system(size: 24, weight: Font.Weight.bold))
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
         }.showToast(text: toastText, isShowing: $isShowingToast)
@@ -162,3 +159,4 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
 #Preview {
     RtmpSwiftUIView()
 }
+

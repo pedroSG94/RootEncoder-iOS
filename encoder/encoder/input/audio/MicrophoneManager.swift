@@ -30,7 +30,7 @@ public class MicrophoneManager {
         }
         inputNode?.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
             self.thread.async {
-                self.callback?.getPcmData(buffer: buffer)
+                self.callback?.getPcmData(buffer: buffer, time: time)
             }
         }
         audioEngine.prepare()

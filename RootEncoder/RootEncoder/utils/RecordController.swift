@@ -15,8 +15,9 @@ public class RecordController {
     private var writer: AVAssetWriter? = nil
     private var videoInput: AVAssetWriterInput? = nil
     private var audioInput: AVAssetWriterInput? = nil
-    private var videoConfigured = false
+    private var videoConfigured = true
     private var audioConfigured = true
+    private let queue = DispatchQueue(label: "RecordController")
     
     enum Status {
         case STARTED
@@ -27,66 +28,54 @@ public class RecordController {
     }
 
     func startRecord(path: URL) {
-        writer = createWriter(path: path)
-        if (writer == nil) {
-            print("fail to create writer")
-        }
-        if (videoInput != nil && writer?.canAdd(videoInput!) == true) {
-            writer?.add(videoInput!)
-        } else {
-            print("fail to add video track")
-        }
-        if (audioInput != nil && writer?.canAdd(audioInput!) == true) {
-            writer?.add(audioInput!)
-        } else {
-            print("fail to add audio track")
-        }
-        let result = writer?.startWriting()
-        if (result != true) {
-            print("fail to start writer")
-        }
-        writer?.startSession(atSourceTime: .zero)
-        if (videoConfigured && audioConfigured) {
-            status = Status.RECORDING
-        } else {
-            status = Status.STARTED
+        queue.async {
+            self.writer = self.createWriter(path: path)
+            if (self.videoInput != nil && self.writer?.canAdd(self.videoInput!) == true) {
+                self.writer?.add(self.videoInput!)
+            }
+            if (self.audioInput != nil && self.writer?.canAdd(self.audioInput!) == true) {
+                self.writer?.add(self.audioInput!)
+            }
+            self.writer?.startWriting()
+            self.status = Status.STARTED
         }
     }
 
     func stopRecord() {
         videoInput?.markAsFinished()
         audioInput?.markAsFinished()
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
         writer?.finishWriting {
             self.videoInput = nil
             self.audioInput = nil
-            if (self.writer?.status == .completed) {
-                PHPhotoLibrary.shared().performChanges({
-                    guard let path = self.path else { return }
-                    // Crear una solicitud para agregar el video a la biblioteca de fotos
-                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: path)
-                }) { success, error in
-                    if let error = error {
-                        print("Error saving video to photo library: \(error)")
-                    } else {
-                        print("Video saved to photo library.")
-                    }
-                }
-            } else {
-                print("stop record failed: \(self.writer?.status.rawValue ?? -1)")
-            }
+            dispatchGroup.leave()
         }
-
+        dispatchGroup.wait()
+    }
+    
+    private func initialize(time: CMTime) {
+        if (self.status == Status.STARTED) {
+            self.writer?.startSession(atSourceTime: time)
+            self.status = Status.RECORDING
+        }
     }
 
     func recordVideo(buffer: CMSampleBuffer) {
-        if (videoInput?.isReadyForMoreMediaData == true && status == Status.RECORDING) {
-            videoInput?.append(buffer)
+        queue.async {
+            self.initialize(time: buffer.presentationTimeStamp)
+            if (self.videoInput?.isReadyForMoreMediaData == true && self.status == Status.RECORDING) {
+                self.videoInput?.append(buffer)
+            }
         }
     }
 
     func recordAudio(buffer: CMSampleBuffer) {
-        if (audioInput?.isReadyForMoreMediaData == true && status == Status.RECORDING) {
-            audioInput?.append(buffer)
+        queue.async {
+            self.initialize(time: buffer.presentationTimeStamp)
+            if (self.audioInput?.isReadyForMoreMediaData == true && self.status == Status.RECORDING) {
+                self.audioInput?.append(buffer)
+            }
         }
     }
 
@@ -98,28 +87,32 @@ public class RecordController {
         status = Status.RECORDING
     }
 
+
     func setVideoFormat(witdh: Int, height: Int, bitrate: Int, codec: AVVideoCodecType) {
-        // Configurar los ajustes de video
-        let videoSettings: [String : Any] = [
-            AVVideoCodecKey: codec,
-            AVVideoWidthKey: witdh,
-            AVVideoHeightKey: height
-        ]
-        
-        let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
-        videoInput = input
-        videoConfigured = true
+        queue.async {
+            let videoSettings: [String : Any] = [
+                AVVideoCodecKey: codec,
+                AVVideoWidthKey: witdh,
+                AVVideoHeightKey: height
+            ]
+            
+            let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+            self.videoInput = input
+            self.videoConfigured = true
+        }
     }
 
     func setAudioFormat(sampleRate: Int, channels: Int, bitrate: Int, codec: AudioFormatID) {
-        let audioSettings: [String: Any] = [
-            AVFormatIDKey: Int(codec), // Formato de audio MPEG4 AAC
-            AVSampleRateKey: sampleRate, // Tasa de muestreo de audio (en Hz)
-            AVNumberOfChannelsKey: channels, // Número de canales de audio (1 para mono, 2 para estéreo)
-        ]
-        let input = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
-        audioInput = input
-        audioConfigured = true
+        queue.async {
+            let audioSettings: [String: Any] = [
+                AVFormatIDKey: codec,
+                AVSampleRateKey: sampleRate,
+                AVNumberOfChannelsKey: channels
+            ]
+            let input = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+            self.audioInput = input
+            self.audioConfigured = true
+        }
     }
 
     func isRunning() -> Bool {

@@ -76,6 +76,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     
     @State private var endpoint = "rtsp://192.168.0.160:8554/live/pedro"
     @State private var bStreamText = "Start stream"
+    @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
     @State private var toastText = ""
     @State private var bitrateText = ""
@@ -114,6 +115,20 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
                 Text(bitrateText).foregroundColor(Color.blue)
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
+                    Button(bRecordText) {
+                        if (!rtspCamera.isRecording()) {
+                            if (rtspCamera.prepareAudio() && rtspCamera.prepareVideo()) {
+                                let url = getVideoUrl()
+                                if (url != nil) {
+                                    rtspCamera.startRecord(path: url!)
+                                    bStreamText = "Stop record"
+                                }
+                            }
+                        } else {
+                            rtspCamera.stopRecord()
+                            bStreamText = "Start record"
+                        }
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button(bStreamText) {
                         let endpoint = endpoint
                         if (!rtspCamera.isStreaming()) {
@@ -126,10 +141,10 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
                             bStreamText = "Start stream"
                             bitrateText = ""
                         }
-                    }
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
                         rtspCamera.switchCamera()
-                    }
+                    }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
         }.showToast(text: toastText, isShowing: $isShowingToast)

@@ -117,7 +117,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
 
     public func getH264DataRtp(frame: Frame) {}
 
-    public func getPcmData(buffer: AVAudioPCMBuffer) {
+    public func getPcmData(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
         audioEncoder.encodeFrame(buffer: buffer)
     }
 
