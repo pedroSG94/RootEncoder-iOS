@@ -47,6 +47,7 @@ public class AudioEncoder {
                 if let b = b {
                     var error: NSError? = nil
                     let aacBuffer = self.convertToAAC(buffer: b, error: &error)!
+                    
                     if error != nil {
                         print("Encode error: \(error.debugDescription)")
                     } else {

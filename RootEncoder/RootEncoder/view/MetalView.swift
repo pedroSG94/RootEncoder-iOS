@@ -155,7 +155,6 @@ extension MetalView: MTKViewDelegate {
         var rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: streamImage.extent.height)
         
         if (rotated) {
-            //TODO offset to center image
             if (streamImage.extent.height > streamImage.extent.width) { //portrait
                 let factor = streamImage.extent.width / streamImage.extent.height
                 let scaledHeight = streamImage.extent.width * factor
@@ -183,9 +182,7 @@ extension MetalView: MTKViewDelegate {
         guard let callback = callback else { return }
         guard let pixelBuffer = toPixelBuffer(width: Int(rect.width), height: Int(rect.height)) else { return }
         
-//        context.render(_:streamImage, to: pixelBuffer, bounds: rect, colorSpace: colorSpace)
         context.render(_:streamImage, to: pixelBuffer)
-
         let pts = CMSampleBufferGetPresentationTimeStamp(buffer)
         callback.getVideoData(pixelBuffer: pixelBuffer, pts: pts)
     }

@@ -20,6 +20,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private var fpsListener = FpsListener()
     private var metalView: MetalView? = nil
     private var previewResolution = CameraHelper.Resolution.vga640x480
+    private let recordController = RecordController()
 
     public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
@@ -39,6 +40,8 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {}
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
+        let channels = isStereo ? 2 : 1
+        recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate, codec: kAudioFormatMPEG4AAC)
         microphone.createMicrophone()
         prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
         return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
@@ -53,6 +56,13 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         if (previewResolution != resolution || rotation != cameraManager.rotation) {
             cameraManager.stop()
         }
+        var w = resolution.width
+        var h = resolution.height
+        if (rotation == 90 || rotation == 270) {
+            w = resolution.height
+            h = resolution.width
+        }
+        recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate, codec: AVVideoCodecType.h264)
         cameraManager.prepare(resolution: resolution, rotation: rotation)
         return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
@@ -69,28 +79,50 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
-        audioEncoder.start()
-        videoEncoder.start()
-        microphone.start()
-        cameraManager.start()
-        metalView?.setCallback(callback: self)
+        startEncoders()
         onPreview = true
         streaming = true
         startStreamRtp(endpoint: endpoint)
     }
 
-    public func stopStreamRtp() {}
-
-    public func stopStream() {
+    private func startEncoders() {
+        audioEncoder.start()
+        videoEncoder.start()
+        microphone.start()
+        cameraManager.start()
+        metalView?.setCallback(callback: self)
+    }
+    
+    private func stopEncoders() {
         metalView?.setCallback(callback: nil)
         microphone.stop()
         audioEncoder.stop()
         videoEncoder.stop()
+    }
+    
+    public func stopStreamRtp() {}
+
+    public func stopStream() {
+        stopEncoders()
         stopStreamRtp()
         endpoint = ""
         streaming = false
     }
+    
+    public func startRecord(path: URL) {
+        recordController.startRecord(path: path)
+        startEncoders()
+    }
 
+    public func stopRecord() {
+        stopEncoders()
+        recordController.stopRecord()
+    }
+    
+    public func isRecording() -> Bool {
+        return recordController.isRecording()
+    }
+    
     public func isStreaming() -> Bool {
         streaming
     }
@@ -128,12 +160,14 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func getH264DataRtp(frame: Frame) {}
 
-    public func getPcmData(buffer: AVAudioPCMBuffer) {
+    public func getPcmData(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
+        recordController.recordAudio(buffer: buffer.makeSampleBuffer(time)!)
         audioEncoder.encodeFrame(buffer: buffer)
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
         guard let metalView = metalView else {
+            recordController.recordVideo(buffer: buffer)
             videoEncoder.encodeFrame(buffer: buffer)
             return
         }
@@ -141,6 +175,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+        recordController.recordVideo(pixelBuffer: pixelBuffer, pts: pts)
         videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
     }
     
