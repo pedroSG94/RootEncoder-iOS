@@ -10,6 +10,7 @@ import Foundation
 import AVFoundation
 import VideoToolbox
 import CoreFoundation
+import common
 
 extension UInt32 {
     func toBytes() -> [UInt8] {

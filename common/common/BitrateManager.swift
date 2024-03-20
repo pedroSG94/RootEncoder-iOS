@@ -7,21 +7,21 @@
 
 import Foundation
 
-class BitrateManager {
+public class BitrateManager {
 
-    private let connectCheckerRtsp: ConnectCheckerRtsp
+    private let connectChecker: ConnectChecker
     private var bitrate: Int64 = 0
     private var timeStamp = Date().millisecondsSince1970
 
-    init(connectCheckerRtsp: ConnectCheckerRtsp) {
-        self.connectCheckerRtsp = connectCheckerRtsp
+    public init(connectChecker: ConnectChecker) {
+        self.connectChecker = connectChecker
     }
 
-    func calculateBitrate(size: Int64) {
+    public func calculateBitrate(size: Int64) {
         bitrate += size
         let timeDiff = Date().millisecondsSince1970 - timeStamp
         if timeDiff >= 1000 {
-            self.connectCheckerRtsp.onNewBitrateRtsp(bitrate: UInt64(self.bitrate / (timeDiff / 1000)))
+            self.connectChecker.onNewBitrate(bitrate: UInt64(self.bitrate / (timeDiff / 1000)))
             timeStamp = Date().millisecondsSince1970
             bitrate = 0
         }

@@ -9,10 +9,11 @@
 import SwiftUI
 import RootEncoder
 import rtsp
+import common
 
-struct RtspSwiftUIView: View, ConnectCheckerRtsp {
+struct RtspSwiftUIView: View, ConnectChecker {
     
-    func onConnectionSuccessRtsp() {
+    func onConnectionSuccess() {
         print("connection success")
         toastText = "connection success"
         isShowingToast = true
@@ -21,7 +22,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
         }
     }
     
-    func onConnectionFailedRtsp(reason: String) {
+    func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
         if (rtspCamera.reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
@@ -41,12 +42,12 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
         }
     }
     
-    func onNewBitrateRtsp(bitrate: UInt64) {
+    func onNewBitrate(bitrate: UInt64) {
         print("new bitrate: \(bitrate)")
         bitrateText = "bitrate: \(bitrate) bps"
     }
     
-    func onDisconnectRtsp() {
+    func onDisconnect() {
         print("disconnected")
         toastText = "disconnected"
         isShowingToast = true
@@ -55,7 +56,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
         }
     }
     
-    func onAuthErrorRtsp() {
+    func onAuthError() {
         print("auth error")
         toastText = "auth error"
         isShowingToast = true
@@ -64,7 +65,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
         }
     }
     
-    func onAuthSuccessRtsp() {
+    func onAuthSuccess() {
         print("auth success")
         toastText = "auth success"
         isShowingToast = true

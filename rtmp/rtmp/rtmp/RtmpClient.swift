@@ -4,10 +4,11 @@
 //
 
 import Foundation
+import common
 
 public class RtmpClient {
 
-    private let connectCheckerRtmp: ConnectCheckerRtmp
+    private let connectChecker: ConnectChecker
     private var socket: Socket? = nil
     private let commandManager = CommandManager()
     private var checkServerAlive = false
@@ -21,9 +22,9 @@ public class RtmpClient {
     private var url: String? = nil
     private var thread: Task<(), Error>? = nil
 
-    public init(connectCheckerRtmp: ConnectCheckerRtmp) {
-        self.connectCheckerRtmp = connectCheckerRtmp
-        rtmpSender = RtmpSender(callback: connectCheckerRtmp, commandManager: commandManager)
+    public init(connectChecker: ConnectChecker) {
+        self.connectChecker = connectChecker
+        rtmpSender = RtmpSender(callback: connectChecker, commandManager: commandManager)
     }
 
     public func setOnlyAudio(onlyAudio: Bool) {
@@ -65,7 +66,7 @@ public class RtmpClient {
             self.isStreaming = true
             thread = Task {
                 guard let url = url else {
-                    self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
+                    self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
                 }
                 self.url = url
@@ -85,7 +86,7 @@ public class RtmpClient {
                     self.commandManager.tcUrl = self.getTcUrl(url: String(groups[0].prefix(upTo: tcUrlIndex)))
                     do {
                         if (try await !self.establishConnection()) {
-                            self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Handshake failed")
+                            self.connectChecker.onConnectionFailed(reason: "Handshake failed")
                             return
                         }
                         guard let socket = self.socket else {
@@ -99,7 +100,7 @@ public class RtmpClient {
                         
                         await self.handleServerCommands()
                     } catch {
-                        self.connectCheckerRtmp.onConnectionFailedRtmp(reason: "Connection failed: \(error)")
+                        self.connectChecker.onConnectionFailed(reason: "Connection failed: \(error)")
                     }
                 }
             }
@@ -130,7 +131,7 @@ public class RtmpClient {
             reTries = numRetry
             doingRetry = false
             isStreaming = false
-            connectCheckerRtmp.onDisconnectRtmp()
+            connectChecker.onDisconnect()
         }
         publishPermitted = false
         thread?.cancel()
@@ -233,7 +234,7 @@ public class RtmpClient {
                         switch (commandName) {
                             case "connect":
                                 if (commandManager.onAuth) {
-                                    connectCheckerRtmp.onAuthSuccessRtmp()
+                                    connectChecker.onAuthSuccess()
                                     commandManager.onAuth = false
                                 }
                                 try await commandManager.createStream(socket: socket)
@@ -248,7 +249,7 @@ public class RtmpClient {
                         switch (commandName) {
                             case "connect":
                                 if (description.contains("reason=authfail") || description.contains("reason=nosuchuser")) {
-                                    connectCheckerRtmp.onAuthErrorRtmp()
+                                    connectChecker.onAuthError()
                                 } else if (commandManager.user != nil && commandManager.password != nil
                                         && description.contains("challenge=") && description.contains("salt=") //adobe response
                                         || description.contains("nonce="))  { //llnw response
@@ -281,22 +282,22 @@ public class RtmpClient {
                                         try await commandManager.sendConnect(auth: "?authmod=llnw&user=\(commandManager.user ?? "")", socket: socket)
                                     }
                                 } else {
-                                    connectCheckerRtmp.onAuthErrorRtmp()
+                                    connectChecker.onAuthError()
                                 }
                             default:
-                                connectCheckerRtmp.onConnectionFailedRtmp(reason: description)
+                            connectChecker.onConnectionFailed(reason: description)
                         }
                     case "onStatus":
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value
                         switch (code) {
                             case "NetStream.Publish.Start":
                                 try await commandManager.sendMetadata(socket: socket)
-                                connectCheckerRtmp.onConnectionSuccessRtmp()
+                                connectChecker.onConnectionSuccess()
                                 rtmpSender.socket = socket
                                 rtmpSender.start()
                                 publishPermitted = true
                             case "NetConnection.Connect.Rejected", "NetStream.Publish.BadName":
-                                connectCheckerRtmp.onConnectionFailedRtmp(reason: "onStatus: \(code)")
+                                connectChecker.onConnectionFailed(reason: "onStatus: \(code)")
                             default:
                                 print("onStatus $code response received from \(commandName ?? "unknown command")")
                         }

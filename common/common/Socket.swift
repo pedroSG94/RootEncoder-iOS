@@ -3,7 +3,7 @@ import Network
 
 public class Socket: NSObject, StreamDelegate {
 
-    var host: String
+    public var host: String
     private var connection: NWConnection? = nil
     private var bufferAppend: [UInt8]? = nil
     private let lock = DispatchQueue(label: "com.pedro.Socket.sync")

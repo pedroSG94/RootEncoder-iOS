@@ -31,7 +31,6 @@
 		EB34F4E42AF6D40B00567E51 /* MetalViewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */; };
 		EB445A8A2AE70CFA00E338B4 /* ScreenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A892AE70CFA00E338B4 /* ScreenManager.swift */; };
 		EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */; };
-		EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,7 +69,6 @@
 		EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalViewport.swift; sourceTree = "<group>"; };
 		EB445A892AE70CFA00E338B4 /* ScreenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenManager.swift; sourceTree = "<group>"; };
 		EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,7 +155,6 @@
 				EB173AA82AC4978E00B73F4A /* Conversor.swift */,
 				EB173AA92AC4978E00B73F4A /* CodecUtil.swift */,
 				EB9B4DA52AC4BEF800F427C5 /* Extensions.swift */,
-				EB9B4DA92AC4C0DF00F427C5 /* SynchronizedQueue.swift */,
 				EB34F4DD2AF6D37300567E51 /* SizeCalculator.swift */,
 				EB34F4E12AF6D3D900567E51 /* AspectRatioMode.swift */,
 				EB34F4E32AF6D40B00567E51 /* MetalViewport.swift */,
@@ -270,7 +267,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					EB173A7C2AC4977200B73F4A = {
 						CreatedOnToolsVersion = 15.0;
@@ -341,7 +338,6 @@
 				EB34F4D52AF6C2E100567E51 /* BaseFilterRender.swift in Sources */,
 				EB173A822AC4977200B73F4A /* encoder.docc in Sources */,
 				EB9B4DA62AC4BEF800F427C5 /* Extensions.swift in Sources */,
-				EB9B4DAA2AC4C0DF00F427C5 /* SynchronizedQueue.swift in Sources */,
 				EB34F4D82AF6C37800567E51 /* GreyScaleFilterRender.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -493,6 +489,7 @@
 		EB173A922AC4977200B73F4A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -524,6 +521,7 @@
 		EB173A932AC4977200B73F4A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

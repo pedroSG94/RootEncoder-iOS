@@ -43,6 +43,7 @@
 
 
 import Foundation
+import common
 
 public class Handshake {
 

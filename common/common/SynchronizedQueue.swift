@@ -8,18 +8,18 @@
 
 import Foundation
 
-class SynchronizedQueue<T> {
+public class SynchronizedQueue<T> {
     private var elements = [T]()
     private let semaphore = DispatchSemaphore(value: 0)
     private let queue: DispatchQueue
     private var size: Int
     
-    init(label: String, size: Int) {
+    public init(label: String, size: Int) {
         queue = DispatchQueue(label: label)
         self.size = size
     }
 
-    func enqueue(_ element: T) -> Bool {
+    public func enqueue(_ element: T) -> Bool {
         queue.sync {
             if (elements.count >= size) {
                 return false
@@ -31,7 +31,7 @@ class SynchronizedQueue<T> {
         }
     }
 
-    func dequeue() -> T? {
+    public func dequeue() -> T? {
         var result: T?
         let _ = semaphore.wait(timeout: .now() + 0.01)
         queue.sync {
@@ -42,22 +42,21 @@ class SynchronizedQueue<T> {
         return result
     }
     
-    func clear() {
+    public func clear() {
         queue.sync {
             elements.removeAll()
         }
     }
     
-    func resizeSize(size: Int) {
+    public func resizeSize(size: Int) {
         self.size = size
     }
     
-    func itemsCount() -> Int {
+    public func itemsCount() -> Int {
         return elements.count
     }
     
-    func remaining() -> Int {
+    public func remaining() -> Int {
         return size - elements.count
     }
 }
-

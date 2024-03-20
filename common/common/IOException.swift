@@ -5,6 +5,6 @@
 
 import Foundation
 
-enum IOException: Error {
+public enum IOException: Error {
     case runtimeError(String)
 }

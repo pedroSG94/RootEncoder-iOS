@@ -1,9 +1,10 @@
 import Foundation
+import common
 
 public class RtspClient {
     
     private var socket: Socket?
-    private let connectCheckerRtsp: ConnectCheckerRtsp
+    private let connectChecker: ConnectChecker
     private var streaming = false
     private let commandsManager = CommandsManager()
     private var tlsEnabled = false
@@ -16,9 +17,9 @@ public class RtspClient {
     private var semaphore: Task<Bool, Error>? = nil
     private var thread: Task<(), Error>? = nil
     
-    public init(connectCheckerRtsp: ConnectCheckerRtsp) {
-        self.connectCheckerRtsp = connectCheckerRtsp
-        rtspSender = RtspSender(callback: connectCheckerRtsp)
+    public init(connectChecker: ConnectChecker) {
+        self.connectChecker = connectChecker
+        rtspSender = RtspSender(callback: connectChecker)
     }
     
     public func setAuth(user: String, password: String) {
@@ -71,7 +72,7 @@ public class RtspClient {
             self.streaming = true
             thread = Task {
                 guard let url = url else {
-                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
+                    self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
                 }
                 self.url = url
@@ -99,7 +100,7 @@ public class RtspClient {
                                 }
                                 let _ = await semaphore?.result
                                 if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
-                                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "sps or pps is null")
+                                    self.connectChecker.onConnectionFailed(reason: "sps or pps is null")
                                     return
                                 } else {
                                     self.rtspSender.setVideoInfo(sps: self.commandsManager.sps!, pps: self.commandsManager.pps!, vps: self.commandsManager.vps)
@@ -116,32 +117,32 @@ public class RtspClient {
                         try await self.socket?.write(data: self.commandsManager.createAnnounce())
                         let announceResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                         if announceResponse.status == 403 {
-                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, access denied")
+                            self.connectChecker.onConnectionFailed(reason: "Error configure stream, access denied")
                         } else if announceResponse.status == 401 {
                             if (self.commandsManager.canAuth()) {
                                 //Announce with auth
                                 try await self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
                                 let authResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                                 if authResponse.status == 401 {
-                                    self.connectCheckerRtsp.onAuthErrorRtsp()
+                                    self.connectChecker.onAuthError()
                                 } else if authResponse.status == 200 {
-                                    self.connectCheckerRtsp.onAuthSuccessRtsp()
+                                    self.connectChecker.onAuthSuccess()
                                 } else {
-                                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(authResponse.status)")
+                                    self.connectChecker.onConnectionFailed(reason: "Error configure stream, announce with auth failed \(authResponse.status)")
                                 }
                             } else {
-                                self.connectCheckerRtsp.onAuthErrorRtsp()
+                                self.connectChecker.onAuthError()
                                 return
                             }
                         } else if announceResponse.status != 200 {
-                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, announce with auth failed \(announceResponse.status)")
+                            self.connectChecker.onConnectionFailed(reason: "Error configure stream, announce with auth failed \(announceResponse.status)")
                         }
                         if !self.commandsManager.videoDisabled {
                             //Setup video
                             try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
                             let setupVideoStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupVideoStatus != 200) {
-                                self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup video \(setupVideoStatus)")
+                                self.connectChecker.onConnectionFailed(reason: "Error configure stream, setup video \(setupVideoStatus)")
                                 return
                             }
                         }
@@ -150,7 +151,7 @@ public class RtspClient {
                             try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
                             let setupAudioStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupAudioStatus != 200) {
-                                self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, setup audio \(setupAudioStatus)")
+                                self.connectChecker.onConnectionFailed(reason: "Error configure stream, setup audio \(setupAudioStatus)")
                                 return
                             }
                         }
@@ -158,7 +159,7 @@ public class RtspClient {
                         try await self.socket?.write(data: self.commandsManager.createRecord())
                         let recordStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
                         if (recordStatus != 200) {
-                            self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Error configure stream, record \(recordStatus)")
+                            self.connectChecker.onConnectionFailed(reason: "Error configure stream, record \(recordStatus)")
                             return
                         }
 
@@ -166,15 +167,15 @@ public class RtspClient {
                                 videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
                                 videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
                         self.rtspSender.start()
-                        self.connectCheckerRtsp.onConnectionSuccessRtsp()
+                        self.connectChecker.onConnectionSuccess()
                         
                         await self.handleServerCommands()
                     } catch let error {
-                        self.connectCheckerRtsp.onConnectionFailedRtsp(reason: error.localizedDescription)
+                        self.connectChecker.onConnectionFailed(reason: error.localizedDescription)
                         return
                     }
                 } else {
-                    self.connectCheckerRtsp.onConnectionFailedRtsp(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
+                    self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
                 }
             }
@@ -221,7 +222,7 @@ public class RtspClient {
             reTries = numRetry
             doingRetry = false
             streaming = false
-            connectCheckerRtsp.onDisconnectRtsp()
+            connectChecker.onDisconnect()
         } else {
             commandsManager.retryClear()
         }

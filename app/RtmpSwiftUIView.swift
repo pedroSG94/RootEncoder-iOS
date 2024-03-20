@@ -9,11 +9,12 @@
 import SwiftUI
 import RootEncoder
 import rtmp
+import common
 import Photos
 
-struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
+struct RtmpSwiftUIView: View, ConnectChecker {
     
-    func onConnectionSuccessRtmp() {
+    func onConnectionSuccess() {
         print("connection success")
         toastText = "connection success"
         isShowingToast = true
@@ -22,7 +23,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
         }
     }
     
-    func onConnectionFailedRtmp(reason: String) {
+    func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
         if (rtmpCamera.reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
@@ -42,12 +43,12 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
         }
     }
     
-    func onNewBitrateRtmp(bitrate: UInt64) {
+    func onNewBitrate(bitrate: UInt64) {
         print("new bitrate: \(bitrate)")
         bitrateText = "bitrate: \(bitrate) bps"
     }
     
-    func onDisconnectRtmp() {
+    func onDisconnect() {
         print("disconnected")
         toastText = "disconnected"
         isShowingToast = true
@@ -56,7 +57,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
         }
     }
     
-    func onAuthErrorRtmp() {
+    func onAuthError() {
         print("auth error")
         toastText = "auth error"
         isShowingToast = true
@@ -65,7 +66,7 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
         }
     }
     
-    func onAuthSuccessRtmp() {
+    func onAuthSuccess() {
         print("auth success")
         toastText = "auth success"
         isShowingToast = true

@@ -1,4 +1,5 @@
 import Foundation
+import common
 
 public class CommandsManager {
     private var host: String?

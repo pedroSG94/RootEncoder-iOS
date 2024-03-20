@@ -7,6 +7,7 @@
 
 import Foundation
 import AVFoundation
+import common
 
 public class AudioEncoder {
     

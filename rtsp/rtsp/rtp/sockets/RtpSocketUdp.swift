@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import common
 
 public class RtpSocketUdp: BaseRtpSocket {
 
@@ -12,7 +13,7 @@ public class RtpSocketUdp: BaseRtpSocket {
     private var videoPorts: Array<Int>
     private var audioPorts: Array<Int>
 
-    public init(callback: ConnectCheckerRtsp, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) async {
+    public init(callback: ConnectChecker, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) async {
         self.videoPorts = videoPorts
         self.audioPorts = audioPorts
         videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1])
@@ -21,7 +22,7 @@ public class RtpSocketUdp: BaseRtpSocket {
             try await videoSocket.connect()
             try await audioSocket.connect()
         } catch let error {
-            callback.onConnectionFailedRtsp(reason: error.localizedDescription)
+            callback.onConnectionFailed(reason: error.localizedDescription)
         }
         super.init()
     }

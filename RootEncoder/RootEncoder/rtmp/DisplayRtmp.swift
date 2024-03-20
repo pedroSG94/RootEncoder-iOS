@@ -9,13 +9,14 @@ import Foundation
 import encoder
 import UIKit
 import rtmp
+import common
 
 public class DisplayRtmp: DisplayBase {
 
     private var client: RtmpClient!
 
-    public init(view: UIView, connectChecker: ConnectCheckerRtmp) {
-        client = RtmpClient(connectCheckerRtmp: connectChecker)
+    public init(view: UIView, connectChecker: ConnectChecker) {
+        client = RtmpClient(connectChecker: connectChecker)
         super.init(view: view)
     }
 

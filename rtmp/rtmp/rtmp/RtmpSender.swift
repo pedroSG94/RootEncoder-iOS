@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import common
 
 public class RtmpSender {
 
@@ -13,7 +14,7 @@ public class RtmpSender {
     private var running = false
     private var cacheSize = 200
     private let queue: SynchronizedQueue<FlvPacket>
-    private let callback: ConnectCheckerRtmp
+    private let callback: ConnectChecker
     private let commandManager: CommandManager
     var socket: Socket? = nil
     var audioFramesSent = 0
@@ -23,11 +24,11 @@ public class RtmpSender {
     private let bitrateManager: BitrateManager
     var isEnableLogs = true
 
-    public init(callback: ConnectCheckerRtmp, commandManager: CommandManager) {
+    public init(callback: ConnectChecker, commandManager: CommandManager) {
         self.callback = callback
         self.commandManager = commandManager
         self.queue = SynchronizedQueue<FlvPacket>(label: "RtmpSenderQueue", size: cacheSize)
-        bitrateManager = BitrateManager(connectCheckerRtmp: callback)
+        bitrateManager = BitrateManager(connectChecker: callback)
     }
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
@@ -90,7 +91,7 @@ public class RtmpSender {
                             self.bitrateManager.calculateBitrate(size: Int64(size * 8))
                         }
                     } catch let error {
-                        self.callback.onConnectionFailedRtmp(reason: error.localizedDescription)
+                        self.callback.onConnectionFailed(reason: error.localizedDescription)
                         return
                     }
                 }

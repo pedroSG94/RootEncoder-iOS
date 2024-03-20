@@ -12,6 +12,8 @@
 		EB445A942AE725A600E338B4 /* DisplayRtmp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A932AE725A600E338B4 /* DisplayRtmp.swift */; };
 		EB445A962AE7262300E338B4 /* DisplayBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A952AE7262300E338B4 /* DisplayBase.swift */; };
 		EB445A982AE72E3B00E338B4 /* DisplayRtsp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */; };
+		EB59B8AB2BAB9BF100B2981F /* common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8AA2BAB9BF100B2981F /* common.framework */; };
+		EB59B8AC2BAB9BF100B2981F /* common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8AA2BAB9BF100B2981F /* common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB65621D2AC498A600DD8958 /* RootEncoder.docc in Sources */ = {isa = PBXBuildFile; fileRef = EB65621C2AC498A600DD8958 /* RootEncoder.docc */; };
 		EB6562232AC498A700DD8958 /* RootEncoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB6562182AC498A600DD8958 /* RootEncoder.framework */; };
 		EB6562282AC498A700DD8958 /* RootEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB6562272AC498A700DD8958 /* RootEncoderTests.swift */; };
@@ -48,6 +50,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				EB9B4D882AC49AD000F427C5 /* encoder.framework in Embed Frameworks */,
+				EB59B8AC2BAB9BF100B2981F /* common.framework in Embed Frameworks */,
 				EB9B4D8A2AC49AD000F427C5 /* rtmp.framework in Embed Frameworks */,
 				EB9B4D8C2AC49AD000F427C5 /* rtsp.framework in Embed Frameworks */,
 			);
@@ -62,6 +65,7 @@
 		EB445A932AE725A600E338B4 /* DisplayRtmp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtmp.swift; sourceTree = "<group>"; };
 		EB445A952AE7262300E338B4 /* DisplayBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayBase.swift; sourceTree = "<group>"; };
 		EB445A972AE72E3B00E338B4 /* DisplayRtsp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayRtsp.swift; sourceTree = "<group>"; };
+		EB59B8AA2BAB9BF100B2981F /* common.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = common.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB6562182AC498A600DD8958 /* RootEncoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RootEncoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB65621B2AC498A600DD8958 /* RootEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootEncoder.h; sourceTree = "<group>"; };
 		EB65621C2AC498A600DD8958 /* RootEncoder.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = RootEncoder.docc; sourceTree = "<group>"; };
@@ -87,6 +91,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB9B4D872AC49AD000F427C5 /* encoder.framework in Frameworks */,
+				EB59B8AB2BAB9BF100B2981F /* common.framework in Frameworks */,
 				EB9B4D892AC49AD000F427C5 /* rtmp.framework in Frameworks */,
 				EB9B4D8B2AC49AD000F427C5 /* rtsp.framework in Frameworks */,
 			);
@@ -193,6 +198,7 @@
 		EB9B4D6E2AC498F300F427C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EB59B8AA2BAB9BF100B2981F /* common.framework */,
 				EB9B4D842AC49AD000F427C5 /* encoder.framework */,
 				EB9B4D852AC49AD000F427C5 /* rtmp.framework */,
 				EB9B4D862AC49AD000F427C5 /* rtsp.framework */,
@@ -262,7 +268,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					EB6562172AC498A600DD8958 = {
 						CreatedOnToolsVersion = 15.0;
@@ -475,6 +481,7 @@
 		EB65622D2AC498A700DD8958 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -506,6 +513,7 @@
 		EB65622E2AC498A700DD8958 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

@@ -8,18 +8,19 @@ import AVFoundation
 import UIKit
 import encoder
 import rtsp
+import common
 
 public class RtspCamera: CameraBase {
 
     private var client: RtspClient!
 
-    public init(view: UIView, connectChecker: ConnectCheckerRtsp) {
-        client = RtspClient(connectCheckerRtsp: connectChecker)
+    public init(view: UIView, connectChecker: ConnectChecker) {
+        client = RtspClient(connectChecker: connectChecker)
         super.init(view: view)
     }
 
-    public init(view: MetalView, connectChecker: ConnectCheckerRtsp) {
-        client = RtspClient(connectCheckerRtsp: connectChecker)
+    public init(view: MetalView, connectChecker: ConnectChecker) {
+        client = RtspClient(connectChecker: connectChecker)
         super.init(view: view)
     }
     

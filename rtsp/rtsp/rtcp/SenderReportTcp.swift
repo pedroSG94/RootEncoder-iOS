@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import common
 
 public class SenderReportTcp: BaseSenderReport {
 

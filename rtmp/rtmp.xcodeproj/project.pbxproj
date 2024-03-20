@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EB450F102AE0740A0081CE4D /* BitrateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */; };
+		EB59B8B12BAB9EFD00B2981F /* common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8B02BAB9EFD00B2981F /* common.framework */; };
+		EB59B8B22BAB9EFD00B2981F /* common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8B02BAB9EFD00B2981F /* common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F1B2AC4929100B48654 /* rtmp.docc */; };
 		EBB16F222AC4929200B48654 /* rtmp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBB16F172AC4929100B48654 /* rtmp.framework */; };
 		EBB16F272AC4929200B48654 /* rtmpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F262AC4929200B48654 /* rtmpTests.swift */; };
@@ -70,13 +71,9 @@
 		EBB16FC02AC4932200B48654 /* CommandManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6B2AC492BB00B48654 /* CommandManager.swift */; };
 		EBB16FC12AC4932200B48654 /* RtmpClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6C2AC492BB00B48654 /* RtmpClient.swift */; };
 		EBB16FC22AC4932200B48654 /* RtmpSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6D2AC492BB00B48654 /* RtmpSender.swift */; };
-		EBB16FC32AC4932200B48654 /* ConnectCheckerRtmp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */; };
-		EBB16FC42AC4932200B48654 /* IOException.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F702AC492BB00B48654 /* IOException.swift */; };
 		EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F712AC492BB00B48654 /* Extensions.swift */; };
 		EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */; };
 		EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F732AC492BB00B48654 /* RtmpConfig.swift */; };
-		EBB16FC82AC4932200B48654 /* SynchronizedQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */; };
-		EBB16FC92AC4932200B48654 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB16F752AC492BB00B48654 /* Socket.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,8 +86,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		EB59B8B32BAB9EFD00B2981F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				EB59B8B22BAB9EFD00B2981F /* common.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitrateManager.swift; sourceTree = "<group>"; };
+		EB59B8B02BAB9EFD00B2981F /* common.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = common.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBB16F172AC4929100B48654 /* rtmp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = rtmp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBB16F1A2AC4929100B48654 /* rtmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rtmp.h; sourceTree = "<group>"; };
 		EBB16F1B2AC4929100B48654 /* rtmp.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = rtmp.docc; sourceTree = "<group>"; };
@@ -139,13 +150,9 @@
 		EBB16F6B2AC492BB00B48654 /* CommandManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandManager.swift; sourceTree = "<group>"; };
 		EBB16F6C2AC492BB00B48654 /* RtmpClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpClient.swift; sourceTree = "<group>"; };
 		EBB16F6D2AC492BB00B48654 /* RtmpSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpSender.swift; sourceTree = "<group>"; };
-		EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectCheckerRtmp.swift; sourceTree = "<group>"; };
-		EBB16F702AC492BB00B48654 /* IOException.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IOException.swift; sourceTree = "<group>"; };
 		EBB16F712AC492BB00B48654 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandSessionHistory.swift; sourceTree = "<group>"; };
 		EBB16F732AC492BB00B48654 /* RtmpConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RtmpConfig.swift; sourceTree = "<group>"; };
-		EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronizedQueue.swift; sourceTree = "<group>"; };
-		EBB16F752AC492BB00B48654 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		EBB16F772AC492BB00B48654 /* H264FlvPacket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = H264FlvPacket.swift; sourceTree = "<group>"; };
 		EBB16F782AC492BB00B48654 /* VideoDataType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDataType.swift; sourceTree = "<group>"; };
 		EBB16F792AC492BB00B48654 /* VideoFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFormat.swift; sourceTree = "<group>"; };
@@ -168,6 +175,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB59B8B12BAB9EFD00B2981F /* common.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,12 +190,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EB59B8AF2BAB9EFD00B2981F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EB59B8B02BAB9EFD00B2981F /* common.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EBB16F0D2AC4929100B48654 = {
 			isa = PBXGroup;
 			children = (
 				EBB16F192AC4929100B48654 /* rtmp */,
 				EBB16F252AC4929200B48654 /* rtmpTests */,
 				EBB16F182AC4929100B48654 /* Products */,
+				EB59B8AF2BAB9EFD00B2981F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -345,14 +362,9 @@
 		EBB16F762AC492BB00B48654 /* utils */ = {
 			isa = PBXGroup;
 			children = (
-				EBB16F6F2AC492BB00B48654 /* ConnectCheckerRtmp.swift */,
-				EBB16F702AC492BB00B48654 /* IOException.swift */,
 				EBB16F712AC492BB00B48654 /* Extensions.swift */,
 				EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */,
 				EBB16F732AC492BB00B48654 /* RtmpConfig.swift */,
-				EBB16F742AC492BB00B48654 /* SynchronizedQueue.swift */,
-				EBB16F752AC492BB00B48654 /* Socket.swift */,
-				EB450F0F2AE0740A0081CE4D /* BitrateManager.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -417,6 +429,7 @@
 				EBB16F132AC4929100B48654 /* Sources */,
 				EBB16F142AC4929100B48654 /* Frameworks */,
 				EBB16F152AC4929100B48654 /* Resources */,
+				EB59B8B32BAB9EFD00B2981F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -453,7 +466,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1530;
 				TargetAttributes = {
 					EBB16F162AC4929100B48654 = {
 						CreatedOnToolsVersion = 15.0;
@@ -549,7 +562,6 @@
 				EBB16FB32AC4932200B48654 /* SharedObjectAmf3.swift in Sources */,
 				EBB16FB42AC4932200B48654 /* MessageType.swift in Sources */,
 				EBB16FB52AC4932200B48654 /* BasicHeader.swift in Sources */,
-				EB450F102AE0740A0081CE4D /* BitrateManager.swift in Sources */,
 				EBB16FB62AC4932200B48654 /* RtmpHeader.swift in Sources */,
 				EBB16FB72AC4932200B48654 /* RtmpMessage.swift in Sources */,
 				EBB16FB82AC4932200B48654 /* Abort.swift in Sources */,
@@ -563,13 +575,9 @@
 				EBB16FC02AC4932200B48654 /* CommandManager.swift in Sources */,
 				EBB16FC12AC4932200B48654 /* RtmpClient.swift in Sources */,
 				EBB16FC22AC4932200B48654 /* RtmpSender.swift in Sources */,
-				EBB16FC32AC4932200B48654 /* ConnectCheckerRtmp.swift in Sources */,
-				EBB16FC42AC4932200B48654 /* IOException.swift in Sources */,
 				EBB16FC52AC4932200B48654 /* Extensions.swift in Sources */,
 				EBB16FC62AC4932200B48654 /* CommandSessionHistory.swift in Sources */,
 				EBB16FC72AC4932200B48654 /* RtmpConfig.swift in Sources */,
-				EBB16FC82AC4932200B48654 /* SynchronizedQueue.swift in Sources */,
-				EBB16FC92AC4932200B48654 /* Socket.swift in Sources */,
 				EBB16F1C2AC4929100B48654 /* rtmp.docc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -721,6 +729,7 @@
 		EBB16F2C2AC4929200B48654 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -752,6 +761,7 @@
 		EBB16F2D2AC4929200B48654 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;

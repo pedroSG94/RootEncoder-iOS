@@ -1,4 +1,5 @@
 import Foundation
+import common
 
 public class RtspSender {
     
@@ -10,7 +11,7 @@ public class RtspSender {
     private var running = false
     private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
     private let queue: SynchronizedQueue<RtpFrame>
-    private let callback: ConnectCheckerRtsp
+    private let callback: ConnectChecker
 
     var audioFramesSent = 0
     var videoFramesSent = 0
@@ -19,10 +20,10 @@ public class RtspSender {
     private let bitrateManager: BitrateManager
     var isEnableLogs = true
     
-    public init(callback: ConnectCheckerRtsp) {
+    public init(callback: ConnectChecker) {
         self.callback = callback
         queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: cacheSize)
-        bitrateManager = BitrateManager(connectCheckerRtsp: callback)
+        bitrateManager = BitrateManager(connectChecker: callback)
     }
 
     public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>, videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) async {
@@ -120,7 +121,7 @@ public class RtspSender {
                             self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
                         }
                     } catch let error {
-                        self.callback.onConnectionFailedRtsp(reason: error.localizedDescription)
+                        self.callback.onConnectionFailed(reason: error.localizedDescription)
                         return
                     }
                 }
