@@ -121,8 +121,9 @@ struct RtmpSwiftUIView: View, ConnectCheckerRtmp {
                             if (rtmpCamera.prepareAudio() && rtmpCamera.prepareVideo()) {
                                 let url = getVideoUrl()
                                 if (url != nil) {
+                                    filePath = url
                                     rtmpCamera.startRecord(path: url!)
-                                    bStreamText = "Stop record"
+                                    bRecordText = "Stop record"
                                 }
                             }
                         } else {

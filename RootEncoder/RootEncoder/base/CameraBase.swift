@@ -9,11 +9,6 @@ import UIKit
 import encoder
 
 public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data, MetalViewCallback {
-    
-    public func onVideoSample(buffer: CMSampleBuffer) {
-        
-    }
-    
 
     private var microphone: MicrophoneManager!
     private var cameraManager: CameraManager!
@@ -171,8 +166,8 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
-        recordController.recordVideo(buffer: buffer)
         guard let metalView = metalView else {
+            recordController.recordVideo(buffer: buffer)
             videoEncoder.encodeFrame(buffer: buffer)
             return
         }
@@ -180,6 +175,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+        recordController.recordVideo(pixelBuffer: pixelBuffer, pts: pts)
         videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
     }
     

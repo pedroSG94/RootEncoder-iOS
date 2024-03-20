@@ -231,7 +231,6 @@ public class VideoEncoder {
                 isSpsAndPpsSend = true
             }
         }
-        callback.onVideoSample(buffer: sampleBuffer)
         convertBuffer(sampleBuffer: sampleBuffer)
     }
 

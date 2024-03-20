@@ -80,6 +80,7 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
     @State private var isShowingToast = false
     @State private var toastText = ""
     @State private var bitrateText = ""
+    @State private var filePath: URL? = nil
 
     @State private var rtspCamera: RtspCamera!
     
@@ -120,13 +121,18 @@ struct RtspSwiftUIView: View, ConnectCheckerRtsp {
                             if (rtspCamera.prepareAudio() && rtspCamera.prepareVideo()) {
                                 let url = getVideoUrl()
                                 if (url != nil) {
+                                    filePath = url
                                     rtspCamera.startRecord(path: url!)
-                                    bStreamText = "Stop record"
+                                    bRecordText = "Stop record"
                                 }
                             }
                         } else {
                             rtspCamera.stopRecord()
-                            bStreamText = "Start record"
+                            if (filePath != nil) {
+                                saveVideoToGallery(videoURL: filePath!)
+                                filePath = nil
+                            }
+                            bRecordText = "Start record"
                         }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button(bStreamText) {

@@ -14,6 +14,7 @@ public class RecordController {
     private var path: URL? = nil
     private var writer: AVAssetWriter? = nil
     private var videoInput: AVAssetWriterInput? = nil
+    private var videoAdaptor: AVAssetWriterInputPixelBufferAdaptor? = nil
     private var audioInput: AVAssetWriterInput? = nil
     private var videoConfigured = true
     private var audioConfigured = true
@@ -42,13 +43,15 @@ public class RecordController {
     }
 
     func stopRecord() {
+        self.status = Status.STOPPED
         videoInput?.markAsFinished()
         audioInput?.markAsFinished()
+        self.videoAdaptor = nil
+        self.videoInput = nil
+        self.audioInput = nil
         let dispatchGroup = DispatchGroup()
         dispatchGroup.enter()
         writer?.finishWriting {
-            self.videoInput = nil
-            self.audioInput = nil
             dispatchGroup.leave()
         }
         dispatchGroup.wait()
@@ -64,8 +67,23 @@ public class RecordController {
     func recordVideo(buffer: CMSampleBuffer) {
         queue.async {
             self.initialize(time: buffer.presentationTimeStamp)
-            if (self.videoInput?.isReadyForMoreMediaData == true && self.status == Status.RECORDING) {
+            if (self.status != Status.RECORDING) {
+                return
+            }
+            if (self.videoInput?.isReadyForMoreMediaData == true) {
                 self.videoInput?.append(buffer)
+            }
+        }
+    }
+    
+    func recordVideo(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+        queue.async {
+            self.initialize(time: pts)
+            if (self.status != Status.RECORDING) {
+                return
+            }
+            if (self.videoInput?.isReadyForMoreMediaData == true) {
+                self.videoAdaptor?.append(pixelBuffer, withPresentationTime: pts)
             }
         }
     }
@@ -73,7 +91,10 @@ public class RecordController {
     func recordAudio(buffer: CMSampleBuffer) {
         queue.async {
             self.initialize(time: buffer.presentationTimeStamp)
-            if (self.audioInput?.isReadyForMoreMediaData == true && self.status == Status.RECORDING) {
+            if (self.status != Status.RECORDING) {
+                return
+            }
+            if (self.audioInput?.isReadyForMoreMediaData == true) {
                 self.audioInput?.append(buffer)
             }
         }
@@ -97,7 +118,10 @@ public class RecordController {
             ]
             
             let input = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+            input.expectsMediaDataInRealTime = true
+            let adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: nil)
             self.videoInput = input
+            self.videoAdaptor = adaptor
             self.videoConfigured = true
         }
     }
@@ -110,6 +134,7 @@ public class RecordController {
                 AVNumberOfChannelsKey: channels
             ]
             let input = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+            input.expectsMediaDataInRealTime = true
             self.audioInput = input
             self.audioConfigured = true
         }
