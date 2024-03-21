@@ -8,16 +8,6 @@
 import Foundation
 import AVFAudio
 
-extension Date {
-    var millisecondsSince1970:Int64 {
-        Int64((timeIntervalSince1970 * 1000.0).rounded())
-    }
-
-    init(milliseconds:Int64) {
-        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
-    }
-}
-
 public extension AVAudioPCMBuffer {
     final func makeSampleBuffer(_ when: AVAudioTime) -> CMSampleBuffer? {
         var status: OSStatus = noErr
@@ -51,5 +41,15 @@ extension AVAudioTime {
 
     func makeTime() -> CMTime {
         return .init(seconds: AVAudioTime.seconds(forHostTime: hostTime), preferredTimescale: 1000000000)
+    }
+}
+
+extension UInt32 {
+    func toBytes() -> [UInt8] {
+        let b1 = UInt8(self & 0x1F)
+        let b2 = UInt8(self >> 8)
+        let b3 = UInt8(self >> 16)
+        let b4 = UInt8(self >> 24)
+        return [UInt8](arrayLiteral: b1, b2, b3, b4)
     }
 }

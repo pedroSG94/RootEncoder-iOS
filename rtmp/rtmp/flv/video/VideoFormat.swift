@@ -16,7 +16,7 @@ public enum VideoFormat: Int {
     case SCREEN_2 = 6
     case AVC = 7
     case UNKNOWN = 255
-    //fourCC extension
+    //fourCC
     case HEVC = 1752589105 // { "h", "v", "c", "1" }
     case AV1 = 1635135537 // { "a", "v", "0", "1" }
     case VP9 = 1987063865 // { "v", "p", "0", "9" }

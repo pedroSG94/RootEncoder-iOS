@@ -29,7 +29,6 @@
 		EB9B4D8A2AC49AD000F427C5 /* rtmp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D852AC49AD000F427C5 /* rtmp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB9B4D8B2AC49AD000F427C5 /* rtsp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D862AC49AD000F427C5 /* rtsp.framework */; };
 		EB9B4D8C2AC49AD000F427C5 /* rtsp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB9B4D862AC49AD000F427C5 /* rtsp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		EB9B4DA82AC4BFBF00F427C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DA72AC4BFBF00F427C5 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,7 +81,6 @@
 		EB9B4D842AC49AD000F427C5 /* encoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = encoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB9B4D852AC49AD000F427C5 /* rtmp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = rtmp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB9B4D862AC49AD000F427C5 /* rtsp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = rtsp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		EB9B4DA72AC4BFBF00F427C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,7 +188,6 @@
 			children = (
 				EB6562412AC498B500DD8958 /* FpsListener.swift */,
 				EB6562422AC498B500DD8958 /* RecordController.swift */,
-				EB9B4DA72AC4BFBF00F427C5 /* Extensions.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -322,7 +319,6 @@
 				EB9B4D7C2AC4998B00F427C5 /* CameraBase.swift in Sources */,
 				EB445A962AE7262300E338B4 /* DisplayBase.swift in Sources */,
 				EB9B4D7D2AC4998B00F427C5 /* RtspCamera.swift in Sources */,
-				EB9B4DA82AC4BFBF00F427C5 /* Extensions.swift in Sources */,
 				EB9B4D7E2AC4998B00F427C5 /* FpsListener.swift in Sources */,
 				EB9B4D7F2AC4998B00F427C5 /* RecordController.swift in Sources */,
 				EB34F4CB2AF5979C00567E51 /* MetalView.swift in Sources */,

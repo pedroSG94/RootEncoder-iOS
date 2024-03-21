@@ -12,16 +12,6 @@ import VideoToolbox
 import CoreFoundation
 import common
 
-extension UInt32 {
-    func toBytes() -> [UInt8] {
-        let b1 = UInt8(self & 0x1F)
-        let b2 = UInt8(self >> 8)
-        let b3 = UInt8(self >> 16)
-        let b4 = UInt8(self >> 24)
-        return [UInt8](arrayLiteral: b1, b2, b3, b4)
-    }
-}
-
 public class VideoEncoder {
     
     private var resolution: CameraHelper.Resolution = .vga640x480
