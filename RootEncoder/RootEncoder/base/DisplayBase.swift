@@ -9,6 +9,7 @@ import Foundation
 import AVFoundation
 import UIKit
 import encoder
+import common
 
 public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
 
@@ -20,6 +21,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     private var streaming = false
     private var onPreview = false
     private var fpsListener = FpsListener()
+    private let recordController = RecordController()
 
     public init(view: UIView) {
         cameraManager = ScreenManager(cameraView: view, callbackVideo: self, callbackAudio: nil)
@@ -31,10 +33,11 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     public func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {}
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
+        let channels = isStereo ? 2 : 1
+        recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
         microphone.createMicrophone()
         prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
-        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
-                channels: isStereo ? 2 : 1, bitrate: bitrate)
+        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate), channels: UInt32(channels), bitrate: bitrate)
     }
 
     public func prepareAudio() -> Bool {
@@ -42,6 +45,13 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     }
 
     public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
+        var w = resolution.width
+        var h = resolution.height
+        if (rotation == 90 || rotation == 270) {
+            w = resolution.height
+            h = resolution.width
+        }
+        recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
         return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
@@ -53,14 +63,25 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         fpsListener.setCallback(callback: fpsCallback)
     }
 
-    public func startStreamRtp(endpoint: String) {}
-        
-    public func startStream(endpoint: String) {
-        self.endpoint = endpoint
+    private func startEncoders() {
         audioEncoder.start()
         videoEncoder.start()
         microphone.start()
         cameraManager.start()
+    }
+    
+    private func stopEncoders() {
+        microphone.stop()
+        cameraManager.stop()
+        audioEncoder.stop()
+        videoEncoder.stop()
+    }
+    
+    public func startStreamRtp(endpoint: String) {}
+        
+    public func startStream(endpoint: String) {
+        self.endpoint = endpoint
+        startEncoders()
         onPreview = true
         streaming = true
         startStreamRtp(endpoint: endpoint)
@@ -69,15 +90,26 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     public func stopStreamRtp() {}
 
     public func stopStream() {
-        microphone.stop()
-        cameraManager.stop()
-        audioEncoder.stop()
-        videoEncoder.stop()
+        stopEncoders()
         stopStreamRtp()
         endpoint = ""
         streaming = false
     }
 
+    public func startRecord(path: URL) {
+        recordController.startRecord(path: path)
+        startEncoders()
+    }
+
+    public func stopRecord() {
+        stopEncoders()
+        recordController.stopRecord()
+    }
+    
+    public func isRecording() -> Bool {
+        return recordController.isRecording()
+    }
+    
     public func isStreaming() -> Bool {
         streaming
     }
@@ -107,6 +139,30 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         }
     }
 
+    public func setVideoCodec(codec: VideoCodec) {
+        setVideoCodecImp(codec: codec)
+        recordController.setVideoCodec(codec: codec)
+        let type = switch codec {
+        case .H264:
+            CodecUtil.H264
+        case .H265:
+            CodecUtil.H265
+        @unknown default:
+            CodecUtil.H264
+        }
+        videoEncoder.setCodec(codec: type)
+    }
+    
+    public func setAudioCodec(codec: common.AudioCodec) {
+        setAudioCodecImp(codec: codec)
+        recordController.setAudioCodec(codec: codec)
+        audioEncoder.codec = codec
+    }
+
+    public func setVideoCodecImp(codec: VideoCodec) {}
+    
+    public func setAudioCodecImp(codec: common.AudioCodec) {}
+    
     public func getAacDataRtp(frame: Frame) {}
 
     public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
@@ -114,10 +170,12 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     public func getH264DataRtp(frame: Frame) {}
 
     public func getPcmData(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
+        recordController.recordAudio(buffer: buffer.makeSampleBuffer(time)!)
         audioEncoder.encodeFrame(buffer: buffer)
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
+        recordController.recordVideo(buffer: buffer)
         videoEncoder.encodeFrame(buffer: buffer)
     }
 

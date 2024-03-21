@@ -7,6 +7,7 @@ import Foundation
 import AVFoundation
 import UIKit
 import encoder
+import common
 
 public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data, MetalViewCallback {
 
@@ -41,7 +42,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
-        recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate, codec: kAudioFormatMPEG4AAC)
+        recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
         microphone.createMicrophone()
         prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
         return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
@@ -62,7 +63,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
             w = resolution.height
             h = resolution.width
         }
-        recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate, codec: AVVideoCodecType.h264)
+        recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
         cameraManager.prepare(resolution: resolution, rotation: rotation)
         return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
@@ -153,7 +154,31 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
             onPreview = false
         }
     }
+    
+    public func setVideoCodec(codec: VideoCodec) {
+        setVideoCodecImp(codec: codec)
+        recordController.setVideoCodec(codec: codec)
+        let type = switch codec {
+        case .H264:
+            CodecUtil.H264
+        case .H265:
+            CodecUtil.H265
+        @unknown default:
+            CodecUtil.H264
+        }
+        videoEncoder.setCodec(codec: type)
+    }
+    
+    public func setAudioCodec(codec: common.AudioCodec) {
+        setAudioCodecImp(codec: codec)
+        recordController.setAudioCodec(codec: codec)
+        audioEncoder.codec = codec
+    }
 
+    public func setVideoCodecImp(codec: VideoCodec) {}
+    
+    public func setAudioCodecImp(codec: common.AudioCodec) {}
+    
     public func getAacDataRtp(frame: Frame) {}
 
     public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}

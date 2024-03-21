@@ -3,7 +3,7 @@ import common
 
 public class RtspSender {
     
-    private var audioPacketizer: AacPacket?
+    private var audioPacketizer: BasePacket?
     private var videoPacketizer: BasePacket?
     private var tcpSocket: BaseRtpSocket?
     private var tcpReport: BaseSenderReport?
@@ -12,6 +12,7 @@ public class RtspSender {
     private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
     private let queue: SynchronizedQueue<RtpFrame>
     private let callback: ConnectChecker
+    private let commandsManager: CommandsManager
 
     var audioFramesSent = 0
     var videoFramesSent = 0
@@ -20,8 +21,9 @@ public class RtspSender {
     private let bitrateManager: BitrateManager
     var isEnableLogs = true
     
-    public init(callback: ConnectChecker) {
+    public init(callback: ConnectChecker, commandsManager: CommandsManager) {
         self.callback = callback
+        self.commandsManager = commandsManager
         queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: cacheSize)
         bitrateManager = BitrateManager(connectChecker: callback)
     }
@@ -44,16 +46,26 @@ public class RtspSender {
     }
 
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        if (vps == nil) {
-            videoPacketizer = H264Packet(sps: sps, pps: pps)
-        } else {
-            videoPacketizer = H265Packet(sps: sps, pps: pps)
+        videoPacketizer = switch commandsManager.videoCodec {
+        case VideoCodec.H264:
+            H264Packet(sps: sps, pps: pps)
+        case VideoCodec.H265:
+            H265Packet()
+        default:
+            H264Packet(sps: sps, pps: pps)
         }
-
     }
     
     public func setAudioInfo(sampleRate: Int) {
-        audioPacketizer = AacPacket(sampleRate: 44100)
+        audioPacketizer = switch commandsManager.audioCodec {
+        case AudioCodec.AAC:
+            AacPacket(sampleRate: sampleRate)
+        case AudioCodec.G711:
+            G711Packet(sampleRate: sampleRate)
+        default:
+            AacPacket(sampleRate: sampleRate)
+        }
+
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {

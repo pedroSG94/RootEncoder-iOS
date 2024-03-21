@@ -18,6 +18,7 @@ public class AudioEncoder {
     private var initTs: Int64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
     private let syncQueue = SynchronizedQueue<AVAudioPCMBuffer>(label: "AudioEncodeQueue", size: 60)
+    public var codec = common.AudioCodec.AAC
     
     public init(callback: GetAacData) {
         self.callback = callback
@@ -34,7 +35,7 @@ public class AudioEncoder {
     
     public func encodeFrame(buffer: AVAudioPCMBuffer) {
         if (running) {
-            syncQueue.enqueue(buffer)
+            let _ = syncQueue.enqueue(buffer)
         }
     }
     

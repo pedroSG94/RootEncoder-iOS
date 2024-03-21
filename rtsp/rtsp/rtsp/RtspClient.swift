@@ -19,7 +19,7 @@ public class RtspClient {
     
     public init(connectChecker: ConnectChecker) {
         self.connectChecker = connectChecker
-        rtspSender = RtspSender(callback: connectChecker)
+        rtspSender = RtspSender(callback: connectChecker, commandsManager: commandsManager)
     }
     
     public func setAuth(user: String, password: String) {
@@ -92,14 +92,14 @@ public class RtspClient {
                             self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
                         }
                         if (!self.commandsManager.videoDisabled) {
-                            if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
+                            if (!self.commandsManager.videoInfoReady()) {
                                 print("waiting for sps and pps")
                                 semaphore = Task {
                                     try await Task.sleep(nanoseconds: 5 * 1_000_000_000)
                                     return true
                                 }
                                 let _ = await semaphore?.result
-                                if (self.commandsManager.sps == nil || self.commandsManager.pps == nil) {
+                                if (!self.commandsManager.videoInfoReady()) {
                                     self.connectChecker.onConnectionFailed(reason: "sps or pps is null")
                                     return
                                 } else {
@@ -239,6 +239,18 @@ public class RtspClient {
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (!commandsManager.audioDisabled) {
             rtspSender.sendAudio(buffer: buffer, ts: ts)
+        }
+    }
+    
+    public func setVideoCodec(codec: VideoCodec) {
+        if (!streaming) {
+            commandsManager.videoCodec = codec
+        }
+    }
+    
+    public func setAudioCodec(codec: AudioCodec) {
+        if (!streaming) {
+            commandsManager.audioCodec = codec
         }
     }
     

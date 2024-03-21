@@ -6,7 +6,7 @@
 import Foundation
 import AVFoundation
 import encoder
-import Photos
+import common
 
 public class RecordController {
 
@@ -18,6 +18,8 @@ public class RecordController {
     private var audioInput: AVAssetWriterInput? = nil
     private var videoConfigured = true
     private var audioConfigured = true
+    private var videoCodec = AVVideoCodecType.h264
+    private var audioCodec = kAudioFormatMPEG4AAC
     private let queue = DispatchQueue(label: "RecordController")
     
     enum Status {
@@ -109,10 +111,10 @@ public class RecordController {
     }
 
 
-    func setVideoFormat(witdh: Int, height: Int, bitrate: Int, codec: AVVideoCodecType) {
+    func setVideoFormat(witdh: Int, height: Int, bitrate: Int) {
         queue.async {
             let videoSettings: [String : Any] = [
-                AVVideoCodecKey: codec,
+                AVVideoCodecKey: self.videoCodec,
                 AVVideoWidthKey: witdh,
                 AVVideoHeightKey: height
             ]
@@ -126,10 +128,10 @@ public class RecordController {
         }
     }
 
-    func setAudioFormat(sampleRate: Int, channels: Int, bitrate: Int, codec: AudioFormatID) {
+    func setAudioFormat(sampleRate: Int, channels: Int, bitrate: Int) {
         queue.async {
             let audioSettings: [String: Any] = [
-                AVFormatIDKey: codec,
+                AVFormatIDKey: self.audioCodec,
                 AVSampleRateKey: sampleRate,
                 AVNumberOfChannelsKey: channels
             ]
@@ -137,6 +139,28 @@ public class RecordController {
             input.expectsMediaDataInRealTime = true
             self.audioInput = input
             self.audioConfigured = true
+        }
+    }
+    
+    func setVideoCodec(codec: VideoCodec) {
+        videoCodec = switch codec {
+        case VideoCodec.H264:
+            AVVideoCodecType.h264
+        case VideoCodec.H265:
+            AVVideoCodecType.hevc
+        default:
+            AVVideoCodecType.h264 //TODO throw error
+        }
+    }
+    
+    func setAudioCodec(codec: common.AudioCodec) {
+        audioCodec = switch codec {
+        case AudioCodec.AAC:
+            kAudioFormatMPEG4AAC
+        case AudioCodec.G711:
+            kAudioFormatALaw
+        default:
+            kAudioFormatLinearPCM // TODO throw error
         }
     }
 

@@ -28,10 +28,23 @@ public class CommandsManager {
     var audioServerPorts = [5004, 5005]
     var videoServerPorts = [5006, 5007]
     private let commandParser = CommandParser()
+    var videoCodec = VideoCodec.H264
+    var audioCodec = AudioCodec.AAC
     
     public init() {
         let time = Date().millisecondsSince1970
         timeStamp = (time / 1000) << 32 & (((time - ((time / 1000) * 1000)) >> 32) / 1000)
+    }
+    
+    public func videoInfoReady() -> Bool {
+      switch videoCodec {
+      case VideoCodec.H264:
+          return sps != nil && pps != nil
+      case VideoCodec.H265:
+          return sps != nil && pps != nil && vps != nil
+      default:
+          return false
+      }
     }
     
     public func getSampleRate() -> Int {
@@ -129,14 +142,28 @@ public class CommandsManager {
     }
     
     private func createAudioBody(body: SdpBody) -> String {
-        body.createAACBody(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
+        return switch audioCodec {
+        case .AAC:
+            body.createAACBody(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
+        case .G711:
+            body.createG711Body(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
+        default:
+            ""
+        }
     }
     
     private func createVideoBody(body: SdpBody) -> String {
         let spsString = Data(sps!).base64EncodedString()
         let ppsString = Data(pps!).base64EncodedString()
         let vpsString = vps != nil ? Data(vps!).base64EncodedString() : nil
-        return vps == nil ? body.createH264Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString) : body.createH265Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString, vps: vpsString!)
+        return switch videoCodec {
+        case .H264:
+            body.createH264Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString)
+        case .H265:
+            body.createH265Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString, vps: vpsString!)
+        default:
+            ""
+        }
     }
     
     public func setAuth(user: String, password: String) {

@@ -93,8 +93,9 @@ struct RtspSwiftUIView: View, ConnectChecker {
             
             camera.onAppear {
                 rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
+                
                 rtspCamera.setRetries(reTries: 10)
-                //rtspCamera.setCodec(codec: CodecUtil.H265)
+                rtspCamera.setVideoCodec(codec: VideoCodec.H265)
                 rtspCamera.startPreview()
             }
             camera.onDisappear {

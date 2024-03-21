@@ -7,6 +7,7 @@ public struct RtpConstants {
     public static let rtpHeaderLength = 12
     public static let MTU = 1500
     public static let payloadType = 96
+    public static let payloadTypeG711 = 8
     //H264
     public static let IDR = 5
     //H265

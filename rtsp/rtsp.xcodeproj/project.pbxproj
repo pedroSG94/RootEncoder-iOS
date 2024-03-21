@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		EB59B8A72BAB9BB400B2981F /* common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8A62BAB9BB400B2981F /* common.framework */; };
 		EB59B8A82BAB9BB400B2981F /* common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8A62BAB9BB400B2981F /* common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EB59B8B92BACE65400B2981F /* G711Packet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB59B8B82BACE65400B2981F /* G711Packet.swift */; };
 		EB9B4DB12ACCB26800F427C5 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DB02ACCB26800F427C5 /* Command.swift */; };
 		EB9B4DB32ACCB28200F427C5 /* Method.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DB22ACCB28200F427C5 /* Method.swift */; };
 		EB9B4DB52ACCB48C00F427C5 /* CommandParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9B4DB42ACCB48C00F427C5 /* CommandParser.swift */; };
@@ -62,6 +63,7 @@
 
 /* Begin PBXFileReference section */
 		EB59B8A62BAB9BB400B2981F /* common.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = common.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB59B8B82BACE65400B2981F /* G711Packet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = G711Packet.swift; sourceTree = "<group>"; };
 		EB9B4DB02ACCB26800F427C5 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		EB9B4DB22ACCB28200F427C5 /* Method.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Method.swift; sourceTree = "<group>"; };
 		EB9B4DB42ACCB48C00F427C5 /* CommandParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandParser.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				EBC6AC472AC383A800AAA380 /* BasePacket.swift */,
 				EBC6AC482AC383A800AAA380 /* H264Packet.swift */,
 				EBC6AC492AC383A800AAA380 /* H265Packet.swift */,
+				EB59B8B82BACE65400B2981F /* G711Packet.swift */,
 			);
 			path = packets;
 			sourceTree = "<group>";
@@ -356,6 +359,7 @@
 				EBB16EFF2AC3861500B48654 /* SdpBody.swift in Sources */,
 				EBB16F002AC3861500B48654 /* CommandsManager.swift in Sources */,
 				EBB16F012AC3861500B48654 /* Protocol.swift in Sources */,
+				EB59B8B92BACE65400B2981F /* G711Packet.swift in Sources */,
 				EBB16F022AC3861500B48654 /* RtpFrame.swift in Sources */,
 				EBB16F032AC3861500B48654 /* RtspSender.swift in Sources */,
 				EBC6AC6B2AC3841500AAA380 /* SenderReportUdp.swift in Sources */,

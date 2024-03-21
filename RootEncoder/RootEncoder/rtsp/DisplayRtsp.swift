@@ -55,6 +55,14 @@ public class DisplayRtsp: DisplayBase {
         client.connect(url: endpoint)
     }
     
+    public override func setVideoCodecImp(codec: VideoCodec) {
+        client.setVideoCodec(codec: codec)
+    }
+    
+    public override func setAudioCodecImp(codec: common.AudioCodec) {
+        client.setAudioCodec(codec: codec)
+    }
+    
     public override func getAacDataRtp(frame: Frame) {
         client.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
     }

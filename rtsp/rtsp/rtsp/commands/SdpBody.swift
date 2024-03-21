@@ -30,6 +30,14 @@ public class SdpBody {
         return "m=audio 0 RTP/AVP \(payload)\r\na=rtpmap:\(payload) MPEG4-GENERIC/\(sampleRate)/\(channel)\r\na=fmtp:\(payload) streamtype=5; profile-level-id=15; mode=AAC-hbr; config=\(hexStringConfig); SizeLength=13; IndexLength=3; IndexDeltaLength=3;\r\na=control:trackID=\(trackAudio)\r\n"
     }
     
+    public func createG711Body(trackAudio: Int, sampleRate: Int, isStereo: Bool) -> String {
+        let channel = isStereo ? 2 : 1
+        let payload = RtpConstants.payloadTypeG711
+        return "m=audio 0 RTP/AVP \(payload)\r\n" +
+                "a=rtpmap:\(payload) PCMA/\(sampleRate)/\(channel)\r\n" +
+                "a=control:streamid=\(trackAudio)\r\n"
+    }
+    
     public func createH264Body(trackVideo: Int, sps: String, pps: String) -> String {
         let payload = RtpConstants.payloadType + trackVideo
         return "m=video 0 RTP/AVP \(payload)\r\na=rtpmap:\(payload) H264/\(RtpConstants.clockVideoFrequency)\r\na=fmtp:\(payload) packetization-mode=1;sprop-parameter-sets=\(sps),\(pps);\r\na=control:trackID=\(trackVideo)\r\n"
