@@ -80,7 +80,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
-        startEncoders()
+        if (!isRecording()) {
+            startEncoders()
+        }
         onPreview = true
         streaming = true
         startStreamRtp(endpoint: endpoint)
@@ -104,7 +106,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func stopStreamRtp() {}
 
     public func stopStream() {
-        stopEncoders()
+        if (!isRecording()) {
+            stopEncoders()
+        }
         stopStreamRtp()
         endpoint = ""
         streaming = false
@@ -112,11 +116,15 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     
     public func startRecord(path: URL) {
         recordController.startRecord(path: path)
-        startEncoders()
+        if (!streaming) {
+            startEncoders()
+        }
     }
 
     public func stopRecord() {
-        stopEncoders()
+        if (!streaming) {
+            stopEncoders()
+        }
         recordController.stopRecord()
     }
     
