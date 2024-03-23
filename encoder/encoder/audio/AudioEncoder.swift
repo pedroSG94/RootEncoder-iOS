@@ -12,7 +12,7 @@ import common
 public class AudioEncoder {
     
     private var converter: AVAudioConverter? = nil
-    private var outputFormat: AVAudioFormat?
+    private var outputFormat: AVAudioFormat? = nil
     private var callback: GetAacData?
     private var running = false
     private var initTs: Int64 = 0
@@ -25,11 +25,16 @@ public class AudioEncoder {
     }
     
     public func prepareAudio(inputFormat: AVAudioFormat, sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
-        outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels)
-        converter = AVAudioConverter(from: inputFormat, to: outputFormat!)
-        converter!.bitRate = bitrate
+        guard let outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels) else {
+            return false
+        }
+        guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
+            return false
+        }
+        converter.bitRate = bitrate
+        self.outputFormat = outputFormat
+        self.converter = converter
         print("prepare audio success")
-        
         return true
     }
     
@@ -48,14 +53,18 @@ public class AudioEncoder {
                 let b = self.syncQueue.dequeue()
                 if let b = b {
                     var error: NSError? = nil
-                    let aacBuffer = self.convertToAAC(buffer: b, error: &error)!
-                    
+                    guard let aacBuffer = self.convertToAAC(buffer: b, error: &error) else {
+                        continue
+                    }
                     if error != nil {
                         print("Encode error: \(error.debugDescription)")
                     } else {
                         let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
+                        guard let packetDescriptions = aacBuffer.packetDescriptions else {
+                            continue
+                        }
                         for i in 0..<aacBuffer.packetCount {
-                            let info = aacBuffer.packetDescriptions![Int(i)]
+                            let info = packetDescriptions[Int(i)]
                             var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
                             mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
                             let end = Date().millisecondsSince1970
@@ -75,11 +84,16 @@ public class AudioEncoder {
     
     public func stop() {
         running = false
+        converter = nil
+        outputFormat = nil
         syncQueue.clear()
     }
     
     private func convertToAAC(buffer: AVAudioPCMBuffer, error: inout NSError?) -> AVAudioCompressedBuffer? {
-        let outBuffer = AVAudioCompressedBuffer(format: outputFormat!, packetCapacity: 8, maximumPacketSize: Int(buffer.frameLength))
+        guard let outputFormat = outputFormat else {
+            return nil
+        }
+        let outBuffer = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 8, maximumPacketSize: Int(buffer.frameLength))
         self.convert(sourceBuffer: buffer, destinationBuffer: outBuffer, error: &error)
         return outBuffer
     }
