@@ -12,13 +12,11 @@ public class VideoSpecificConfigAVC {
     
     let sps: Array<UInt8>
     let pps: Array<UInt8>
-    let profileIop: ProfileIop
-    var size = 0
+    private(set) public var size = 0
     
-    init(sps: Array<UInt8>, pps: Array<UInt8>, profileIop: ProfileIop) {
+    init(sps: Array<UInt8>, pps: Array<UInt8>) {
         self.sps = sps
         self.pps = pps
-        self.profileIop = profileIop
         size = calculateSize(sps: sps, pps: pps)
     }
     
@@ -27,7 +25,8 @@ public class VideoSpecificConfigAVC {
         buffer[offset] = 0x01
         let profileIdc = sps[1]
         buffer[offset + 1] = profileIdc
-        buffer[offset + 2] = profileIop.rawValue
+        let profileCompatibility = sps[2]
+        buffer[offset + 2] = profileCompatibility
         let levelIdc = sps[3]
         buffer[offset + 3] = levelIdc
         buffer[offset + 4] = 0xff

@@ -27,7 +27,7 @@ public class VideoEncoder {
     private let thread = DispatchQueue(label: "VideoEncoder")
     private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
 
-    private var session: VTCompressionSession?
+    private var session: VTCompressionSession? = nil
     private let callback: GetH264Data
     
     public init(callback: GetH264Data) {
@@ -114,14 +114,14 @@ public class VideoEncoder {
             guard let px = CMSampleBufferGetImageBuffer(buffer) else { return }
             let time = CMSampleBufferGetPresentationTimeStamp(buffer)
             let frame = VideoFrame(pixelBuffer: px, pts: time)
-            syncQueue.enqueue(frame)
+            let _ = syncQueue.enqueue(frame)
         }
     }
     
     public func encodeFrame(pixelBuffer: CVPixelBuffer, pts: CMTime) {
         if (running) {
             let frame = VideoFrame(pixelBuffer: pixelBuffer, pts: pts)
-            syncQueue.enqueue(frame)
+            let _ = syncQueue.enqueue(frame)
         }
     }
 
@@ -129,6 +129,7 @@ public class VideoEncoder {
         running = false
         guard let session: VTCompressionSession = session else { return }
         VTCompressionSessionInvalidate(session)
+        self.session = nil
         isSpsAndPpsSend = false
         forceKey = false
         syncQueue.clear()

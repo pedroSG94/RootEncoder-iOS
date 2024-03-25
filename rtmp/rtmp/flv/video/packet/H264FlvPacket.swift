@@ -17,7 +17,6 @@ public class H264FlvPacket {
     private var configSend = false
     private var sps: Array<UInt8>? = nil
     private var pps: Array<UInt8>? = nil
-    var profileIop = ProfileIop.BASELINE
     
     enum VideoType: UInt8 {
         case SEQUENCE = 0x00
@@ -44,7 +43,7 @@ public class H264FlvPacket {
             header[1] = VideoType.SEQUENCE.rawValue
             
             if let sps = self.sps, let pps = self.pps {
-                let config = VideoSpecificConfigAVC(sps: sps, pps: pps, profileIop: profileIop)
+                let config = VideoSpecificConfigAVC(sps: sps, pps: pps)
                 packetBuffer = [UInt8](repeating: 0, count: config.size + header.count)
                 config.write(buffer: &packetBuffer, offset: header.count)
             } else {
