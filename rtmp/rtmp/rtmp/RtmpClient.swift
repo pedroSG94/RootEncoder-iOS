@@ -311,6 +311,18 @@ public class RtmpClient {
         }
     }
 
+    public func setVideoCodec(codec: VideoCodec) {
+        if (!isStreaming) {
+            commandManager.videoCodec = codec
+        }
+    }
+    
+    public func setAudioCodec(codec: AudioCodec) {
+        if (!isStreaming) {
+            commandManager.audioCodec = codec
+        }
+    }
+    
     private func closeConnection() {
         socket?.disconnect()
         commandManager.reset()

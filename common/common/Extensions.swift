@@ -38,7 +38,7 @@ public extension String {
                     return String(text[range])
                 }
             }
-        } catch let error {
+        } catch _ {
             return []
         }
     }
