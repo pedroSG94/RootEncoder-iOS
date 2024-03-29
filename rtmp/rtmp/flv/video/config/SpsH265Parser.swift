@@ -20,7 +20,7 @@ class SpsH265Parser {
     var bitDepthChromaMinus8 = 0
     
     func parse(sps: Array<UInt8>) {
-        let rbsp = BitBuffer.extractRbsp(buffer: sps, headerLength: 2)
+        let rbsp = BitBuffer.extractRbsp(buffer: sps)
         let bitBuffer = BitBuffer(buffer: rbsp)
         //Dropping nal_unit_header
         let _ = bitBuffer.getLong(i: 16)
@@ -45,13 +45,13 @@ class SpsH265Parser {
         
         var subLayerProfilePresentFlag = Array<Bool>()
         var subLayerLevelPresentFlag = Array<Bool>()
-        for i in 0..<maxSubLayersMinus1 {
+        for _ in 0..<maxSubLayersMinus1 {
             subLayerProfilePresentFlag.append(bitBuffer.getBool())
             subLayerLevelPresentFlag.append(bitBuffer.getBool())
         }
         
         if maxSubLayersMinus1 > 0 {
-            for i in maxSubLayersMinus1...8 {
+            for _ in maxSubLayersMinus1...8 {
                 let _ = bitBuffer.getLong(i: 2)
             }
         }

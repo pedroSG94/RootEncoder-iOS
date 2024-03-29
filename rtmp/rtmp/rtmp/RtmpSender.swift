@@ -8,8 +8,8 @@ import common
 
 public class RtmpSender {
 
-    private let h264FlvPacket = H264FlvPacket()
-    private let aacFlvPacket = AacFlvPacket()
+    private var videoPacket: BasePacket = H264Packet()
+    private var audioPacket: BasePacket = AacPacket()
     private var thread: Task<(), Never>? = nil
     private var running = false
     private var cacheSize = 200
@@ -32,16 +32,41 @@ public class RtmpSender {
     }
     
     public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        h264FlvPacket.setVideoInfo(sps: sps, pps: pps)
+        switch commandManager.videoCodec {
+        case .H264:
+            let packet = H264Packet()
+            packet.setVideoInfo(sps: sps, pps: pps)
+            videoPacket = packet
+        case .H265:
+            let packet = H265Packet()
+            packet.setVideoInfo(sps: sps, pps: pps, vps: vps!)
+            videoPacket = packet
+        @unknown default:
+            let packet = H264Packet()
+            packet.setVideoInfo(sps: sps, pps: pps)
+            videoPacket = packet
+        }
     }
     
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
-        aacFlvPacket.sendAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+        switch commandManager.audioCodec {
+        case .AAC:
+            let packet = AacPacket()
+            packet.sendAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+            audioPacket = packet
+        case .G711:
+            let packet = G711Packet()
+            audioPacket = packet
+        @unknown default:
+            let packet = AacPacket()
+            packet.sendAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+            audioPacket = packet
+        }
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         if (running) {
-            h264FlvPacket.createFlvVideoPacket(
+            videoPacket.createFlvPacket(
                 buffer: buffer, ts: ts,
                 callback: { (flvPacket) in
                     if (!queue.enqueue(flvPacket)) {
@@ -55,7 +80,7 @@ public class RtmpSender {
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (running) {
-            aacFlvPacket.createFlvAudioPacket(
+            audioPacket.createFlvPacket(
                 buffer: buffer, ts: ts,
                 callback: { (flvPacket) in
                     if (!queue.enqueue(flvPacket)) {
@@ -103,8 +128,8 @@ public class RtmpSender {
         running = false
         thread?.cancel()
         thread = nil
-        aacFlvPacket.reset()
-        h264FlvPacket.reset(resetInfo: clear)
+        audioPacket.reset()
+        videoPacket.reset(resetInfo: clear)
         queue.clear()
     }
     

@@ -34,6 +34,8 @@ public class CommandManager {
     private var isStereo = true
     private var bytesRead = 0
     private var acknowledgementSequence = 0
+    var videoCodec = VideoCodec.H264
+    var audioCodec = AudioCodec.AAC
 
     public func setVideoResolution(width: Int, height: Int) {
         self.width = width
@@ -154,14 +156,31 @@ public class CommandManager {
         let amfEcmaArray = AmfEcmaArray()
         amfEcmaArray.setProperty(name: "duration", data: 0.0)
         if (!videoDisabled) {
+            let codecValue = switch videoCodec {
+            case .H264:
+                VideoFormat.AVC.rawValue
+            case .H265:
+                VideoFormat.HEVC.rawValue
+            @unknown default:
+                VideoFormat.AVC.rawValue
+            }
+            print("codec: \(codecValue)")
             amfEcmaArray.setProperty(name: "width", data: Double(width))
             amfEcmaArray.setProperty(name: "height", data: Double(height))
-            amfEcmaArray.setProperty(name: "videocodecid", data: 7.0)
+            amfEcmaArray.setProperty(name: "videocodecid", data: Double(codecValue))
             amfEcmaArray.setProperty(name: "framerate", data: Double(fps))
             amfEcmaArray.setProperty(name: "videodatarate", data: 0.0)
         }
         if (!audioDisabled) {
-            amfEcmaArray.setProperty(name: "audiocodecid", data: 10.0)
+            let codecValue = switch audioCodec {
+            case .AAC:
+                AudioFormat.AAC.rawValue
+            case .G711:
+                AudioFormat.G711_A.rawValue
+            @unknown default:
+                AudioFormat.AAC.rawValue
+            }
+            amfEcmaArray.setProperty(name: "audiocodecid", data: Double(codecValue))
             amfEcmaArray.setProperty(name: "audiosamplerate", data: Double(sampleRate))
             amfEcmaArray.setProperty(name: "audiosamplesize", data: 16.0)
             amfEcmaArray.setProperty(name: "audiodatarate", data: 0.0)

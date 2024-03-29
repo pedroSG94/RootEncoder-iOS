@@ -28,10 +28,6 @@ public class RtmpCamera: CameraBase {
         //client.setAuth(user: user, password: password)
     }
 
-    public func setCodec(codec: CodecUtil) {
-        videoEncoder.setCodec(codec: codec)
-    }
-
     public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
         let result = client.shouldRetry(reason: reason)
         if (result) {
@@ -43,6 +39,14 @@ public class RtmpCamera: CameraBase {
     
     public func setRetries(reTries: Int) {
         client.setRetries(reTries: reTries)
+    }
+    
+    public override func setVideoCodecImp(codec: VideoCodec) {
+        client.setVideoCodec(codec: codec)
+    }
+    
+    public override func setAudioCodecImp(codec: common.AudioCodec) {
+        client.setAudioCodec(codec: codec)
     }
     
     public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {

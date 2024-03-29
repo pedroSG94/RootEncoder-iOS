@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class H264FlvPacket {
+public class H264Packet: BasePacket {
     
     private let TAG = "H264Packet"
 
@@ -29,7 +29,7 @@ public class H264FlvPacket {
         self.pps = pps
     }
     
-    func createFlvVideoPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
+    public override func createFlvPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
         let timeStamp = ts / 1000
         let cts = 0
         header[2] = UInt8(cts >> 16)
@@ -115,7 +115,7 @@ public class H264FlvPacket {
         return Array(byteBuffer[position..<byteBuffer.count])
     }
     
-    func reset(resetInfo: Bool = true) {
+    public override func reset(resetInfo: Bool = true) {
         if resetInfo {
             sps = nil
             pps = nil

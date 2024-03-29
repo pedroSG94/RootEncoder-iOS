@@ -93,6 +93,18 @@ extension Int {
         }
         return [UInt8](arrayLiteral: byteArray[0], byteArray[1], byteArray[2], byteArray[3])
     }
+    
+    public func toUInt48Array() -> [UInt8] {
+        let uInt = UInt64(self)
+        var bigEndian = uInt.bigEndian
+        let count = MemoryLayout<UInt64>.size
+        let byteArray = withUnsafePointer(to: &bigEndian) {
+            $0.withMemoryRebound(to: UInt8.self, capacity: count) {
+                UnsafeBufferPointer(start: $0, count: count)
+            }
+        }
+        return [UInt8](arrayLiteral: byteArray[2], byteArray[3], byteArray[4], byteArray[5], byteArray[6], byteArray[7])
+    }
 
     public func toUInt8LittleEndianArray() -> [UInt8] {
         toUInt8Array().reversed()

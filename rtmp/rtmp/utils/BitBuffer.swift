@@ -49,7 +49,7 @@ public class BitBuffer {
             return 0
         }
         let b = buffer[bufferPosition / sizeBits]
-        let v = if (b < 0) {
+        let v = if (b > 128) {
             Int(Int(b) + 256)
         } else {
             Int(b)
@@ -58,6 +58,7 @@ public class BitBuffer {
         var rc: UInt64 = 0
         if (i <= left) {
             rc = UInt64((v << (bufferPosition % sizeBits) & 0xFF) >> ((bufferPosition % sizeBits + (left - i))))
+            bufferPosition += i
         } else {
             let then = i - left
             rc = getLong(i: left)
@@ -80,25 +81,31 @@ public class BitBuffer {
         }
     }
     
-    public static func extractRbsp(buffer: Array<UInt8>, headerLength: Int) -> Array<UInt8> {
-        let byteBuffer = ByteBuffer.wrap(bytes: buffer)
-        let indices = byteBuffer.indicesOf(prefix: [0x00, 0x00, 0x03])
-        
-        let rbsp = ByteBuffer(capacity: byteBuffer.remaining())
-        
-        rbsp.put(bytes: byteBuffer, offset: 0, length: headerLength)
-        
-        var previous = byteBuffer.position
-        indices.forEach { it in
-            rbsp.put(bytes: byteBuffer, offset: previous, length: it + 2 - previous)
-            previous = it + 3
+    public static func extractRbsp(buffer: Array<UInt8>) -> Array<UInt8> {
+        guard let startCodeLength = buffer.firstIndex(of: 0x01) else {
+            return buffer
         }
-        rbsp.put(bytes: byteBuffer, offset: previous, length: byteBuffer.limit - previous)
-        
-        var result = rbsp.getBytes(count: rbsp.position)
-        if (result == nil) {
-            result = Array<UInt8>()
+        let rbspStartIndex = startCodeLength + 1
+        let rbspEndIndex = buffer.endIndex
+
+        var rbsp = [UInt8]()
+
+        var isEmulationPreventionByte = false
+
+        for i in rbspStartIndex..<rbspEndIndex {
+            let byte = buffer[i]
+
+            if isEmulationPreventionByte && byte == 0x03 {
+                // Omite el byte de prevención de emulación
+                isEmulationPreventionByte = false
+            } else {
+                // Agrega el byte al RBSP
+                rbsp.append(byte)
+
+                // Verifica si el byte es un byte de prevención de emulación
+                isEmulationPreventionByte = byte == 0x00
+            }
         }
-        return result!
+        return rbsp
     }
 }

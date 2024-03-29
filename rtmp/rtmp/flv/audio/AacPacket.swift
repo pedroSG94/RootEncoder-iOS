@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class AacFlvPacket {
+public class AacPacket: BasePacket {
     private var header = [UInt8](repeating: 0, count: 2)
     private var configSend = false
     
@@ -28,7 +28,7 @@ public class AacFlvPacket {
         self.audioSize = audioSize
     }
     
-    func createFlvAudioPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
+    public override func createFlvPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
         let length = buffer.count
         header[0] = isStereo ? AudioSoundType.STEREO.rawValue : AudioSoundType.MONO.rawValue
         header[0] |= (audioSize.rawValue << 1)
@@ -61,7 +61,7 @@ public class AacFlvPacket {
         callback(FlvPacket(buffer: packetBuffer, timeStamp: Int64(timeStamp), length: packetBuffer.count, type: .AUDIO))
     }
     
-    func reset() {
+    public override func reset(resetInfo: Bool = true) {
         configSend = false
     }
 }
