@@ -107,6 +107,26 @@ struct RtmpSwiftUIView: View, ConnectChecker {
             }
             
             VStack {
+                HStack {
+                    Spacer()
+                    Menu("Filters") {
+                        Button(action: {
+                            rtmpCamera.metalInterface?.clearFilters()
+                        }) {
+                            Text("No filter")
+                        }
+                        Button(action: {
+                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                        }) {
+                            Text("GreyScale")
+                        }
+                        Button(action: {
+                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                        }) {
+                            Text("Sepia")
+                        }
+                    }
+                }.padding(.trailing, 16)
                 TextField("rtmp://ip:port/app/streamname", text: $endpoint)
                     .padding()
                     .background(Color.blue)

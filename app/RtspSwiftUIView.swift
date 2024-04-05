@@ -10,6 +10,7 @@ import SwiftUI
 import RootEncoder
 import rtsp
 import common
+import encoder
 
 struct RtspSwiftUIView: View, ConnectChecker {
     
@@ -108,6 +109,26 @@ struct RtspSwiftUIView: View, ConnectChecker {
             }
             
             VStack {
+                HStack {
+                    Spacer()
+                    Menu("Filters") {
+                        Button(action: {
+                            rtspCamera.metalInterface?.clearFilters()
+                        }) {
+                            Text("No filter")
+                        }
+                        Button(action: {
+                            rtspCamera.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                        }) {
+                            Text("GreyScale")
+                        }
+                        Button(action: {
+                            rtspCamera.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                        }) {
+                            Text("Sepia")
+                        }
+                    }
+                }.padding(.trailing, 16)
                 TextField("rtsp://ip:port/app/streamname", text: $endpoint)
                     .padding()
                     .background(Color.blue)
