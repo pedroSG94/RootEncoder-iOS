@@ -19,9 +19,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     private var streaming = false
     private var onPreview = false
     private var fpsListener = FpsListener()
-    private var metalView: MetalView? = nil
     private var previewResolution = CameraHelper.Resolution.vga640x480
     private let recordController = RecordController()
+    private(set) public var metalInterface: MetalInterface? = nil
 
     public init(view: UIView) {
         cameraManager = CameraManager(cameraView: view, callback: self)
@@ -31,7 +31,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
     
     public init(view: MetalView) {
-        self.metalView = view
+        self.metalInterface = view
         cameraManager = CameraManager(callback: self)
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
@@ -93,11 +93,11 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         videoEncoder.start()
         microphone.start()
         cameraManager.start()
-        metalView?.setCallback(callback: self)
+        metalInterface?.setCallback(callback: self)
     }
     
     private func stopEncoders() {
-        metalView?.setCallback(callback: nil)
+        metalInterface?.setCallback(callback: nil)
         microphone.stop()
         audioEncoder.stop()
         videoEncoder.stop()
@@ -199,12 +199,12 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {
-        guard let metalView = metalView else {
+        guard let metalInterface = metalInterface else {
             recordController.recordVideo(buffer: buffer)
             videoEncoder.encodeFrame(buffer: buffer)
             return
         }
-        metalView.update(buffer: buffer)
+        metalInterface.sendBuffer(buffer: buffer)
     }
 
     public func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {

@@ -10,6 +10,7 @@ import SwiftUI
 import RootEncoder
 import rtmp
 import common
+import encoder
 import Photos
 
 struct RtmpSwiftUIView: View, ConnectChecker {
@@ -83,7 +84,6 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     @State private var toastText = ""
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
-
     @State private var rtmpCamera: RtmpCamera!
     
     var body: some View {

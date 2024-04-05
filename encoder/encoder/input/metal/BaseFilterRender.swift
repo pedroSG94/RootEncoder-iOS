@@ -9,7 +9,5 @@ import Foundation
 import CoreImage
 
 public protocol BaseFilterRender {
-    func initialize()
     func draw(image: CIImage) -> CIImage
-    func release()
 }

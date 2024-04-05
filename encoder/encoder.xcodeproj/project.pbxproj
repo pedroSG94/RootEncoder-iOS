@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB12DBEA2BC06A3100F11CA4 /* SepiaFilterRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB12DBE92BC06A3100F11CA4 /* SepiaFilterRender.swift */; };
 		EB173A822AC4977200B73F4A /* encoder.docc in Sources */ = {isa = PBXBuildFile; fileRef = EB173A812AC4977200B73F4A /* encoder.docc */; };
 		EB173A882AC4977200B73F4A /* encoder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB173A7D2AC4977200B73F4A /* encoder.framework */; };
 		EB173A8D2AC4977200B73F4A /* encoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB173A8C2AC4977200B73F4A /* encoderTests.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		EB12DBE92BC06A3100F11CA4 /* SepiaFilterRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SepiaFilterRender.swift; sourceTree = "<group>"; };
 		EB173A7D2AC4977200B73F4A /* encoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = encoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB173A802AC4977200B73F4A /* encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = encoder.h; sourceTree = "<group>"; };
 		EB173A812AC4977200B73F4A /* encoder.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = encoder.docc; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				EB34F4D72AF6C37800567E51 /* GreyScaleFilterRender.swift */,
+				EB12DBE92BC06A3100F11CA4 /* SepiaFilterRender.swift */,
 			);
 			path = filter;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				EB34F4E42AF6D40B00567E51 /* MetalViewport.swift in Sources */,
 				EB173AB32AC497BC00B73F4A /* GetAacData.swift in Sources */,
 				EB173AB42AC497BC00B73F4A /* GetMicrophoneData.swift in Sources */,
+				EB12DBEA2BC06A3100F11CA4 /* SepiaFilterRender.swift in Sources */,
 				EB173AB52AC497BC00B73F4A /* MicrophoneManager.swift in Sources */,
 				EB173AB62AC497BC00B73F4A /* GetCameraData.swift in Sources */,
 				EB173AB72AC497BC00B73F4A /* CameraManager.swift in Sources */,
