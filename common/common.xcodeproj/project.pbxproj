@@ -18,7 +18,6 @@
 		EB59B8A42BAB9B8A00B2981F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB59B8A32BAB9B8A00B2981F /* Extensions.swift */; };
 		EB59B8B52BACDEF700B2981F /* VideoCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB59B8B42BACDEF700B2981F /* VideoCodec.swift */; };
 		EB59B8B72BACDF3300B2981F /* AudioCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB59B8B62BACDF3300B2981F /* AudioCodec.swift */; };
-		EBE37E562BB0B3DD0069E949 /* ByteBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE37E552BB0B3DD0069E949 /* ByteBuffer.swift */; };
 		EBE37E582BB226910069E949 /* BitBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE37E572BB226910069E949 /* BitBuffer.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,7 +44,6 @@
 		EB59B8A32BAB9B8A00B2981F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EB59B8B42BACDEF700B2981F /* VideoCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCodec.swift; sourceTree = "<group>"; };
 		EB59B8B62BACDF3300B2981F /* AudioCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
-		EBE37E552BB0B3DD0069E949 /* ByteBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteBuffer.swift; sourceTree = "<group>"; };
 		EBE37E572BB226910069E949 /* BitBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitBuffer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,7 +96,6 @@
 				EB59B8A32BAB9B8A00B2981F /* Extensions.swift */,
 				EB59B8B42BACDEF700B2981F /* VideoCodec.swift */,
 				EB59B8B62BACDF3300B2981F /* AudioCodec.swift */,
-				EBE37E552BB0B3DD0069E949 /* ByteBuffer.swift */,
 				EBE37E572BB226910069E949 /* BitBuffer.swift */,
 			);
 			path = common;
@@ -223,7 +220,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB59B89C2BAB9AFF00B2981F /* ConnectChecker.swift in Sources */,
-				EBE37E562BB0B3DD0069E949 /* ByteBuffer.swift in Sources */,
 				EB59B8A42BAB9B8A00B2981F /* Extensions.swift in Sources */,
 				EBE37E582BB226910069E949 /* BitBuffer.swift in Sources */,
 				EB59B89A2BAB9AD700B2981F /* SynchronizedQueue.swift in Sources */,
