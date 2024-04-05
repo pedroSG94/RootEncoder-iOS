@@ -10,7 +10,68 @@ import MetalKit
 import CoreMedia
 import encoder
 
-public class MetalView: MTKView {
+public class MetalView: MTKView, MetalInterface {
+    
+    public func setCallback(callback: MetalViewCallback?) {
+        self.callback = callback
+    }
+    
+    public func sendBuffer(buffer: CMSampleBuffer) {
+        if Thread.isMainThread {
+            self.buffer = buffer
+            setNeedsDisplay()
+        } else {
+            DispatchQueue.main.async {
+                self.sendBuffer(buffer: buffer)
+            }
+        }
+    }
+    
+    public func addFilter(baseFilterRender: BaseFilterRender) {
+        filters.append(baseFilterRender)
+    }
+    
+    public func addFilter(position: Int, baseFilterRender: BaseFilterRender) {
+        filters.insert(baseFilterRender, at: position)
+        
+    }
+    
+    public func removeFilter(position: Int) {
+        filters.remove(at: position)
+    }
+    
+    public func clearFilters() {
+        filters.removeAll()
+    }
+    
+    public func setFilter(baseFilterRender: BaseFilterRender) {
+        setFilter(position: 0, baseFilterRender: baseFilterRender)
+    }
+    
+    public func setFilter(position: Int, baseFilterRender: BaseFilterRender) {
+        if filters.isEmpty && position == 0 {
+            addFilter(baseFilterRender: baseFilterRender)
+        } else {
+            removeFilter(position: position)
+            addFilter(position: position, baseFilterRender: baseFilterRender)
+        }
+    }
+    
+    public func setIsStreamHorizontalFlip(flip: Bool) {
+        isStreamHorizontalFlip = flip
+    }
+    
+    public func setIsStreamVerticalFlip(flip: Bool) {
+        isStreamVerticalFlip = flip
+    }
+    
+    public func setIsPreviewHorizontalFlip(flip: Bool) {
+        isPreviewHorizontalFlip = flip
+    }
+    
+    public func setIsPreviewVerticalFlip(flip: Bool) {
+        isPreviewVerticalFlip = flip
+    }
     
     private var isPreviewHorizontalFlip = false
     private var isPreviewVerticalFlip = false
@@ -51,33 +112,6 @@ public class MetalView: MTKView {
         delegate = self
         framebufferOnly = false
         enableSetNeedsDisplay = true
-    }
-    
-    public func update(buffer: CMSampleBuffer) {
-        if Thread.isMainThread {
-            self.buffer = buffer
-            setNeedsDisplay()
-        } else {
-            DispatchQueue.main.async {
-                self.update(buffer: buffer)
-            }
-        }
-    }
-    
-    public func setCallback(callback: MetalViewCallback?) {
-        self.callback = callback
-    }
-    
-    public func addFilter(filter: BaseFilterRender) {
-        filters.append(filter)
-    }
-    
-    public func removeFilter(position: Int) {
-        filters.remove(at: position)
-    }
-    
-    public func clearFilters() {
-        filters.removeAll()
     }
 }
 

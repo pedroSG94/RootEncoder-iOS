@@ -10,6 +10,7 @@ import SwiftUI
 import RootEncoder
 import rtmp
 import common
+import encoder
 import Photos
 
 struct RtmpSwiftUIView: View, ConnectChecker {
@@ -83,7 +84,6 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     @State private var toastText = ""
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
-
     @State private var rtmpCamera: RtmpCamera!
     
     var body: some View {
@@ -107,6 +107,26 @@ struct RtmpSwiftUIView: View, ConnectChecker {
             }
             
             VStack {
+                HStack {
+                    Spacer()
+                    Menu("Filters") {
+                        Button(action: {
+                            rtmpCamera.metalInterface?.clearFilters()
+                        }) {
+                            Text("No filter")
+                        }
+                        Button(action: {
+                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                        }) {
+                            Text("GreyScale")
+                        }
+                        Button(action: {
+                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                        }) {
+                            Text("Sepia")
+                        }
+                    }
+                }.padding(.trailing, 16)
                 TextField("rtmp://ip:port/app/streamname", text: $endpoint)
                     .padding()
                     .background(Color.blue)
