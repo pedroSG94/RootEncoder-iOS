@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EB12DBF62BD8585F00F11CA4 /* AuthUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB12DBF52BD8585F00F11CA4 /* AuthUtil.swift */; };
 		EB59B8B12BAB9EFD00B2981F /* common.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8B02BAB9EFD00B2981F /* common.framework */; };
 		EB59B8B22BAB9EFD00B2981F /* common.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = EB59B8B02BAB9EFD00B2981F /* common.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		EB59B8C72BB0A61A00B2981F /* FourCCPacketType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB59B8C62BB0A61A00B2981F /* FourCCPacketType.swift */; };
@@ -107,6 +108,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EB12DBF52BD8585F00F11CA4 /* AuthUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthUtil.swift; sourceTree = "<group>"; };
 		EB59B8B02BAB9EFD00B2981F /* common.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = common.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB59B8C62BB0A61A00B2981F /* FourCCPacketType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourCCPacketType.swift; sourceTree = "<group>"; };
 		EBB16F172AC4929100B48654 /* rtmp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = rtmp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -397,6 +399,7 @@
 				EBB16F722AC492BB00B48654 /* CommandSessionHistory.swift */,
 				EBB16F732AC492BB00B48654 /* RtmpConfig.swift */,
 				EBE37E532BB0ACE20069E949 /* BitBuffer.swift */,
+				EB12DBF52BD8585F00F11CA4 /* AuthUtil.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -552,6 +555,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBB16F892AC4932200B48654 /* AmfVersion.swift in Sources */,
+				EB12DBF62BD8585F00F11CA4 /* AuthUtil.swift in Sources */,
 				EBB16F8A2AC4932200B48654 /* AmfData.swift in Sources */,
 				EBB16F8B2AC4932200B48654 /* AmfType.swift in Sources */,
 				EBB16F8C2AC4932200B48654 /* AmfBoolean.swift in Sources */,

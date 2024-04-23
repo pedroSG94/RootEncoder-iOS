@@ -27,6 +27,10 @@ public class RtmpClient {
         rtmpSender = RtmpSender(callback: connectChecker, commandManager: commandManager)
     }
 
+    public func setAuth(user: String, password: String) {
+        commandManager.setAuth(user: user, password: password)
+    }
+    
     public func setOnlyAudio(onlyAudio: Bool) {
         commandManager.audioDisabled = false
         commandManager.videoDisabled = onlyAudio
@@ -262,9 +266,13 @@ public class RtmpClient {
                                     }
                                     commandManager.onAuth = true
                                     if (description.contains("challenge=") && description.contains("salt=")) { //create adobe auth
-                                        //TODO send connect auth
-                                    } else if (description.contains("nonce=")) { //create llnw auth)
-                                        //TODO send connect auth
+                                        let salt = AuthUtil.getSalt(description: description)
+                                        let challenge = AuthUtil.getChallenge(description: description)
+                                        let opaque = AuthUtil.getOpaque(description: description)
+                                        try await commandManager.sendConnect(auth: AuthUtil.getAdobeAuthUserResult(user: commandManager.user ?? "", password: commandManager.password ?? "", salt: salt, challenge: challenge, opaque: opaque), socket: socket)
+                                    } else if (description.contains("nonce=")) { //create llnw auth
+                                        let nonce = AuthUtil.getNonce(description: description)
+                                        try await commandManager.sendConnect(auth: AuthUtil.getLlnwAuthUserResult(user: commandManager.user ?? "", password: commandManager.password ?? "", nonce: nonce, app: commandManager.appName), socket: socket)
                                     }
                                 } else if (description.contains("code=403")) {
                                     if (description.contains("authmod=adobe")) {
