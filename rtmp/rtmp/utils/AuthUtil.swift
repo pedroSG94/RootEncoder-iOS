@@ -14,15 +14,15 @@ public class AuthUtil {
     }
     
     public static func getSalt(description: String) -> String {
-        return ""
+        return findDescriptionValue(value: "salt=", description: description)
     }
     
     public static func getChallenge(description: String) -> String {
-        return ""
+        return findDescriptionValue(value: "challenge=", description: description)
     }
     
     public static func getOpaque(description: String) -> String {
-        return ""
+        return findDescriptionValue(value: "opaque=", description: description)
     }
     
     public static func getLlnwAuthUserResult(user: String, password: String, nonce: String, app: String) -> String {
@@ -30,6 +30,18 @@ public class AuthUtil {
     }
     
     public static func getNonce(description: String) -> String {
-        return ""
+        return findDescriptionValue(value: "nonce=", description: description)
+    }
+    
+    private static func findDescriptionValue(value: String, description: String) -> String {
+        var result = ""
+        let data = description.split(separator: "&")
+        for s in data {
+            if s.contains(value) {
+                result = String(s.dropFirst(value.count))
+                break
+            }
+        }
+        return result
     }
 }
