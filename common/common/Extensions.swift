@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit
 
 public extension Date {
     var millisecondsSince1970:Int64 {
@@ -41,5 +42,16 @@ public extension String {
         } catch _ {
             return []
         }
+    }
+    var md5: String {
+        let data = Data(utf8)
+        let digestData = Insecure.MD5.hash(data: data)
+        return String(digestData.map { String(format: "%02x", $0) }.joined())
+    }
+    
+    var md5Base64: String {
+        let data = Data(utf8)
+        let digestData = Data(Insecure.MD5.hash(data: data))
+        return digestData.base64EncodedString()
     }
 }

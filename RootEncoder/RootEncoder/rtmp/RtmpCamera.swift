@@ -25,7 +25,7 @@ public class RtmpCamera: CameraBase {
     }
     
     public func setAuth(user: String, password: String) {
-        //client.setAuth(user: user, password: password)
+        client.setAuth(user: user, password: password)
     }
 
     public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
