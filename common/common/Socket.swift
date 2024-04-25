@@ -109,8 +109,8 @@ public class Socket: NSObject, StreamDelegate {
 
     public func readString() async throws -> String {
         let data: Data = try await read()
-        let message = String(data: data, encoding: String.Encoding.utf8)!
-        return message
+        let message = String(data: data, encoding: String.Encoding.utf8)
+        return message ?? ""
     }
 
     public func read() async throws -> Data {

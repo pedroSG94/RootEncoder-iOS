@@ -203,7 +203,7 @@ public class RtmpClient {
     }
 
     private func handleMessages() async throws {
-        guard var socket =  socket else {
+        guard var socket = socket else {
             throw IOException.runtimeError("Invalid socket, Connection failed")
         }
         let message = try await commandManager.readMessageResponse(socket: socket)

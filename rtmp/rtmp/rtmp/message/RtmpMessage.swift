@@ -23,8 +23,11 @@ public class RtmpMessage: CustomStringConvertible {
     public static func getMessage(socket: Socket, chunkSize: Int,
         commandSessionHistory: CommandSessionHistory) async throws -> RtmpMessage {
         let header = try await RtmpHeader.readHeader(socket: socket, commandSessionHistory: commandSessionHistory)
+        guard let type = header.messageType else {
+            throw IOException.runtimeError("Unknown header messageType")
+        }
         let rtmpMessage: RtmpMessage
-        switch header.messageType! {
+        switch type {
         case .SET_CHUNK_SIZE:
             rtmpMessage = SetChunkSize()
         case .ABORT:
