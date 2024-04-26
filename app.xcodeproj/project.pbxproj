@@ -158,6 +158,7 @@
 		EBB16F312AC4929200B48654 /* rtmp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rtmp.xcodeproj; path = rtmp/rtmp.xcodeproj; sourceTree = "<group>"; };
 		EBC318B52B9E79BF003C7526 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		EBC6AC392AC3839200AAA380 /* rtsp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rtsp.xcodeproj; path = rtsp/rtsp.xcodeproj; sourceTree = "<group>"; };
+		EBD8165E2BDC19FE006FD33D /* srt */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = srt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,6 +194,7 @@
 		044138282501A02300732969 = {
 			isa = PBXGroup;
 			children = (
+				EBD8165E2BDC19FE006FD33D /* srt */,
 				EB59B8882BAB9A9300B2981F /* common.xcodeproj */,
 				EB6562322AC498A700DD8958 /* RootEncoder.xcodeproj */,
 				EB173A972AC4977200B73F4A /* encoder.xcodeproj */,
