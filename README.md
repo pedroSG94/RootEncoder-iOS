@@ -11,13 +11,14 @@ Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 
 ## Features
 
-- [x] H264 and AAC support
-- [x] Switch camera while streaming
-- [x] RTSP TCP/UDP
-- [x] RTSPS
-- [x] RTSP auth (basic and digest)
-- [x] RTMP
-- [x] RTMPS
+- [X] H264 and AAC support
+- [X] Switch camera while streaming
+- [X] RTSP TCP/UDP
+- [X] RTSPS
+- [X] RTSP auth (basic and digest)
+- [X] RTMP auth (adobe and llnw)
+- [X] RTMP
+- [X] RTMPS
 - [X] Real time filters (with Metal). For now, support only filters with CIImage but I have plan to add filters using vertex and fragment
 - [X] Reconnection (RTMP and RTSP)
 - [X] Stream from device display (DisplayRtsp/DisplayRtmp)
@@ -28,7 +29,7 @@ Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 
 I will develop this features but not in this order.
 
-- [ ] RTMP auth (adobe and llnw)
+
 - [ ] H265 support (RTMP)
 - [ ] Local video record
 - [ ] Stream from file (FromFileRtsp/FromFileRtmp)

@@ -4,24 +4,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "srt",
+    name: "encoder",
     platforms: [.iOS(.v14)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "srt",
-            targets: ["srt"]
+            name: "encoder",
+            targets: ["encoder"]
         ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "srt"
+            name: "encoder"
         ),
         .testTarget(
-            name: "srtTests",
-            dependencies: ["srt"]
+            name: "encoderTests",
+            dependencies: ["encoder"]
         ),
     ]
 )
