@@ -8,9 +8,6 @@
 
 import SwiftUI
 import RootEncoder
-import rtmp
-import common
-import encoder
 import Photos
 
 struct RtmpSwiftUIView: View, ConnectChecker {

@@ -18,12 +18,7 @@
 		EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD42ABA62E500249638 /* CameraUIView.swift */; };
 		EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */; };
 		EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC318B52B9E79BF003C7526 /* Utils.swift */; };
-		EBDA589B2BDC25A2002F85A2 /* common in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA589A2BDC25A2002F85A2 /* common */; };
-		EBDA589D2BDC25A7002F85A2 /* RootEncoder in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA589C2BDC25A7002F85A2 /* RootEncoder */; };
-		EBDA589F2BDC25AF002F85A2 /* encoder in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA589E2BDC25AF002F85A2 /* encoder */; };
-		EBDA58A12BDC25B4002F85A2 /* rtmp in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A02BDC25B4002F85A2 /* rtmp */; };
-		EBDA58A32BDC25B7002F85A2 /* rtsp in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A22BDC25B7002F85A2 /* rtsp */; };
-		EBDA58A52BDC25BC002F85A2 /* srt in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A42BDC25BC002F85A2 /* srt */; };
+		EBDA58A72BEE915E002F85A2 /* RootEncoder in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A62BEE915E002F85A2 /* RootEncoder */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,18 +63,13 @@
 		044138582501A02500732969 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		659B7C7C942D059E7C4F1424 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = file.gitignore; path = .gitignore; sourceTree = "<group>"; };
 		EB07EC4B2B0D51FD0001309D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		EB94C7242BDC210D002CCC0B /* common */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = common; sourceTree = "<group>"; };
-		EB94C7252BDC21B0002CCC0B /* rtmp */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = rtmp; sourceTree = "<group>"; };
-		EB94C7262BDC2233002CCC0B /* rtsp */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = rtsp; sourceTree = "<group>"; };
 		EB94C7272BDC2286002CCC0B /* RootEncoder */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RootEncoder; sourceTree = "<group>"; };
-		EB94C7282BDC22C0002CCC0B /* encoder */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = encoder; sourceTree = "<group>"; };
 		EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA400112ABA7AED00249638 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD42ABA62E500249638 /* CameraUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspSwiftUIView.swift; sourceTree = "<group>"; };
 		EBC318B52B9E79BF003C7526 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		EBD8165E2BDC19FE006FD33D /* srt */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = srt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,12 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EBDA58A52BDC25BC002F85A2 /* srt in Frameworks */,
-				EBDA589F2BDC25AF002F85A2 /* encoder in Frameworks */,
-				EBDA58A32BDC25B7002F85A2 /* rtsp in Frameworks */,
-				EBDA589B2BDC25A2002F85A2 /* common in Frameworks */,
-				EBDA589D2BDC25A7002F85A2 /* RootEncoder in Frameworks */,
-				EBDA58A12BDC25B4002F85A2 /* rtmp in Frameworks */,
+				EBDA58A72BEE915E002F85A2 /* RootEncoder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,12 +101,7 @@
 		044138282501A02300732969 = {
 			isa = PBXGroup;
 			children = (
-				EB94C7282BDC22C0002CCC0B /* encoder */,
 				EB94C7272BDC2286002CCC0B /* RootEncoder */,
-				EB94C7262BDC2233002CCC0B /* rtsp */,
-				EB94C7252BDC21B0002CCC0B /* rtmp */,
-				EB94C7242BDC210D002CCC0B /* common */,
-				EBD8165E2BDC19FE006FD33D /* srt */,
 				044138332501A02300732969 /* app */,
 				0441384A2501A02500732969 /* appTests */,
 				044138552501A02500732969 /* appUITests */,
@@ -216,12 +196,7 @@
 			);
 			name = app;
 			packageProductDependencies = (
-				EBDA589A2BDC25A2002F85A2 /* common */,
-				EBDA589C2BDC25A7002F85A2 /* RootEncoder */,
-				EBDA589E2BDC25AF002F85A2 /* encoder */,
-				EBDA58A02BDC25B4002F85A2 /* rtmp */,
-				EBDA58A22BDC25B7002F85A2 /* rtsp */,
-				EBDA58A42BDC25BC002F85A2 /* srt */,
+				EBDA58A62BEE915E002F85A2 /* RootEncoder */,
 			);
 			productName = app;
 			productReference = 044138312501A02300732969 /* app.app */;
@@ -519,7 +494,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.streamers2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.streamers3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -546,7 +521,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.streamers2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedro.streamers3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -682,29 +657,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		EBDA589A2BDC25A2002F85A2 /* common */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = common;
-		};
-		EBDA589C2BDC25A7002F85A2 /* RootEncoder */ = {
+		EBDA58A62BEE915E002F85A2 /* RootEncoder */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RootEncoder;
-		};
-		EBDA589E2BDC25AF002F85A2 /* encoder */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = encoder;
-		};
-		EBDA58A02BDC25B4002F85A2 /* rtmp */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = rtmp;
-		};
-		EBDA58A22BDC25B7002F85A2 /* rtsp */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = rtsp;
-		};
-		EBDA58A42BDC25BC002F85A2 /* srt */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = srt;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
