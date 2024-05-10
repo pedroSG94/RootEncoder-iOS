@@ -30,9 +30,10 @@ Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 
 ### SPM
 
+In Xcode go to:
 Project > Package dependencies > + > add this to the search bar:
 ```
-https://github.com/pedroSG94/RootEncoder
+https://github.com/pedroSG94/RootEncoder-iOS
 ```
 
 ## Use examples:
