@@ -22,17 +22,34 @@ Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 - [X] Real time filters (with Metal). For now, support only filters with CIImage but I have plan to add filters using vertex and fragment
 - [X] Reconnection (RTMP and RTSP)
 - [X] Stream from device display (DisplayRtsp/DisplayRtmp)
-- [X] H265 support (RTSP)
+- [X] H265 support (RTSP and RTMP)
 - [X] Get upload bandwidth used (RTMP and RTSP)
+- [X] Local video record
+
+## Compile
+
+### SPM
+
+Project > Package dependencies > + > add this to the search bar:
+```
+https://github.com/pedroSG94/RootEncoder
+```
+
+## Use examples:
+
+### RTMP
+
+https://github.com/pedroSG94/RootEncoder-iOS/blob/master/app/RtmpSwiftUIView.swift
+
+### RTSP
+
+https://github.com/pedroSG94/RootEncoder-iOS/blob/master/app/RtspSwiftUIView.swift
 
 ## Incoming features
 
 I will develop this features but not in this order.
 
-
-- [ ] H265 support (RTMP)
-- [ ] Local video record
 - [ ] Stream from file (FromFileRtsp/FromFileRtmp)
-- [ ] Upload to cocoapod or similar
+- [ ] Upload to cocoapod
 - [ ] Minors features: video bitrate on fly, adaptative bitrate.
 - [ ] SRT (maybe the last one)
