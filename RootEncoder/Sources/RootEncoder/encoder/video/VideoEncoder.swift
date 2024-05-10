@@ -52,7 +52,6 @@ public class VideoEncoder {
                 codecType: codec.value, encoderSpecification: nil, imageBufferAttributes: nil,
                 compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(),
                 compressionSessionOut: &session)
-        print("using codec \(codec)")
         self.resolution = resolution
         self.fps = fps
         self.bitrate = bitrate
@@ -100,8 +99,13 @@ public class VideoEncoder {
         }
     }
 
-    public func setCodec(codec: CodecUtil) {
-        self.codec = codec
+    public func setCodec(codec: VideoCodec) {
+        switch codec {
+        case .H264:
+            self.codec = CodecUtil.H264
+        case .H265:
+            self.codec = CodecUtil.H265
+        }
     }
 
     public func forceKeyFrame() {

@@ -41,8 +41,6 @@ public class RtspCommandManager {
           return sps != nil && pps != nil
       case VideoCodec.H265:
           return sps != nil && pps != nil && vps != nil
-      default:
-          return false
       }
     }
     
@@ -146,8 +144,6 @@ public class RtspCommandManager {
             body.createAACBody(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
         case .G711:
             body.createG711Body(trackAudio: RtpConstants.trackAudio, sampleRate: sampleRate, isStereo: isStereo)
-        default:
-            ""
         }
     }
     
@@ -160,8 +156,6 @@ public class RtspCommandManager {
             body.createH264Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString)
         case .H265:
             body.createH265Body(trackVideo: RtpConstants.trackVideo, sps: spsString, pps: ppsString, vps: vpsString!)
-        default:
-            ""
         }
     }
     

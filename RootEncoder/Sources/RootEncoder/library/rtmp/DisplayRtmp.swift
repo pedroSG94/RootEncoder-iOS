@@ -18,11 +18,7 @@ public class DisplayRtmp: DisplayBase {
     }
 
     public func setAuth(user: String, password: String) {
-        //client.setAuth(user: user, password: password)
-    }
-
-    public func setCodec(codec: CodecUtil) {
-        videoEncoder.setCodec(codec: codec)
+        client.setAuth(user: user, password: password)
     }
 
     public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {

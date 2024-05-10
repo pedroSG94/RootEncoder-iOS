@@ -22,10 +22,6 @@ public class DisplayRtsp: DisplayBase {
         client.setAuth(user: user, password: password)
     }
 
-    public func setCodec(codec: CodecUtil) {
-        videoEncoder.setCodec(codec: codec)
-    }
-
     public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
         let result = client.shouldRetry(reason: reason)
         if (result) {

@@ -292,7 +292,7 @@ public class RtmpClient {
                                     connectChecker.onAuthError()
                                 }
                             default:
-                            connectChecker.onConnectionFailed(reason: description)
+                                connectChecker.onConnectionFailed(reason: description)
                         }
                     case "onStatus":
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value

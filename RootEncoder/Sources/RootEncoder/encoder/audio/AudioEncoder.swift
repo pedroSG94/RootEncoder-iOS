@@ -17,22 +17,41 @@ public class AudioEncoder {
     private var initTs: Int64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
     private let syncQueue = SynchronizedQueue<AVAudioPCMBuffer>(label: "AudioEncodeQueue", size: 60)
-    public var codec = AudioCodec.AAC
+    private let g711Codec = G711Codec()
+    private var codec = AudioCodec.AAC
     
     public init(callback: GetAacData) {
         self.callback = callback
     }
     
+    public func setCodec(codec: AudioCodec) {
+        self.codec = codec
+    }
+    
     public func prepareAudio(inputFormat: AVAudioFormat, sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
-        guard let outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels) else {
+        if codec == AudioCodec.AAC {
+            guard let outputFormat = getAACFormat(sampleRate: sampleRate, channels: channels) else {
+                return false
+            }
+            guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
+                return false
+            }
+            converter.bitRate = bitrate
+            self.outputFormat = outputFormat
+            self.converter = converter
+        } else if codec == AudioCodec.G711 {
+            do {
+                try g711Codec.configure(sampleRate: sampleRate, channels: channels)
+            } catch IOException.runtimeError(let error) {
+                print("Create AudioEncoder failed. \(error)")
+                return false
+            } catch {
+                return false
+            }
+        } else {
+            print("invalid codec")
             return false
         }
-        guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
-            return false
-        }
-        converter.bitRate = bitrate
-        self.outputFormat = outputFormat
-        self.converter = converter
         print("prepare audio success")
         return true
     }
@@ -51,6 +70,18 @@ public class AudioEncoder {
             while (self.running) {
                 let b = self.syncQueue.dequeue()
                 if let b = b {
+                    if self.codec == AudioCodec.G711 {
+                        let data = b.audioBufferToBytes()
+                        let mBuffer = self.g711Codec.encode(buffer: data, offset: 0, size: data.count)
+                        let end = Date().millisecondsSince1970
+                        let elapsedNanoSeconds = (end - self.initTs) * 1000
+                        var frame = Frame()
+                        frame.buffer = mBuffer
+                        frame.length = UInt32(mBuffer.count)
+                        frame.timeStamp = UInt64(elapsedNanoSeconds)
+                        self.callback?.getAacData(frame: frame)
+                        continue
+                    }
                     var error: NSError? = nil
                     guard let aacBuffer = self.convertToAAC(buffer: b, error: &error) else {
                         continue
