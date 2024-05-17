@@ -98,7 +98,7 @@ public class RtspSender {
         tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         queue.clear()
         running = true
-        thread = Task {
+        thread = Task(priority: .background) {
             let isTcp = self.tcpSocket is RtpSocketTcp
             while (self.running) {
                 let frame = self.queue.dequeue()

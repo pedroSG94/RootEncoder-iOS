@@ -46,7 +46,7 @@ public class G711Codec {
         var sample = Int16(bitPattern: mySample)
         let sign = ~sample >> 8 & 0x80
         if sign != 0x80 {
-            sample = -sample
+            sample = ~sample
         }
         if sample > cClip {
             sample = cClip
@@ -60,7 +60,6 @@ public class G711Codec {
             s = Int(sample) >> 4
         }
         s = s ^ (Int(sign) ^ 0x55)
-        print("value: \(s.toUInt8Array()[0])")
         return s.toUInt8Array()[0]
     }
     

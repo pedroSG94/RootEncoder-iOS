@@ -49,8 +49,8 @@ public class RtspCommandManager {
     }
     
     private func addHeader() -> String {
-        let session = sessionId != nil ? "Session: \(sessionId!)\r\n" : ""
-        let auth = authorization != nil ? "Authorization: \(authorization!)\r\n" : ""
+        let session = sessionId?.isEmpty ?? true != true ? "Session: \(sessionId!)\r\n" : ""
+        let auth = authorization?.isEmpty ?? true != true ? "Authorization: \(authorization!)\r\n" : ""
         let result = "CSeq: \(cSeq)\r\n\(session)\(auth)"
         cSeq += 1
         return result
@@ -76,8 +76,8 @@ public class RtspCommandManager {
     
     public func createSetup(track: Int) -> String {
         let ports = track == RtpConstants.trackVideo ? videoClientPorts : audioClientPorts
-        let params = mProtocol == .TCP ? "TCP;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
-        let setup = "SETUP rtsp://\(host!):\(port!)\(path!)/trackID=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
+        let params = mProtocol == .TCP ? "TCP;unicast;interleaved=\(2 * track)-\(2 * track + 1)" : "UDP;unicast;client_port=\(ports[0])-\(ports[1])"
+        let setup = "SETUP rtsp://\(host!):\(port!)\(path!)/streamid=\(track) RTSP/1.0\r\nTransport: RTP/AVP/\(params);mode=record\r\n\(addHeader())\r\n"
         print(setup)
         return setup
     }

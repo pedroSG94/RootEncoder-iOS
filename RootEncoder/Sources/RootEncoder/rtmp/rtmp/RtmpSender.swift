@@ -86,7 +86,7 @@ public class RtmpSender {
     public func start() {
         queue.clear()
         running = true
-        thread = Task {
+        thread = Task(priority: .high) {
             while (self.running) {
                 let flvPacket = self.queue.dequeue()
                 if let flvPacket = flvPacket {

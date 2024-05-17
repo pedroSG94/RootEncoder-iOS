@@ -67,7 +67,7 @@ public class RtmpClient {
         }
         if (!self.isStreaming || isRetry) {
             self.isStreaming = true
-            thread = Task {
+            thread = Task(priority: .high) {
                 guard let url = url else {
                     self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
