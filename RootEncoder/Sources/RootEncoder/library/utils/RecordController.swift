@@ -146,8 +146,6 @@ public class RecordController {
             AVVideoCodecType.h264
         case VideoCodec.H265:
             AVVideoCodecType.hevc
-        default:
-            AVVideoCodecType.h264 //TODO throw error
         }
     }
     
@@ -157,8 +155,6 @@ public class RecordController {
             kAudioFormatMPEG4AAC
         case AudioCodec.G711:
             kAudioFormatALaw
-        default:
-            kAudioFormatLinearPCM // TODO throw error
         }
     }
 

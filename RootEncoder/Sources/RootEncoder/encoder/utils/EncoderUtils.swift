@@ -34,6 +34,19 @@ public extension AVAudioPCMBuffer {
         )
         return sampleBuffer
     }
+    
+    func audioBufferToBytes() -> [UInt8] {
+        let srcLeft = self.audioBufferList.pointee.mBuffers.mData!
+        let bytesPerFrame = self.format.streamDescription.pointee.mBytesPerFrame
+        let numBytes = Int(bytesPerFrame * self.frameLength)
+        var audioByteArray = [UInt8](repeating: 0, count: numBytes)
+        srcLeft.withMemoryRebound(to: UInt8.self, capacity: numBytes) { srcByteData in
+            audioByteArray.withUnsafeMutableBufferPointer {
+                $0.baseAddress!.initialize(from: srcByteData, count: numBytes)
+            }
+        }
+        return audioByteArray
+    }
 }
 
 extension AVAudioTime {

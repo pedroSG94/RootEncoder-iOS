@@ -40,10 +40,6 @@ public class RtmpSender {
             let packet = RtmpH265Packet()
             packet.setVideoInfo(sps: sps, pps: pps, vps: vps!)
             videoPacket = packet
-        @unknown default:
-            let packet = RtmpH264Packet()
-            packet.setVideoInfo(sps: sps, pps: pps)
-            videoPacket = packet
         }
     }
     
@@ -55,10 +51,6 @@ public class RtmpSender {
             audioPacket = packet
         case .G711:
             let packet = RtmpG711Packet()
-            audioPacket = packet
-        @unknown default:
-            let packet = RtmpAacPacket()
-            packet.sendAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
             audioPacket = packet
         }
     }
@@ -94,7 +86,7 @@ public class RtmpSender {
     public func start() {
         queue.clear()
         running = true
-        thread = Task {
+        thread = Task(priority: .high) {
             while (self.running) {
                 let flvPacket = self.queue.dequeue()
                 if let flvPacket = flvPacket {

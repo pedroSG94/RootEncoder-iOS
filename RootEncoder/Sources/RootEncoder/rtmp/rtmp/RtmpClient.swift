@@ -67,7 +67,7 @@ public class RtmpClient {
         }
         if (!self.isStreaming || isRetry) {
             self.isStreaming = true
-            thread = Task {
+            thread = Task(priority: .high) {
                 guard let url = url else {
                     self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
@@ -292,7 +292,7 @@ public class RtmpClient {
                                     connectChecker.onAuthError()
                                 }
                             default:
-                            connectChecker.onConnectionFailed(reason: description)
+                                connectChecker.onConnectionFailed(reason: description)
                         }
                     case "onStatus":
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value

@@ -50,8 +50,6 @@ public class RtspSender {
             RtspH264Packet(sps: sps, pps: pps)
         case VideoCodec.H265:
             RtspH265Packet()
-        default:
-            RtspH264Packet(sps: sps, pps: pps)
         }
     }
     
@@ -61,10 +59,7 @@ public class RtspSender {
             RtspAacPacket(sampleRate: sampleRate)
         case AudioCodec.G711:
             RtspG711Packet(sampleRate: sampleRate)
-        default:
-            RtspAacPacket(sampleRate: sampleRate)
         }
-
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
@@ -103,7 +98,7 @@ public class RtspSender {
         tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         queue.clear()
         running = true
-        thread = Task {
+        thread = Task(priority: .background) {
             let isTcp = self.tcpSocket is RtpSocketTcp
             while (self.running) {
                 let frame = self.queue.dequeue()

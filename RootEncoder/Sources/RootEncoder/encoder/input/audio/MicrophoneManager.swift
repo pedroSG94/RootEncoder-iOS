@@ -11,7 +11,7 @@ import AVFoundation
 
 public class MicrophoneManager {
     
-    private let thread = DispatchQueue.global()
+    private let thread = DispatchQueue(label: "MicrophoneManager")
     private let audioEngine = AVAudioEngine()
     private var inputNode: AVAudioInputNode?
     private var inputFormat: AVAudioFormat?

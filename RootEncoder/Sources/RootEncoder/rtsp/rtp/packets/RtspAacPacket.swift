@@ -9,19 +9,20 @@ public class RtspAacPacket: RtspBasePacket {
     }
     
     public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
-        let length = buffer.count
+        var buffer = buffer
+        let naluLength = buffer.count
         let dts = ts * 1000
         let maxPayload = maxPacketSize - RtpConstants.rtpHeaderLength
         
         var sum = 0
-        while (sum < length) {
-            let size = if (length - sum < maxPayload) {
-                length - sum
+        while (sum < naluLength) {
+            let length = if (naluLength - sum < maxPayload) {
+                naluLength - sum
             } else {
                 maxPayload
             }
-            var rtpBuffer = getBuffer(size: size + RtpConstants.rtpHeaderLength + 4)
-            rtpBuffer[RtpConstants.rtpHeaderLength + 4...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
+            var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
+            buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 4, length: length)
             markPacket(buffer: &rtpBuffer)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             
@@ -31,8 +32,8 @@ public class RtspAacPacket: RtspBasePacket {
             rtpBuffer[RtpConstants.rtpHeaderLength] = 0x00
             rtpBuffer[RtpConstants.rtpHeaderLength + 1] = 0x10
             // AU-size
-            rtpBuffer[RtpConstants.rtpHeaderLength + 2] = intToBytes(from: size >> 5)[0]
-            rtpBuffer[RtpConstants.rtpHeaderLength + 3] = intToBytes(from: size << 3)[0]
+            rtpBuffer[RtpConstants.rtpHeaderLength + 2] = intToBytes(from: length >> 5)[0]
+            rtpBuffer[RtpConstants.rtpHeaderLength + 3] = intToBytes(from: length << 3)[0]
             // AU-Index
             rtpBuffer[RtpConstants.rtpHeaderLength + 3] &= 0xF8
             rtpBuffer[RtpConstants.rtpHeaderLength + 3] |= 0x00
@@ -44,7 +45,7 @@ public class RtspAacPacket: RtspBasePacket {
             frame.buffer = rtpBuffer
             frame.channelIdentifier = channelIdentifier
 
-            sum += size
+            sum += length
             callback(frame)
         }
     }

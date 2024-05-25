@@ -64,11 +64,10 @@ public class RtspH264Packet: RtspBasePacket {
                 
                 var sum = 0
                 while sum < naluLength {
-                    var length = 0
-                    if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
-                        length = maxPacketSize - RtpConstants.rtpHeaderLength - 2
+                    let length = if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
+                        maxPacketSize - RtpConstants.rtpHeaderLength - 2
                     } else {
-                        length = buffer.count
+                        buffer.count
                     }
                     var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 2)
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]

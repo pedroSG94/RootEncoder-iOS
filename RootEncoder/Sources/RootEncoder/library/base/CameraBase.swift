@@ -164,21 +164,13 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func setVideoCodec(codec: VideoCodec) {
         setVideoCodecImp(codec: codec)
         recordController.setVideoCodec(codec: codec)
-        let type = switch codec {
-        case .H264:
-            CodecUtil.H264
-        case .H265:
-            CodecUtil.H265
-        @unknown default:
-            CodecUtil.H264
-        }
-        videoEncoder.setCodec(codec: type)
+        videoEncoder.setCodec(codec: codec)
     }
     
     public func setAudioCodec(codec: AudioCodec) {
         setAudioCodecImp(codec: codec)
         recordController.setAudioCodec(codec: codec)
-        audioEncoder.codec = codec
+        audioEncoder.setCodec(codec: codec)
     }
 
     public func setVideoCodecImp(codec: VideoCodec) {}

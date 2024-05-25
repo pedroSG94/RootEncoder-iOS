@@ -69,7 +69,7 @@ public class RtspClient {
         }
         if (!self.streaming || isRetry) {
             self.streaming = true
-            thread = Task {
+            thread = Task(priority: .background) {
                 guard let url = url else {
                     self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return

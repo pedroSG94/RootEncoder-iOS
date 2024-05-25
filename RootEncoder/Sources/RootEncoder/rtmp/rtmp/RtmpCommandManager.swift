@@ -160,8 +160,6 @@ public class RtmpCommandManager {
                 VideoFormat.AVC.rawValue
             case .H265:
                 VideoFormat.HEVC.rawValue
-            @unknown default:
-                VideoFormat.AVC.rawValue
             }
             print("codec: \(codecValue)")
             amfEcmaArray.setProperty(name: "width", data: Double(width))
@@ -176,8 +174,6 @@ public class RtmpCommandManager {
                 AudioFormat.AAC.rawValue
             case .G711:
                 AudioFormat.G711_A.rawValue
-            @unknown default:
-                AudioFormat.AAC.rawValue
             }
             amfEcmaArray.setProperty(name: "audiocodecid", data: Double(codecValue))
             amfEcmaArray.setProperty(name: "audiosamplerate", data: Double(sampleRate))

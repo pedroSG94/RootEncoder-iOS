@@ -58,11 +58,10 @@ public class RtspH265Packet: RtspBasePacket {
 
             var sum = 0
             while sum < naluLength {
-                var length = 0
-                if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 3) {
-                    length = maxPacketSize - RtpConstants.rtpHeaderLength - 3
+                let length = if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 3) {
+                    maxPacketSize - RtpConstants.rtpHeaderLength - 3
                 } else {
-                    length = buffer.count
+                    buffer.count
                 }
                 var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 3)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]

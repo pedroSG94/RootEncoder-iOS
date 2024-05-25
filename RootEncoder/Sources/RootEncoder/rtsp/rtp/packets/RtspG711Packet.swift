@@ -18,18 +18,19 @@ public class RtspG711Packet: RtspBasePacket {
     }
     
     public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
-        let length = buffer.count
+        var buffer = buffer
+        let naluLength = buffer.count
         let maxPayload = maxPacketSize - RtpConstants.rtpHeaderLength
         
         var sum = 0
-        while (sum < length) {
-            let size = if (length - sum < maxPayload) {
-                length - sum
+        while (sum < naluLength) {
+            let length = if (naluLength - sum < maxPayload) {
+                naluLength - sum
             } else {
                 maxPayload
             }
-            var rtpBuffer = getBuffer(size: size + RtpConstants.rtpHeaderLength)
-            rtpBuffer[RtpConstants.rtpHeaderLength...rtpBuffer.count - 1] = buffer[0...buffer.count - 1]
+            var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength)
+            buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength, length: length)
             let dts = ts * 1000
             markPacket(buffer: &rtpBuffer)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
@@ -41,7 +42,7 @@ public class RtspG711Packet: RtspBasePacket {
             frame.buffer = rtpBuffer
             frame.channelIdentifier = channelIdentifier
 
-            sum += size
+            sum += length
             callback(frame)
         }
     }
