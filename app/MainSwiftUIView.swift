@@ -19,6 +19,9 @@ struct MainSwiftUIView: View {
                 NavigationLink(destination: RtspSwiftUIView()) {
                     Text("RTSP")
                 }
+                NavigationLink(destination: ScreenSwiftUIView()) {
+                    Text("Screen")
+                }
             }
         }.navigationViewStyle(StackNavigationViewStyle())
     }

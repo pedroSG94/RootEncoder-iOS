@@ -12,7 +12,7 @@ import UIKit
 public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
 
     private var microphone: MicrophoneManager!
-    private var cameraManager: ScreenManager!
+    private var screenManager: ScreenManager!
     private var audioEncoder: AudioEncoder!
     internal var videoEncoder: VideoEncoder!
     private(set) var endpoint: String = ""
@@ -21,8 +21,8 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
 
-    public init(view: UIView) {
-        cameraManager = ScreenManager(cameraView: view, callbackVideo: self, callbackAudio: nil)
+    public init() {
+        screenManager = ScreenManager(callbackVideo: self, callbackAudio: nil)
         microphone = MicrophoneManager(callback: self)
         videoEncoder = VideoEncoder(callback: self)
         audioEncoder = AudioEncoder(callback: self)
@@ -42,19 +42,15 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         prepareAudio(bitrate: 64 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
-        var w = resolution.width
-        var h = resolution.height
-        if (rotation == 90 || rotation == 270) {
-            w = resolution.height
-            h = resolution.width
-        }
+    public func prepareVideo(fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
+        let w = screenManager.getWidth()
+        let h = screenManager.getHeight()
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
-        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
+        return videoEncoder.prepareVideo(width: w, height: h, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .fhd1920x1440, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: 0)
+        prepareVideo(fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: 0)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -65,12 +61,12 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         audioEncoder.start()
         videoEncoder.start()
         microphone.start()
-        cameraManager.start()
+        screenManager.start()
     }
     
     private func stopEncoders() {
         microphone.stop()
-        cameraManager.stop()
+        screenManager.stop()
         audioEncoder.stop()
         videoEncoder.stop()
     }
@@ -118,31 +114,6 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     
     public func isStreaming() -> Bool {
         streaming
-    }
-
-    public func isOnPreview() -> Bool {
-        onPreview
-    }
-
-    public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK) {
-        if (!isOnPreview()) {
-            cameraManager.start()
-            onPreview = true
-        }
-    }
-
-    public func startPreview() {
-        if (!isOnPreview()) {
-            cameraManager.start()
-            onPreview = true
-        }
-    }
-
-    public func stopPreview() {
-        if (!isStreaming() && isOnPreview()) {
-            cameraManager.stop()
-            onPreview = false
-        }
     }
 
     public func setVideoCodec(codec: VideoCodec) {

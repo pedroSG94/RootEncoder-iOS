@@ -12,12 +12,10 @@ public class ScreenManager {
     
     private let screen = RPScreenRecorder.shared()
     private var running = false
-    var cameraView: UIView!
     private let callbackVideo: GetCameraData?
     private let callbackAudio: GetMicrophoneData?
     
-    public init(cameraView: UIView, callbackVideo: GetCameraData?, callbackAudio: GetMicrophoneData?) {
-        self.cameraView = cameraView
+    public init(callbackVideo: GetCameraData?, callbackAudio: GetMicrophoneData?) {
         self.callbackVideo = callbackVideo
         self.callbackAudio = callbackAudio
     }
@@ -33,6 +31,9 @@ public class ScreenManager {
             }
             print("type: \(bufferType.rawValue)")
             if (bufferType.rawValue == RPSampleBufferType.video.rawValue) {
+                let w = buffer.formatDescription?.dimensions.width
+                let h = buffer.formatDescription?.dimensions.height
+                print("\(w)x\(h), \(self.getWidth())x\(self.getHeight())")
                 self.callbackVideo?.getYUVData(from: buffer)
             } else if (bufferType.rawValue == RPSampleBufferType.audioApp.rawValue) {
                 //self.callbackAudio?.getPcmData(buffer: buffer)
@@ -46,5 +47,15 @@ public class ScreenManager {
     public func stop() {
         screen.stopCapture()
         running = false
+    }
+    
+    public func getWidth() -> Int {
+        let screenRect = UIScreen.main.nativeBounds
+        return Int(screenRect.width)
+    }
+    
+    public func getHeight() -> Int {
+        let screenRect = UIScreen.main.nativeBounds
+        return Int(screenRect.height)
     }
 }
