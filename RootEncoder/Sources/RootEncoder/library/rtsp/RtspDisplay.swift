@@ -9,13 +9,13 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class DisplayRtsp: DisplayBase {
+public class RtspDisplay: DisplayBase {
 
     private var client: RtspClient!
 
-    public init(view: UIView, connectChecker: ConnectChecker) {
+    public init(connectChecker: ConnectChecker) {
         client = RtspClient(connectChecker: connectChecker)
-        super.init(view: view)
+        super.init()
     }
 
     public func setAuth(user: String, password: String) {

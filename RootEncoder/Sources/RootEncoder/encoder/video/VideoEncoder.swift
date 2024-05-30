@@ -13,7 +13,8 @@ import CoreFoundation
 
 public class VideoEncoder {
     
-    private var resolution: CameraHelper.Resolution = .vga640x480
+    private var width = 640
+    private var height = 480
     private var fps: Int = 60
     private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
@@ -34,25 +35,30 @@ public class VideoEncoder {
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
+        prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
+        prepareVideo(width: resolution.width, height: resolution.height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
+    }
+    
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
         let w = if (rotation == 90 || rotation == 270) {
-            resolution.height
+            height
         } else  {
-            resolution.width
+            width
         }
         let h = if (rotation == 90 || rotation == 270) {
-            resolution.width
+            width
         } else  {
-            resolution.height
+            height
         }
         let err = VTCompressionSessionCreate(allocator: nil, width: Int32(w), height: Int32(h),
                 codecType: codec.value, encoderSpecification: nil, imageBufferAttributes: nil,
                 compressedDataAllocator: nil, outputCallback: videoCallback, refcon: Unmanaged.passUnretained(self).toOpaque(),
                 compressionSessionOut: &session)
-        self.resolution = resolution
+        self.width = width
+        self.height = height
         self.fps = fps
         self.bitrate = bitrate
         self.iFrameInterval = iFrameInterval

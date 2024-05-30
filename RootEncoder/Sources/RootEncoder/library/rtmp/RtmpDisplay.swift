@@ -8,13 +8,13 @@
 import Foundation
 import UIKit
 
-public class DisplayRtmp: DisplayBase {
+public class RtmpDisplay: DisplayBase {
 
     private var client: RtmpClient!
 
-    public init(view: UIView, connectChecker: ConnectChecker) {
+    public init(connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
-        super.init(view: view)
+        super.init()
     }
 
     public func setAuth(user: String, password: String) {
