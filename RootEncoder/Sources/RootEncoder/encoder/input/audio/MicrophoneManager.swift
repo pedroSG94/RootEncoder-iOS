@@ -15,6 +15,7 @@ public class MicrophoneManager {
     private let audioEngine = AVAudioEngine()
     private var inputNode: AVAudioInputNode?
     private var inputFormat: AVAudioFormat?
+    private var muted = false
     
     private var callback: GetMicrophoneData?
     
@@ -30,7 +31,7 @@ public class MicrophoneManager {
         }
         inputNode?.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
             self.thread.async {
-                self.callback?.getPcmData(buffer: buffer, time: time)
+                self.callback?.getPcmData(buffer: buffer.mute(enabled: !self.muted), time: time)
             }
         }
         audioEngine.prepare()
@@ -51,5 +52,17 @@ public class MicrophoneManager {
     public func stop() {
         audioEngine.stop()
         audioEngine.inputNode.removeTap(onBus: 0)
+    }
+    
+    public func isMuted() -> Bool {
+        return muted
+    }
+    
+    public func mute() {
+        muted = true
+    }
+    
+    public func unmute() {
+        muted = false
     }
 }

@@ -116,6 +116,18 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         streaming
     }
 
+    public func isMuted() -> Bool {
+        return microphone.isMuted()
+    }
+    
+    public func mute() {
+        microphone.mute()
+    }
+    
+    public func unmute() {
+        microphone.unmute()
+    }
+    
     public func setVideoCodec(codec: VideoCodec) {
         setVideoCodecImp(codec: codec)
         recordController.setVideoCodec(codec: codec)

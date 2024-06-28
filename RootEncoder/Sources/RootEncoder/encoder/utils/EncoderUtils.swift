@@ -47,6 +47,40 @@ public extension AVAudioPCMBuffer {
         }
         return audioByteArray
     }
+    
+    func mute(enabled: Bool) -> AVAudioPCMBuffer {
+        if enabled {
+            return self
+        }
+        let numSamples = Int(frameLength)
+        if format.isInterleaved {
+            let channelCount = Int(format.channelCount)
+            switch format.commonFormat {
+            case .pcmFormatInt16:
+                int16ChannelData?[0].update(repeating: 0, count: numSamples * channelCount)
+            case .pcmFormatInt32:
+                int32ChannelData?[0].update(repeating: 0, count: numSamples * channelCount)
+            case .pcmFormatFloat32:
+                floatChannelData?[0].update(repeating: 0, count: numSamples * channelCount)
+            default:
+                break
+            }
+        } else {
+            for i in 0..<Int(format.channelCount) {
+                switch format.commonFormat {
+                case .pcmFormatInt16:
+                    int16ChannelData?[i].update(repeating: 0, count: numSamples)
+                case .pcmFormatInt32:
+                    int32ChannelData?[i].update(repeating: 0, count: numSamples)
+                case .pcmFormatFloat32:
+                    floatChannelData?[i].update(repeating: 0, count: numSamples)
+                default:
+                    break
+                }
+            }
+        }
+        return self
+    }
 }
 
 extension AVAudioTime {

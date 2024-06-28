@@ -141,6 +141,18 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func switchCamera() {
         cameraManager.switchCamera()
     }
+    
+    public func isMuted() -> Bool {
+        return microphone.isMuted()
+    }
+    
+    public func mute() {
+        microphone.mute()
+    }
+    
+    public func unmute() {
+        microphone.unmute()
+    }
 
     public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK, rotation: Int) {
         if (!isOnPreview()) {
