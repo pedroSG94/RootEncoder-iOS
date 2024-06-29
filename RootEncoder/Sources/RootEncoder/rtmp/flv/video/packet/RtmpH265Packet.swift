@@ -61,6 +61,9 @@ public class RtmpH265Packet: RtmpBasePacket {
         
         let validBuffer = removeHeader(byteBuffer: buffer, size: headerSize)
         let size = validBuffer.count
+        if size > UInt32.max {
+            return
+        }
         packetBuffer = [UInt8](repeating: 0, count: header.count + size + naluSize)
         header[5] = UInt8(cts >> 16)
         header[6] = UInt8(cts >> 8)
