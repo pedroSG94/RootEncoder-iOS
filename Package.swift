@@ -19,9 +19,8 @@ let package = Package(
         .target(
             name: "RootEncoder",
             path: "RootEncoder/Sources",
-            sources: [
-                "RootEncoder"
-            ]
+            sources: ["RootEncoder"],
+            resources: [.copy("PrivacyInfo.xcprivacy")]
         ),
         .testTarget(
             name: "RootEncoderTests",

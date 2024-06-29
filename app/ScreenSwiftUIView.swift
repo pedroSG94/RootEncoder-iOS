@@ -88,7 +88,6 @@ struct ScreenSwiftUIView: View, ConnectChecker {
     var body: some View {
         ZStack {
             let camera = CameraUIView()
-            let cameraView = camera.view
             camera.edgesIgnoringSafeArea(.all)
             
             camera.onAppear {
