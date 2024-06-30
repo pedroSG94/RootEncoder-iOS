@@ -10,8 +10,7 @@ import UIKit
 public class CameraHelper {
     
     public static func getCameraOrientation() -> Int {
-        let value = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .landscapeLeft
-        switch value {
+        switch getOrientation() {
         case .portrait:
             return 90
         case .portraitUpsideDown:
@@ -23,6 +22,10 @@ public class CameraHelper {
         default:
             return 0
         }
+    }
+    
+    public static func getOrientation() -> UIInterfaceOrientation {
+        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .landscapeLeft
     }
     
     public enum Facing {

@@ -86,7 +86,7 @@ public class MetalView: MTKView, MetalInterface {
     private let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
     private var callback: MetalViewCallback? = nil
     private var filters = [BaseFilterRender]()
-    private let initialOrientation = UIDevice.current.orientation
+    private let initialOrientation = UIDeviceOrientation(rawValue: CameraHelper.getOrientation().rawValue) ?? UIDeviceOrientation.landscapeLeft
     
     public init() {
         super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
