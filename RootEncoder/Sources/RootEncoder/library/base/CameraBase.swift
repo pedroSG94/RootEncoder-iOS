@@ -195,9 +195,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func getH264DataRtp(frame: Frame) {}
 
-    public func getPcmData(buffer: AVAudioPCMBuffer, time: AVAudioTime) {
-        recordController.recordAudio(buffer: buffer.makeSampleBuffer(time)!)
-        audioEncoder.encodeFrame(buffer: buffer)
+    public func getPcmData(frame: PcmFrame, time: AVAudioTime) {
+        recordController.recordAudio(buffer: frame.buffer.makeSampleBuffer(time)!)
+        audioEncoder.encodeFrame(frame: frame)
     }
 
     public func getYUVData(from buffer: CMSampleBuffer) {

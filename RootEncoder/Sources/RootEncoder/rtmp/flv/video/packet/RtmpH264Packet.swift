@@ -97,14 +97,14 @@ public class RtmpH264Packet: RtmpBasePacket {
     }
     
     private func getStartCodeSize(byteBuffer: [UInt8]) -> Int {
-            if byteBuffer[0] == 0x00 && byteBuffer[1] == 0x00
-                && byteBuffer[2] == 0x00 && byteBuffer[3] == 0x01 {
-                return 4 // match 00 00 00 01
-            } else if byteBuffer[0] == 0x00 && byteBuffer[1] == 0x00 && byteBuffer[2] == 0x01 {
-                return 3 // match 00 00 01
-            }
-            return 0
+        if byteBuffer[0] == 0x00 && byteBuffer[1] == 0x00
+            && byteBuffer[2] == 0x00 && byteBuffer[3] == 0x01 {
+            return 4 // match 00 00 00 01
+        } else if byteBuffer[0] == 0x00 && byteBuffer[1] == 0x00 && byteBuffer[2] == 0x01 {
+            return 3 // match 00 00 01
         }
+        return 0
+    }
         
     private func writeNaluSize(buffer: inout [UInt8], offset: Int, size: Int) {
         buffer[offset] = UInt8(size >> 24)

@@ -16,7 +16,7 @@ public class AudioEncoder {
     private var running = false
     private var initTs: Int64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
-    private let syncQueue = SynchronizedQueue<AVAudioPCMBuffer>(label: "AudioEncodeQueue", size: 60)
+    private let syncQueue = SynchronizedQueue<PcmFrame>(label: "AudioEncodeQueue", size: 60)
     private var codec = AudioCodec.AAC
     
     public init(callback: GetAacData) {
@@ -52,9 +52,9 @@ public class AudioEncoder {
         return true
     }
     
-    public func encodeFrame(buffer: AVAudioPCMBuffer) {
+    public func encodeFrame(frame: PcmFrame) {
         if (running) {
-            let _ = syncQueue.enqueue(buffer)
+            let _ = syncQueue.enqueue(frame)
         }
     }
     
@@ -64,44 +64,34 @@ public class AudioEncoder {
         syncQueue.clear()
         thread.async {
             while (self.running) {
-                let b = self.syncQueue.dequeue()
-                if let b = b {
+                let pcmFrame = self.syncQueue.dequeue()
+                if let pcmFrame = pcmFrame {
                     var error: NSError? = nil
                     if self.codec == AudioCodec.AAC {
-                        guard let aacBuffer = self.convertToAAC(buffer: b, error: &error) else {
+                        guard let aacBuffer = self.convertToAAC(buffer: pcmFrame.buffer, error: &error) else {
                             continue
                         }
                         if error != nil {
                             print("Encode error: \(error.debugDescription)")
                         } else {
                             let data = Array<UInt8>(UnsafeBufferPointer<UInt8>(start: aacBuffer.data.assumingMemoryBound(to: UInt8.self), count: Int(aacBuffer.byteLength)))
-                            guard let packetDescriptions = aacBuffer.packetDescriptions else {
-                                continue
-                            }
-                            for i in 0..<aacBuffer.packetCount {
-                                let info = packetDescriptions[Int(i)]
-                                var mBuffer = Array<UInt8>(repeating: 0, count: Int(info.mDataByteSize))
-                                mBuffer[0...mBuffer.count - 1] = data[Int(info.mStartOffset)...Int(info.mStartOffset) + Int(info.mDataByteSize - 1)]
-                                let end = Date().millisecondsSince1970
-                                let elapsedNanoSeconds = (end - self.initTs) * 1000
+                            let elapsedNanoSeconds = (pcmFrame.ts - self.initTs) * 1000
 
-                                var frame = Frame()
-                                frame.buffer = mBuffer
-                                frame.length = UInt32(mBuffer.count)
-                                frame.timeStamp = UInt64(elapsedNanoSeconds)
-                                self.callback?.getAacData(frame: frame)
-                            }
+                            var frame = Frame()
+                            frame.buffer = data
+                            frame.length = UInt32(data.count)
+                            frame.timeStamp = UInt64(elapsedNanoSeconds)
+                            self.callback?.getAacData(frame: frame)
                         }
                     } else if self.codec == AudioCodec.G711 {
-                        guard let g711Buffer = self.convertToG711(buffer: b, error: &error) else {
+                        guard let g711Buffer = self.convertToG711(buffer: pcmFrame.buffer, error: &error) else {
                             continue
                         }
                         if error != nil {
                             print("Encode error: \(error.debugDescription)")
                         } else {
                             let data = g711Buffer.audioBufferToBytes()
-                            let end = Date().millisecondsSince1970
-                            let elapsedNanoSeconds = (end - self.initTs) * 1000
+                            let elapsedNanoSeconds = (pcmFrame.ts - self.initTs) * 1000
 
                             var frame = Frame()
                             frame.buffer = data
@@ -128,7 +118,7 @@ public class AudioEncoder {
         guard let outputFormat = outputFormat else {
             return nil
         }
-        let outBuffer = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 8, maximumPacketSize: Int(buffer.frameLength))
+        let outBuffer = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 1, maximumPacketSize: 2048 * Int(outputFormat.channelCount))
         self.convert(sourceBuffer: buffer, destinationBuffer: outBuffer, error: &error)
         return outBuffer
     }

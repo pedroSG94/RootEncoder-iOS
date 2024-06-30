@@ -13,7 +13,6 @@ public class MicrophoneManager {
     
     private let thread = DispatchQueue(label: "MicrophoneManager")
     private let audioEngine = AVAudioEngine()
-    private var inputNode: AVAudioInputNode?
     private var inputFormat: AVAudioFormat?
     private var muted = false
     
@@ -24,14 +23,16 @@ public class MicrophoneManager {
     }
 
     public func createMicrophone() {
-        inputNode = audioEngine.inputNode
-        inputFormat = inputNode!.outputFormat(forBus: 0)
-        if (inputFormat!.channelCount == 0) {
+        let inputNode = audioEngine.inputNode
+        let inputFormat = inputNode.outputFormat(forBus: 0)
+        self.inputFormat = inputFormat
+        if (inputFormat.channelCount == 0) {
             print("input format error")
         }
-        inputNode?.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
+        inputNode.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
             self.thread.async {
-                self.callback?.getPcmData(buffer: buffer.mute(enabled: !self.muted), time: time)
+                let ts = Date().millisecondsSince1970
+                self.callback?.getPcmData(frame: PcmFrame(buffer: buffer.mute(enabled: !self.muted), ts: ts), time: time)
             }
         }
         audioEngine.prepare()

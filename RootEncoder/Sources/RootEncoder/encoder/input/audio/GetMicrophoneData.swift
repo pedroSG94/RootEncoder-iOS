@@ -10,5 +10,5 @@ import Foundation
 import AVFoundation
 
 public protocol GetMicrophoneData {
-    func getPcmData(buffer: AVAudioPCMBuffer, time: AVAudioTime)
+    func getPcmData(frame: PcmFrame, time: AVAudioTime)
 }
