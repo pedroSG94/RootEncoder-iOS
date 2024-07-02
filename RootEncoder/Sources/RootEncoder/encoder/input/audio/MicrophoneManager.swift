@@ -29,10 +29,10 @@ public class MicrophoneManager {
         if (inputFormat.channelCount == 0) {
             print("input format error")
         }
-        inputNode.installTap(onBus: 0, bufferSize: 2048, format: inputFormat) { buffer, time in
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: inputFormat) { buffer, time in
             self.thread.async {
                 let ts = Date().millisecondsSince1970
-                self.callback?.getPcmData(frame: PcmFrame(buffer: buffer.mute(enabled: !self.muted), ts: ts), time: time)
+                self.callback?.getPcmData(frame: PcmFrame(buffer: buffer.mute(enabled: !self.muted), ts: UInt64(ts)), time: time)
             }
         }
         audioEngine.prepare()

@@ -11,5 +11,5 @@ import AVFoundation
 
 public struct PcmFrame {
     public let buffer: AVAudioPCMBuffer
-    public let ts: Int64
+    public let ts: UInt64
 }
