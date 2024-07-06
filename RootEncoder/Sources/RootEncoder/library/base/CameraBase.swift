@@ -43,8 +43,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
         recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
         microphone.createMicrophone()
         prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
-        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
-                channels: isStereo ? 2 : 1, bitrate: bitrate)
+        return audioEncoder.prepareAudio(sampleRate: Double(sampleRate), channels: isStereo ? 2 : 1, bitrate: bitrate)
     }
 
     public func prepareAudio() -> Bool {
@@ -195,8 +194,8 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func getH264DataRtp(frame: Frame) {}
 
-    public func getPcmData(frame: PcmFrame, time: AVAudioTime) {
-        recordController.recordAudio(buffer: frame.buffer.makeSampleBuffer(time)!)
+    public func getPcmData(frame: PcmFrame) {
+        recordController.recordAudio(buffer: frame.buffer)
         audioEncoder.encodeFrame(frame: frame)
     }
 

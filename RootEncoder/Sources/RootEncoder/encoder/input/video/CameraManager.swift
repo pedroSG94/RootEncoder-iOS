@@ -89,8 +89,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         do{
             input = try AVCaptureDeviceInput(device: device!)
-        }
-        catch{
+        } catch {
             print(error)
         }
 
@@ -99,7 +98,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
 
         output = AVCaptureVideoDataOutput()
-        let thread = DispatchQueue.global()
         output?.setSampleBufferDelegate(self, queue: thread)
         output?.alwaysDiscardsLateVideoFrames = true
         output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
@@ -151,9 +149,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        thread.async {
-            self.callback.getYUVData(from: sampleBuffer)
-        }
+        self.callback.getYUVData(from: sampleBuffer)
     }
     
     private func getOrientation(value: Int) -> AVCaptureVideoOrientation {

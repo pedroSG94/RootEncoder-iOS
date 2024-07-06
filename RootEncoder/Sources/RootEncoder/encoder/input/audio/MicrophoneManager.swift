@@ -9,12 +9,16 @@
 import Foundation
 import AVFoundation
 
-public class MicrophoneManager {
+public class MicrophoneManager: NSObject, AVCaptureAudioDataOutputSampleBufferDelegate {
     
     private let thread = DispatchQueue(label: "MicrophoneManager")
-    private let audioEngine = AVAudioEngine()
     private var inputFormat: AVAudioFormat?
+    var session: AVCaptureSession?
+    var device: AVCaptureDevice?
+    var input: AVCaptureDeviceInput?
+    var output: AVCaptureAudioDataOutput?
     private var muted = false
+    private var running = false
     
     private var callback: GetMicrophoneData?
     
@@ -22,37 +26,40 @@ public class MicrophoneManager {
         self.callback = callback
     }
 
-    public func createMicrophone() {
-        let inputNode = audioEngine.inputNode
-        let inputFormat = inputNode.outputFormat(forBus: 0)
-        self.inputFormat = inputFormat
-        if (inputFormat.channelCount == 0) {
-            print("input format error")
-        }
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: inputFormat) { buffer, time in
-            self.thread.async {
-                let ts = Date().millisecondsSince1970
-                self.callback?.getPcmData(frame: PcmFrame(buffer: buffer.mute(enabled: !self.muted), ts: UInt64(ts)), time: time)
+    public func createMicrophone() -> Bool {
+        session = AVCaptureSession()
+        device = AVCaptureDevice.default(for: .audio)
+        do {
+            let input = try AVCaptureDeviceInput(device: device!)
+            if session?.canAddInput(input) == true {
+                session?.addInput(input)
             }
+            self.input = input
+            
+            let output = AVCaptureAudioDataOutput()
+            output.setSampleBufferDelegate(self, queue: thread)
+            if session?.canAddOutput(output) == true {
+                session?.addOutput(output)
+            }
+            self.output = output
+            return true
+        } catch {
+            return false
         }
-        audioEngine.prepare()
-    }
-    
-    public func getInputFormat() -> AVAudioFormat {
-        inputFormat!
     }
     
     public func start() {
-        do {
-            try audioEngine.start()
-        } catch let error {
-            print(error)
+        running = true
+        thread.async {
+            self.session?.startRunning()
         }
     }
     
     public func stop() {
-        audioEngine.stop()
-        audioEngine.inputNode.removeTap(onBus: 0)
+        session?.stopRunning()
+        session?.removeOutput(output!)
+        session?.removeInput(input!)
+        running = false
     }
     
     public func isMuted() -> Bool {
@@ -65,5 +72,10 @@ public class MicrophoneManager {
     
     public func unmute() {
         muted = false
+    }
+    
+    public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        let ts = UInt64(Date().millisecondsSince1970)
+        self.callback?.getPcmData(frame: PcmFrame(buffer: sampleBuffer.mute(enabled: muted), ts: ts))
     }
 }

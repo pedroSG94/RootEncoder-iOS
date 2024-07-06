@@ -10,6 +10,6 @@ import AVFoundation
 
 
 public struct PcmFrame {
-    public let buffer: AVAudioPCMBuffer
+    public let buffer: CMSampleBuffer
     public let ts: UInt64
 }
