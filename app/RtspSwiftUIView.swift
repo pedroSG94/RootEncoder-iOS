@@ -91,7 +91,6 @@ struct RtspSwiftUIView: View, ConnectChecker {
             
             camera.onAppear {
                 rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
-                rtspCamera.setAudioCodec(codec: AudioCodec.G711)
                 rtspCamera.setRetries(reTries: 10)
                 rtspCamera.startPreview()
             }
