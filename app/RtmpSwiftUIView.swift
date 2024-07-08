@@ -74,7 +74,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtmp://a.rtmp.youtube.com/live2/9rp5-yukj-zxdc-gqv4-ch5g"
+    @State private var endpoint = "rtmp://192.168.0.176:1935/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
@@ -167,11 +167,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                         }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
-                        if rtmpCamera.isMuted() {
-                            rtmpCamera.unmute()
-                        } else {
-                            rtmpCamera.mute()
-                        }
+                        rtmpCamera.switchCamera()
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)

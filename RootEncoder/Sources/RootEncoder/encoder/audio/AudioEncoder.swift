@@ -77,7 +77,6 @@ public class AudioEncoder {
                             converter.bitRate = self.bitrate
                         }
                     }
-                    if self.initTs == 0 { self.initTs = ts }
                     var error: NSError? = nil
                     if self.codec == AudioCodec.AAC {
                         guard let aacBuffer = self.convertAAC(inputBuffer: pcmFrame.buffer, error: &error) else {
