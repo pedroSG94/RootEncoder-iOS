@@ -42,7 +42,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     }
 
     public func prepareAudio() -> Bool {
-        prepareAudio(bitrate: 128 * 1024, sampleRate: 44100, isStereo: true)
+        prepareAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
     }
 
     public func prepareVideo(fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {

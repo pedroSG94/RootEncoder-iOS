@@ -51,6 +51,42 @@ public extension AVAudioPCMBuffer {
         return audioByteArray
     }
     
+    @discardableResult
+    @inlinable
+    final func copy(_ audioBuffer: AVAudioBuffer) -> Bool {
+        guard let audioBuffer = audioBuffer as? AVAudioPCMBuffer, frameLength == audioBuffer.frameLength else {
+            return false
+        }
+        let numSamples = Int(frameLength)
+        if format.isInterleaved {
+            let channelCount = Int(format.channelCount)
+            switch format.commonFormat {
+            case .pcmFormatInt16:
+                memcpy(int16ChannelData?[0], audioBuffer.int16ChannelData?[0], numSamples * channelCount * 2)
+            case .pcmFormatInt32:
+                memcpy(int32ChannelData?[0], audioBuffer.int32ChannelData?[0], numSamples * channelCount * 4)
+            case .pcmFormatFloat32:
+                memcpy(floatChannelData?[0], audioBuffer.floatChannelData?[0], numSamples * channelCount * 4)
+            default:
+                break
+            }
+        } else {
+            for i in 0..<Int(format.channelCount) {
+                switch format.commonFormat {
+                case .pcmFormatInt16:
+                    memcpy(int16ChannelData?[i], audioBuffer.int16ChannelData?[i], numSamples * 2)
+                case .pcmFormatInt32:
+                    memcpy(int32ChannelData?[i], audioBuffer.int32ChannelData?[i], numSamples * 4)
+                case .pcmFormatFloat32:
+                    memcpy(floatChannelData?[i], audioBuffer.floatChannelData?[i], numSamples * 4)
+                default:
+                    break
+                }
+            }
+        }
+        return true
+    }
+    
     func mute(enabled: Bool) -> AVAudioPCMBuffer {
         if !enabled {
             return self

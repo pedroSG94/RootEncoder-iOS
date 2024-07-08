@@ -50,7 +50,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func prepareAudio() -> Bool {
-        prepareAudio(bitrate: 128 * 1024, sampleRate: 44100, isStereo: true)
+        prepareAudio(bitrate: 128 * 1024, sampleRate: 8000, isStereo: false)
     }
 
     public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
