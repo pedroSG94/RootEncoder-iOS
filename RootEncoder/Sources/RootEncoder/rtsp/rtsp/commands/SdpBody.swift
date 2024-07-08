@@ -31,7 +31,6 @@ public class SdpBody {
     }
     
     public func createG711Body(trackAudio: Int, sampleRate: Int, isStereo: Bool) -> String {
-        let channel = isStereo ? 2 : 1
         let payload = RtpConstants.payloadTypeG711
         return "m=audio 0 RTP/AVP \(payload)\r\n" +
                 "a=rtpmap:\(payload) PCMA/8000/1\r\n" +

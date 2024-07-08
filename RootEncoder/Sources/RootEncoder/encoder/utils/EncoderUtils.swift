@@ -10,9 +10,12 @@ import AVFAudio
 
 public extension AVAudioPCMBuffer {
     final func makeSampleBuffer(_ when: AVAudioTime) -> CMSampleBuffer? {
-        var status: OSStatus = noErr
+        return makeSampleBuffer(when.makeTime())
+    }
+    
+    final func makeSampleBuffer(_ when: CMTime) -> CMSampleBuffer? {
         var sampleBuffer: CMSampleBuffer?
-        status = CMAudioSampleBufferCreateWithPacketDescriptions(
+        CMAudioSampleBufferCreateWithPacketDescriptions(
             allocator: nil,
             dataBuffer: nil,
             dataReady: false,
@@ -20,12 +23,12 @@ public extension AVAudioPCMBuffer {
             refcon: nil,
             formatDescription: format.formatDescription,
             sampleCount: Int(frameLength),
-            presentationTimeStamp: when.makeTime(),
+            presentationTimeStamp: when,
             packetDescriptions: nil,
             sampleBufferOut: &sampleBuffer
         )
         guard let sampleBuffer else { return nil }
-        status = CMSampleBufferSetDataBufferFromAudioBufferList(
+        CMSampleBufferSetDataBufferFromAudioBufferList(
             sampleBuffer,
             blockBufferAllocator: kCFAllocatorDefault,
             blockBufferMemoryAllocator: kCFAllocatorDefault,
@@ -49,7 +52,7 @@ public extension AVAudioPCMBuffer {
     }
     
     func mute(enabled: Bool) -> AVAudioPCMBuffer {
-        if enabled {
+        if !enabled {
             return self
         }
         let numSamples = Int(frameLength)
@@ -88,6 +91,12 @@ extension AVAudioTime {
 
     func makeTime() -> CMTime {
         return .init(seconds: AVAudioTime.seconds(forHostTime: hostTime), preferredTimescale: 1000000000)
+    }
+}
+
+extension CMTime {
+    func makeAudioTime() -> AVAudioTime {
+        return .init(sampleTime: value, atRate: Double(timescale))
     }
 }
 

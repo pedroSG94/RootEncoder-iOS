@@ -99,6 +99,13 @@ public class RecordController {
             }
         }
     }
+    
+    func recordAudio(pcmBuffer: AVAudioPCMBuffer, time: CMTime) {
+        queue.async {
+            guard let buffer = pcmBuffer.makeSampleBuffer(time) else { return }
+            self.recordAudio(buffer: buffer)
+        }
+    }
 
     func pauseRecord() {
         status = Status.PAUSED

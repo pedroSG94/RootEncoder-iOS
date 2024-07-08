@@ -274,8 +274,8 @@ public class VideoEncoder {
                 var frame = Frame()
                 frame.buffer = rawH264
                 let end = Date().millisecondsSince1970
-                let elapsedNanoSeconds = (end - initTs) * 1000
-                frame.timeStamp = UInt64(elapsedNanoSeconds)
+                let elapsedMicroSeconds = (end - initTs) * 1000
+                frame.timeStamp = UInt64(elapsedMicroSeconds)
                 frame.length = UInt32(frame.buffer!.count)
 
                 callback.getH264Data(frame: frame)

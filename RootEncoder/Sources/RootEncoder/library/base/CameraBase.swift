@@ -41,14 +41,16 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
         recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
-        microphone.createMicrophone()
+        let createResult = microphone.createMicrophone()
+        if !createResult {
+            return false
+        }
         prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
-        return audioEncoder.prepareAudio(inputFormat: microphone.getInputFormat(), sampleRate: Double(sampleRate),
-                channels: isStereo ? 2 : 1, bitrate: bitrate)
+        return audioEncoder.prepareAudio(sampleRate: Double(sampleRate), channels: isStereo ? 2 : 1, bitrate: bitrate)
     }
 
     public func prepareAudio() -> Bool {
-        prepareAudio(bitrate: 64 * 1024, sampleRate: 32000, isStereo: true)
+        prepareAudio(bitrate: 128 * 1024, sampleRate: 44100, isStereo: true)
     }
 
     public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
@@ -195,8 +197,8 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
 
     public func getH264DataRtp(frame: Frame) {}
 
-    public func getPcmData(frame: PcmFrame, time: AVAudioTime) {
-        recordController.recordAudio(buffer: frame.buffer.makeSampleBuffer(time)!)
+    public func getPcmData(frame: PcmFrame) {
+        recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
         audioEncoder.encodeFrame(frame: frame)
     }
 
