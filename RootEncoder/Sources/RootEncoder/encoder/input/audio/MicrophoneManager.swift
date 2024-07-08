@@ -91,7 +91,7 @@ public class MicrophoneManager: NSObject, AVCaptureAudioDataOutputSampleBufferDe
         memcpy(buffer?.int16ChannelData?[0], dataPointer, length)
         
         if let buffer = buffer {
-            self.callback?.getPcmData(frame: PcmFrame(sampleBuffer: sampleBuffer, buffer: buffer.mute(enabled: self.muted), ts: ts, time: sampleBuffer.presentationTimeStamp))
+            self.callback?.getPcmData(frame: PcmFrame(buffer: buffer.mute(enabled: self.muted), ts: ts, time: sampleBuffer.presentationTimeStamp))
         }
     }
 }

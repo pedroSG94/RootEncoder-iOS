@@ -19,7 +19,7 @@ public class AudioEncoder {
     private let syncQueue = SynchronizedQueue<PcmFrame>(label: "AudioEncodeQueue", size: 60)
     private var codec = AudioCodec.AAC
     private var inputFormat: AVAudioFormat? = nil
-    private var bitrate = 64 * 1000
+    private var bitrate = 128 * 1000
     
     public init(callback: GetAacData) {
         self.callback = callback
