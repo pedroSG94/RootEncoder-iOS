@@ -43,15 +43,6 @@ final class AudioTime {
         anchorTime = .init(hostTime: AVAudioTime.hostTime(forSeconds: time.seconds), sampleTime: sampleTime, atRate: sampleRate)
     }
 
-    func anchor(_ time: AVAudioTime) {
-        guard anchorTime == nil else {
-            return
-        }
-        sampleRate = time.sampleRate
-        sampleTime = 0
-        anchorTime = time
-    }
-
     func reset() {
         sampleRate = 0.0
         sampleTime = 0

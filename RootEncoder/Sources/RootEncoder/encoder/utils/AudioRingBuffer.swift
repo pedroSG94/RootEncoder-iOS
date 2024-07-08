@@ -44,66 +44,8 @@ public final class AudioRingBuffer {
         self.outputBuffer.frameLength = self.outputBuffer.frameCapacity
     }
 
-    func append(_ sampleBuffer: CMSampleBuffer) {
-        guard CMSampleBufferDataIsReady(sampleBuffer) else {
-            return
-        }
-        let targetSampleTime: CMTimeValue
-        if sampleBuffer.presentationTimeStamp.timescale == Int32(inputBuffer.format.sampleRate) {
-            targetSampleTime = sampleBuffer.presentationTimeStamp.value
-        } else {
-            targetSampleTime = Int64(Double(sampleBuffer.presentationTimeStamp.value) * inputBuffer.format.sampleRate / Double(sampleBuffer.presentationTimeStamp.timescale))
-        }
-        if sampleTime == 0 {
-            sampleTime = targetSampleTime
-        }
-        if inputBuffer.frameLength < sampleBuffer.numSamples {
-            if let buffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: AVAudioFrameCount(sampleBuffer.numSamples)) {
-                self.inputBuffer = buffer
-            }
-        }
-        inputBuffer.frameLength = AVAudioFrameCount(sampleBuffer.numSamples)
-        let status = CMSampleBufferCopyPCMDataIntoAudioBufferList(
-            sampleBuffer,
-            at: 0,
-            frameCount: Int32(sampleBuffer.numSamples),
-            into: inputBuffer.mutableAudioBufferList
-        )
-        if status == noErr && kLinearPCMFormatFlagIsBigEndian == ((sampleBuffer.formatDescription?.audioStreamBasicDescription?.mFormatFlags ?? 0) & kLinearPCMFormatFlagIsBigEndian) {
-            if inputFormat.isInterleaved {
-                switch inputFormat.commonFormat {
-                case .pcmFormatInt16:
-                    let length = sampleBuffer.dataBuffer?.dataLength ?? 0
-                    var image = vImage_Buffer(data: inputBuffer.mutableAudioBufferList[0].mBuffers.mData, height: 1, width: vImagePixelCount(length / 2), rowBytes: length)
-                    vImageByteSwap_Planar16U(&image, &image, vImage_Flags(kvImageNoFlags))
-                default:
-                    break
-                }
-            }
-        }
-        skip = max(Int(targetSampleTime - sampleTime), 0)
-        sampleTime += Int64(skip)
-        append(inputBuffer)
-    }
-
-    func append(_ audioPCMBuffer: AVAudioPCMBuffer, when: AVAudioTime) {
-        if sampleTime == 0 {
-            sampleTime = when.sampleTime
-        }
-        if inputBuffer.frameLength < audioPCMBuffer.frameLength {
-            if let buffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: audioPCMBuffer.frameCapacity) {
-                self.inputBuffer = buffer
-            }
-        }
-        inputBuffer.frameLength = audioPCMBuffer.frameLength
-        _ = inputBuffer.copy(audioPCMBuffer)
-        skip = Int(max(when.sampleTime - sampleTime, 0))
-        sampleTime += Int64(skip)
-        append(inputBuffer)
-    }
-
     @inline(__always)
-    private func append(_ audioPCMBuffer: AVAudioPCMBuffer, offset: Int = 0) {
+    func append(_ audioPCMBuffer: AVAudioPCMBuffer, offset: Int = 0) {
         let numSamples = min(Int(audioPCMBuffer.frameLength) - offset, Int(outputBuffer.frameLength) - head)
         if inputFormat.isInterleaved {
             let channelCount = Int(inputFormat.channelCount)

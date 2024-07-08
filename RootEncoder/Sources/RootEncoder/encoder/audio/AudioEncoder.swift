@@ -21,7 +21,7 @@ public class AudioEncoder {
     private var inputFormat: AVAudioFormat? = nil
     private var bitrate = 128 * 1000
     private var ringBuffer: AudioRingBuffer? = nil
-    private var audioTime: AudioTime = AudioTime()
+    private let audioTime = AudioTime()
     
     public init(callback: GetAacData) {
         self.callback = callback
@@ -67,10 +67,7 @@ public class AudioEncoder {
                 let pcmFrame = self.syncQueue.dequeue()
                 if let pcmFrame = pcmFrame {
                     if self.inputFormat == nil {
-                        guard let description = pcmFrame.buffer.formatDescription else {
-                            continue
-                        }
-                        let format = AVAudioFormat(cmAudioFormatDescription: description)
+                        let format = pcmFrame.buffer.format
                         self.inputFormat = format
                         self.ringBuffer = AudioRingBuffer(format)
                         self.audioTime.reset()
@@ -87,7 +84,7 @@ public class AudioEncoder {
                     var error: NSError? = nil
                     guard let outputFormat = self.outputFormat else { continue }
                     if !self.audioTime.hasAnchor {
-                        self.audioTime.anchor(pcmFrame.buffer.presentationTimeStamp, sampleRate: outputFormat.sampleRate)
+                        self.audioTime.anchor(pcmFrame.time, sampleRate: outputFormat.sampleRate)
                     }
                     self.ringBuffer?.append(pcmFrame.buffer)
                     if self.codec == AudioCodec.AAC {
@@ -133,12 +130,9 @@ public class AudioEncoder {
     }
     
     private func convert(inputBuffer: AVAudioPCMBuffer, outputBuffer: AVAudioBuffer) {
-        guard let inputFormat = inputFormat, let outputFormat = outputFormat, let ringBuffer = ringBuffer else {
-            return
-        }
-        
-        
+        guard let ringBuffer = ringBuffer else { return }
         var status: AVAudioConverterOutputStatus? = .endOfStream
+        
         repeat {
             status = converter?.convert(to: outputBuffer, error: nil) { inNumberFrames, status in
                 if inNumberFrames <= ringBuffer.counts {
