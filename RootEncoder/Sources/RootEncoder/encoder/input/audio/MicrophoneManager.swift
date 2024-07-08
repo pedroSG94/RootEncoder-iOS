@@ -37,6 +37,7 @@ public class MicrophoneManager: NSObject, AVCaptureAudioDataOutputSampleBufferDe
             self.input = input
             
             let output = AVCaptureAudioDataOutput()
+            let thread = DispatchQueue(label: "MicrophoneManagerCallback")
             output.setSampleBufferDelegate(self, queue: thread)
             if session?.canAddOutput(output) == true {
                 session?.addOutput(output)
@@ -76,6 +77,18 @@ public class MicrophoneManager: NSObject, AVCaptureAudioDataOutputSampleBufferDe
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         let ts = UInt64(Date().millisecondsSince1970)
-        self.callback?.getPcmData(frame: PcmFrame(buffer: sampleBuffer.mute(enabled: muted), ts: ts))
+        thread.async {
+            guard let description = sampleBuffer.formatDescription else {
+                return
+            }
+            let format = AVAudioFormat(cmAudioFormatDescription: description)
+            let length = AVAudioFrameCount(UInt(sampleBuffer.numSamples))
+            let pcmBuffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: length)
+            if let buffer = pcmBuffer {
+                buffer.frameLength = length
+                CMSampleBufferCopyPCMDataIntoAudioBufferList(sampleBuffer, at: 0, frameCount: Int32(sampleBuffer.numSamples), into: buffer.mutableAudioBufferList)
+                self.callback?.getPcmData(frame: PcmFrame(sampleBuffer: sampleBuffer, buffer: buffer.mute(enabled: self.muted), ts: ts, time: sampleBuffer.presentationTimeStamp))
+            }
+        }
     }
 }

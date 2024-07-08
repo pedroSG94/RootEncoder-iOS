@@ -29,11 +29,7 @@ public class ScreenManager {
             if let error = error {
                 print(error.localizedDescription)
             }
-            print("type: \(bufferType.rawValue)")
             if (bufferType.rawValue == RPSampleBufferType.video.rawValue) {
-                let w = buffer.formatDescription?.dimensions.width
-                let h = buffer.formatDescription?.dimensions.height
-                print("\(w)x\(h), \(self.getWidth())x\(self.getHeight())")
                 self.callbackVideo?.getYUVData(from: buffer)
             } else if (bufferType.rawValue == RPSampleBufferType.audioApp.rawValue) {
                 //self.callbackAudio?.getPcmData(buffer: buffer)

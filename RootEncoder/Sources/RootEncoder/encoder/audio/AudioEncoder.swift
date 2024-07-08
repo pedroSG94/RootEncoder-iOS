@@ -66,21 +66,21 @@ public class AudioEncoder {
                 if let pcmFrame = pcmFrame {
                     let ts = UInt64(pcmFrame.ts * 1000)
                     if self.inputFormat == nil {
-                        if let formatDescription = pcmFrame.buffer.formatDescription, self.inputFormat?.formatDescription != formatDescription {
-                            self.inputFormat = AVAudioFormat(cmAudioFormatDescription: formatDescription)
-                        }
+                        self.inputFormat = pcmFrame.buffer.format
                     }
                     if self.converter == nil {
-                        guard let converter = AVAudioConverter(from: self.inputFormat!, to: self.outputFormat!) else {
-                            continue
+                        if let inputFormat = self.inputFormat, let outputFormat = self.outputFormat {
+                            guard let converter = AVAudioConverter(from: inputFormat, to: outputFormat) else {
+                                continue
+                            }
+                            self.converter = converter
+                            converter.bitRate = self.bitrate
                         }
-                        self.converter = converter
-                        converter.bitRate = self.bitrate
                     }
                     if self.initTs == 0 { self.initTs = ts }
                     var error: NSError? = nil
                     if self.codec == AudioCodec.AAC {
-                        guard let aacBuffer = self.convertAAC(buffer: pcmFrame.buffer, error: &error) else {
+                        guard let aacBuffer = self.convertAAC(inputBuffer: pcmFrame.buffer, error: &error) else {
                             continue
                         }
                         if error != nil {
@@ -91,7 +91,7 @@ public class AudioEncoder {
                             self.callback?.getAacData(frame: Frame(buffer: data, length: UInt32(data.count), timeStamp: elapsedMicroSeconds))
                         }
                     } else if self.codec == AudioCodec.G711 {
-                        guard let g711Buffer = self.convertG711(buffer: pcmFrame.buffer, error: &error) else {
+                        guard let g711Buffer = self.convertG711(inputBuffer: pcmFrame.buffer, error: &error) else {
                             continue
                         }
                         if error != nil {
@@ -115,21 +115,12 @@ public class AudioEncoder {
         syncQueue.clear()
     }
     
-    private func convertAAC(buffer: CMSampleBuffer, error: NSErrorPointer) -> AVAudioCompressedBuffer? {
+    private func convertAAC(inputBuffer: AVAudioPCMBuffer, error: NSErrorPointer) -> AVAudioCompressedBuffer? {
         if (running) {
-            guard let inputFormat = inputFormat, let outputFormat = outputFormat, let blockBuffer = CMSampleBufferGetDataBuffer(buffer) else {
+            guard let outputFormat = outputFormat else {
                 return nil
             }
             let outputBuffer = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 1, maximumPacketSize: 1024 * Int(outputFormat.channelCount))
-            
-            var length = 0
-            var dataPointer: UnsafeMutablePointer<Int8>?
-            
-            CMBlockBufferGetDataPointer(blockBuffer, atOffset: 0, lengthAtOffsetOut: nil, totalLengthOut: &length, dataPointerOut: &dataPointer)
-            
-            let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: AVAudioFrameCount(inputFormat.sampleRate))
-            inputBuffer?.frameLength = AVAudioFrameCount(length) / inputFormat.streamDescription.pointee.mBytesPerFrame
-            memcpy(inputBuffer?.int16ChannelData?[0], dataPointer, length)
             
             converter?.convert(to: outputBuffer, error: nil) { _, outStatus in
                 outStatus.pointee = .haveData
@@ -141,25 +132,13 @@ public class AudioEncoder {
         }
     }
     
-    private func convertG711(buffer: CMSampleBuffer, error: NSErrorPointer) -> AVAudioPCMBuffer? {
+    private func convertG711(inputBuffer: AVAudioPCMBuffer, error: NSErrorPointer) -> AVAudioPCMBuffer? {
         if (running) {
-            guard let inputFormat = inputFormat, let outputFormat = outputFormat, let blockBuffer = CMSampleBufferGetDataBuffer(buffer) else {
+            guard let outputFormat = outputFormat else {
                 return nil
             }
-            let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: AVAudioFrameCount(inputFormat.sampleRate))
-            guard let outputBuffer = outputBuffer else {
-                return nil
-            }
+            let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: AVAudioFrameCount(outputFormat.sampleRate) * inputBuffer.frameLength / AVAudioFrameCount(inputBuffer.format.sampleRate))!
             outputBuffer.frameLength = outputBuffer.frameCapacity
-            
-            var length = 0
-            var dataPointer: UnsafeMutablePointer<Int8>?
-            
-            CMBlockBufferGetDataPointer(blockBuffer, atOffset: 0, lengthAtOffsetOut: nil, totalLengthOut: &length, dataPointerOut: &dataPointer)
-            
-            let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: AVAudioFrameCount(inputFormat.sampleRate))
-            inputBuffer?.frameLength = AVAudioFrameCount(length) / inputFormat.streamDescription.pointee.mBytesPerFrame
-            memcpy(inputBuffer?.int16ChannelData?[0], dataPointer, length)
             
             converter?.convert(to: outputBuffer, error: nil) { _, outStatus in
                 outStatus.pointee = .haveData
