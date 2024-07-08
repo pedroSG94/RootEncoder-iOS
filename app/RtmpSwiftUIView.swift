@@ -74,7 +74,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtmp://192.168.0.176:1935/live/pedro"
+    @State private var endpoint = "rtmp://a.rtmp.youtube.com/live2/brxq-gjp9-a18e-z7mg-2a8v"
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false

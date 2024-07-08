@@ -154,7 +154,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     public func getH264DataRtp(frame: Frame) {}
 
     public func getPcmData(frame: PcmFrame) {
-        recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
+        recordController.recordAudio(buffer: frame.buffer)
         audioEncoder.encodeFrame(frame: frame)
     }
 
