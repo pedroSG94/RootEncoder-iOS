@@ -86,11 +86,11 @@ public class AudioEncoder {
                     if !self.audioTime.hasAnchor {
                         self.audioTime.anchor(pcmFrame.time, sampleRate: outputFormat.sampleRate)
                     }
-                    self.ringBuffer?.append(pcmFrame.buffer)
                     if self.codec == AudioCodec.AAC {
+                        self.ringBuffer?.append(pcmFrame.buffer)
                         self.convertAAC(error: &error)
                     } else if self.codec == AudioCodec.G711 {
-                        self.convertG711(error: &error)
+                        self.convertG711(inputBuffer: pcmFrame.buffer, error: &error)
                     }
                 }
             }
@@ -113,29 +113,31 @@ public class AudioEncoder {
             guard let inputBuffer = inputBuffer else { return }
             
             let outputBuffer = AVAudioCompressedBuffer(format: outputFormat, packetCapacity: 1, maximumPacketSize: 1024 * Int(outputFormat.channelCount))
-            convert(inputBuffer: inputBuffer, outputBuffer: outputBuffer)
+            convert(inputBuffer: inputBuffer, outputBuffer: outputBuffer, extraTime: 1024)
         }
     }
     
-    private func convertG711(error: NSErrorPointer) {
+    private func convertG711(inputBuffer: AVAudioPCMBuffer, error: NSErrorPointer) {
         if (running) {
-            guard let inputFormat = inputFormat, let outputFormat = outputFormat else { return }
-            let inputBuffer = AVAudioPCMBuffer(pcmFormat: inputFormat, frameCapacity: 1024 * 4)
-            guard let inputBuffer = inputBuffer else { return }
-            
-            let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: AVAudioFrameCount(outputFormat.sampleRate) * inputBuffer.frameLength / AVAudioFrameCount(inputBuffer.format.sampleRate))!
+            guard let outputFormat = outputFormat else { return }
+            let extraTime = AVAudioFrameCount(outputFormat.sampleRate) * inputBuffer.frameLength / AVAudioFrameCount(inputBuffer.format.sampleRate)
+            let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: extraTime)!
             outputBuffer.frameLength = outputBuffer.frameCapacity
-            convert(inputBuffer: inputBuffer, outputBuffer: outputBuffer)
+            
+            convert(inputBuffer: inputBuffer, outputBuffer: outputBuffer, extraTime: AVAudioFramePosition(extraTime), force: true)
         }
     }
     
-    private func convert(inputBuffer: AVAudioPCMBuffer, outputBuffer: AVAudioBuffer) {
+    private func convert(inputBuffer: AVAudioPCMBuffer, outputBuffer: AVAudioBuffer, extraTime: AVAudioFramePosition, force: Bool = false) {
         guard let ringBuffer = ringBuffer else { return }
         var status: AVAudioConverterOutputStatus? = .endOfStream
         
         repeat {
             status = converter?.convert(to: outputBuffer, error: nil) { inNumberFrames, status in
-                if inNumberFrames <= ringBuffer.counts {
+                if force {
+                    status.pointee = .haveData
+                    return inputBuffer
+                } else if inNumberFrames <= ringBuffer.counts {
                     _ = ringBuffer.render(inNumberFrames, ioData: inputBuffer.mutableAudioBufferList)
                     inputBuffer.frameLength = inNumberFrames
                     status.pointee = .haveData
@@ -163,13 +165,13 @@ public class AudioEncoder {
                 }
                 let elapsedMicroSeconds = ts - self.initTs
                 self.callback?.getAacData(frame: Frame(buffer: data, length: UInt32(data.count), timeStamp: elapsedMicroSeconds))
-                self.audioTime.advanced(1024)
+                self.audioTime.advanced(extraTime)
             case .error:
                 print("error")
             default:
                 break
             }
-        } while(status == .haveData)
+        } while(status == .haveData && !force)
     }
     
     private func getAACFormat(sampleRate: Double, channels: UInt32) -> AVAudioFormat? {
