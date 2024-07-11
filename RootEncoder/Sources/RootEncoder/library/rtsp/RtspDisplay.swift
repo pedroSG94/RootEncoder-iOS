@@ -67,4 +67,8 @@ public class RtspDisplay: DisplayBase {
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         client.setVideoInfo(sps: sps, pps: pps, vps: vps)
     }
+    
+    public func setLogs(enabled: Bool) {
+        client.setLogs(enabled: enabled)
+    }
 }

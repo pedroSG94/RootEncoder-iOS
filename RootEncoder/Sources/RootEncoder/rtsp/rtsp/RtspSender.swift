@@ -165,4 +165,8 @@ public class RtspSender {
     public func clearCache() {
         queue.clear()
     }
+    
+    public func setLogs(enable: Bool) {
+        isEnableLogs = enable
+    }
 }

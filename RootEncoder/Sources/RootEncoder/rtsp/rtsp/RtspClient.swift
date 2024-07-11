@@ -329,4 +329,8 @@ public class RtspClient {
     public func resetDroppedVideoFrames() {
         rtspSender.droppedVideoFrames = 0
     }
+    
+    public func setLogs(enable: Bool) {
+        rtspSender.setLogs(enable: enable)
+    }
 }
