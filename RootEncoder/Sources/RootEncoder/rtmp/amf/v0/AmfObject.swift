@@ -63,6 +63,13 @@ public class AmfObject: AmfData, CustomStringConvertible {
         bodySize += key.getSize()
         bodySize += value.getSize() + 1
     }
+    
+    public func setProperty(name: String, data: AmfData) {
+        let key = AmfString(value: name)
+        properties[key] = data
+        bodySize += key.getSize()
+        bodySize += data.getSize() + 1
+    }
 
     public override func readBody(buffer: inout [UInt8]) throws {
         let objectEnd = AmfObjectEnd()

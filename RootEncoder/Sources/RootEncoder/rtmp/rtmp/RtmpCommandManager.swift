@@ -89,18 +89,15 @@ public class RtmpCommandManager {
         let connectInfo = AmfObject()
         connectInfo.setProperty(name: "app", data: appName + auth)
         connectInfo.setProperty(name: "flashVer", data: "FMLE/3.0 (compatible; Lavf57.56.101)")
-        connectInfo.setProperty(name: "swfUrl", data: "")
         connectInfo.setProperty(name: "tcUrl", data: tcUrl + auth)
-        connectInfo.setProperty(name: "fpad", data: false)
-        connectInfo.setProperty(name: "capabilities", data: 239)
-        if (!audioDisabled) {
-            connectInfo.setProperty(name: "audioCodecs", data: 3191)
-        }
         if (!videoDisabled) {
-            connectInfo.setProperty(name: "videoCodecs", data: 252)
-            connectInfo.setProperty(name: "videoFunction", data: 1)
+            if videoCodec == VideoCodec.H265 {
+                var list = Array<AmfData>()
+                list.append(AmfString(value: "hvc1"))
+                let array = AmfStrictArray(items: list)
+                connectInfo.setProperty(name: "fourCcList", data: array)
+            }
         }
-        connectInfo.setProperty(name: "pageUrl", data: "")
         connectInfo.setProperty(name: "objectEncoding", data: 0)
         connect.addData(amfData: connectInfo)
         try await connect.writeHeader(socket: socket)

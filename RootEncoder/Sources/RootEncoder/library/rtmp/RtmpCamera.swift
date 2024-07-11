@@ -56,6 +56,12 @@ public class RtmpCamera: CameraBase {
     }
     
     public override func startStreamRtp(endpoint: String) {
+        if videoEncoder.rotation == 90 || videoEncoder.rotation == 270 {
+            client.setVideoResolution(width: videoEncoder.height, height: videoEncoder.width)
+        } else {
+            client.setVideoResolution(width: videoEncoder.width, height: videoEncoder.height)
+        }
+        client.setFps(fps: videoEncoder.fps)
         client.connect(url: endpoint)
     }
     

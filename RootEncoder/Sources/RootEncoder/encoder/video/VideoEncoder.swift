@@ -13,16 +13,16 @@ import CoreFoundation
 
 public class VideoEncoder {
     
-    private var width = 640
-    private var height = 480
-    private var fps: Int = 60
+    private(set) var width = 640
+    private(set) var height = 480
+    private(set) var fps: Int = 30
     private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
     private var running = false
     private var forceKey = false
-    private var rotation = 0
+    private(set) var rotation = 0
     private var codec = CodecUtil.H264
     private let thread = DispatchQueue(label: "VideoEncoder")
     private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
