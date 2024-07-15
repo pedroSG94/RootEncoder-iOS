@@ -58,15 +58,11 @@ public class RtmpH264Packet: RtmpBasePacket {
         
         let headerSize = getHeaderSize(byteBuffer: buffer)
         
-        if headerSize == 0 {
-            return
-        }
+        if headerSize == 0 { return }
         
         let validBuffer = removeHeader(byteBuffer: buffer, size: headerSize)
         let size = validBuffer.count
-        if size > UInt32.max {
-            return
-        }
+        if size < 0 { return }
         packetBuffer = [UInt8](repeating: 0, count: header.count + size + naluSize)
         
         let type: Int = Int(validBuffer[0]) & 0x1F
@@ -107,10 +103,8 @@ public class RtmpH264Packet: RtmpBasePacket {
     }
         
     private func writeNaluSize(buffer: inout [UInt8], offset: Int, size: Int) {
-        buffer[offset] = UInt8(size >> 24)
-        buffer[offset + 1] = UInt8(size >> 16)
-        buffer[offset + 2] = UInt8(size >> 8)
-        buffer[offset + 3] = UInt8(size & 0xFF)
+        let byteArray: Array<UInt8> = withUnsafeBytes(of: UInt32(size)) { Array($0) }.reversed()
+        buffer[offset..<offset + byteArray.count] = byteArray[0..<byteArray.count]
     }
     
     private func removeHeader(byteBuffer: [UInt8], size: Int = -1) -> [UInt8] {
