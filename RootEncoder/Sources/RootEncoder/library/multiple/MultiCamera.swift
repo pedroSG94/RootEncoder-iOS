@@ -18,17 +18,17 @@ import UIKit
  *
  * let arrayRtmp: [ConnectChecker] = [stream1, stream2]
  * let arrayRtsp: [ConnectChecker] = [stream3]
- * let multiCamera = MultiCamera(uiView, arrayRtmp, arrayRtsp);
+ * let multiCamera = MultiCamera(uiView, arrayRtmp, arrayRtsp)
  *
  * You can set an empty array or nil if you don't want use a protocol
- * MultiCamera(uiView, arrayRtmp, nil); //RTSP protocol is not used
+ * MultiCamera(uiView, arrayRtmp, nil) //RTSP protocol is not used
  *
  * In order to use start, stop and other calls you must send type of stream and index to execute it.
  * Example (using previous example interfaces):
  *
- * multiCamera.startStream(MultiType.RTMP, 1, myendpoint); //stream2 is started
- * multiCamera.stopStream(MultiType.RTSP, 0); //stream3 is stopped
- * multiCamera.retry(RtpType.RTMP, 0, delay, reason, backupUrl) //retry stream1
+ * multiCamera.startStream(MultiType.RTMP, 1, myendpoint) //stream2 is started
+ * multiCamera.stopStream(MultiType.RTSP, 0) //stream3 is stopped
+ * multiCamera.getStreamClient(RtpType.RTMP, 0).retry(delay, reason, backupUrl) //retry stream1
  *
  * NOTE:
  * If you call this methods nothing is executed:
@@ -40,47 +40,49 @@ import UIKit
  * The rest of methods without MultiType and index means that you will execute that command in all streams.
  * Read class code if you need info about any method.
  */
-public class MultiCamera: CameraBase {
+public class MultiCamera: CameraBase, StreamClientListenter {
     
+    public func onRequestKeyframe() {
+        videoEncoder.forceKeyFrame()
+    }
     private var rtmpClients = Array<RtmpClient>()
     private var rtspClients = Array<RtspClient>()
+    private var rtmpStreamClients = Array<RtmpStreamClient>()
+    private var rtspStreamClients = Array<RtspStreamClient>()
     
     public init(view: UIView, connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
+        super.init(view: view)
         for i in connectCheckerRtmpList ?? [] {
-            rtmpClients.append(RtmpClient(connectChecker: i))
+            let client = RtmpClient(connectChecker: i)
+            rtmpClients.append(client)
+            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: self))
         }
         for i in connectCheckerRtspList ?? [] {
-            rtspClients.append(RtspClient(connectChecker: i))
+            let client = RtspClient(connectChecker: i)
+            rtspClients.append(client)
+            rtspStreamClients.append(RtspStreamClient(client: client, listener: self))
         }
-        super.init(view: view)
     }
 
     public init(view: MetalView, connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
+        super.init(view: view)
         for i in connectCheckerRtmpList ?? [] {
-            rtmpClients.append(RtmpClient(connectChecker: i))
+            let client = RtmpClient(connectChecker: i)
+            rtmpClients.append(client)
+            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: self))
         }
         for i in connectCheckerRtspList ?? [] {
-            rtspClients.append(RtspClient(connectChecker: i))
-        }
-        super.init(view: view)
-    }
-    
-    public func setAuth(user: String, password: String) {
-        for rtmp in rtmpClients {
-            rtmp.setAuth(user: user, password: password)
-        }
-        for rtsp in rtspClients {
-            rtsp.setAuth(user: user, password: password)
+            let client = RtspClient(connectChecker: i)
+            rtspClients.append(client)
+            rtspStreamClients.append(RtspStreamClient(client: client, listener: self))
         }
     }
     
-    public func setAuth(type: MultiType, index: Int, user: String, password: String) {
+    public func getStreamClient(type: MultiType, index: Int) -> StreamBaseClient {
         if type == MultiType.RTMP {
-            let client = rtmpClients[index]
-            client.setAuth(user: user, password: password)
+            return rtmpStreamClients[index]
         } else {
-            let client = rtspClients[index]
-            client.setAuth(user: user, password: password)
+            return rtspStreamClients[index]
         }
     }
     
@@ -99,44 +101,6 @@ public class MultiCamera: CameraBase {
         }
         for rtsp in rtspClients {
             rtsp.setAudioCodec(codec: codec)
-        }
-    }
-    
-    public func setLogs(enabled: Bool) {
-        for rtmp in rtmpClients {
-            rtmp.setLogs(enabled: enabled)
-        }
-        for rtsp in rtspClients {
-            rtsp.setLogs(enabled: enabled)
-        }
-    }
-    
-    public func setRetries(reTries: Int) {
-        for rtmp in rtmpClients {
-            rtmp.setRetries(reTries: reTries)
-        }
-        for rtsp in rtspClients {
-            rtsp.setRetries(reTries: reTries)
-        }
-    }
-    
-    public func retry(type: MultiType, index: Int, delay: Int, reason: String, backUrl: String? = nil) -> Bool {
-        if type == MultiType.RTMP {
-            let client = rtmpClients[index]
-            let result = client.shouldRetry(reason: reason)
-            if (result) {
-                videoEncoder.forceKeyFrame()
-                client.reconnect(delay: delay, backupUrl: backUrl)
-            }
-            return result
-        } else {
-            let client = rtspClients[index]
-            let result = client.shouldRetry(reason: reason)
-            if (result) {
-                videoEncoder.forceKeyFrame()
-                client.reconnect(delay: delay, backupUrl: backUrl)
-            }
-            return result
         }
     }
     

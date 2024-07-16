@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class RtspStreamClient {
+public class RtspStreamClient: StreamBaseClient {
     
     private let client: RtspClient
     private let listener: StreamClientListenter?
