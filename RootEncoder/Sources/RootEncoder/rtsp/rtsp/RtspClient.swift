@@ -283,7 +283,7 @@ public class RtspClient {
     }
     
     public func setLogs(enabled: Bool) {
-        rtspSender.isEnableLogs = enabled
+        rtspSender.setLogs(enable: enabled)
     }
     
     public func resizeCache(newSize: Int) {
@@ -328,9 +328,5 @@ public class RtspClient {
 
     public func resetDroppedVideoFrames() {
         rtspSender.droppedVideoFrames = 0
-    }
-    
-    public func setLogs(enable: Bool) {
-        rtspSender.setLogs(enable: enable)
     }
 }
