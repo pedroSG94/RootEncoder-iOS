@@ -22,7 +22,7 @@ struct RtspSwiftUIView: View, ConnectChecker {
     
     func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
-        if (rtspCamera.reTry(delay: 5000, reason: reason)) {
+        if (rtspCamera.getStreamClient().reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -91,7 +91,7 @@ struct RtspSwiftUIView: View, ConnectChecker {
             
             camera.onAppear {
                 rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
-                rtspCamera.setRetries(reTries: 10)
+                rtspCamera.getStreamClient().setRetries(reTries: 10)
                 rtspCamera.startPreview()
             }
             camera.onDisappear {

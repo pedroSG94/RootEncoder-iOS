@@ -23,7 +23,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     
     func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
-        if (rtmpCamera.reTry(delay: 5000, reason: reason)) {
+        if (rtmpCamera.getStreamClient().reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -91,7 +91,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
             
             camera.onAppear {
                 rtmpCamera = RtmpCamera(view: cameraView, connectChecker: self)
-                rtmpCamera.setRetries(reTries: 10)
+                rtmpCamera.getStreamClient().setRetries(reTries: 10)
                 rtmpCamera.startPreview()
             }
             camera.onDisappear {

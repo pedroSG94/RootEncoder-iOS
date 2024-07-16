@@ -8,37 +8,32 @@
 import Foundation
 import UIKit
 
-public class RtmpDisplay: DisplayBase {
+public class RtmpDisplay: DisplayBase, StreamClientListenter {
 
+    public func onRequestKeyframe() {
+        videoEncoder.forceKeyFrame()
+    }
     private var client: RtmpClient!
+    private var streamClient: RtmpStreamClient?
 
     public init(connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
         super.init()
-    }
-
-    public func setAuth(user: String, password: String) {
-        client.setAuth(user: user, password: password)
-    }
-
-    public func reTry(delay: Int, reason: String, backUrl: String? = nil) -> Bool {
-        let result = client.shouldRetry(reason: reason)
-        if (result) {
-            videoEncoder.forceKeyFrame()
-            client.reconnect(delay: delay, backupUrl: backUrl)
-        }
-        return result
+        streamClient = RtmpStreamClient(client: client, listener: self)
     }
     
-    public func setRetries(reTries: Int) {
-        client.setRetries(reTries: reTries)
+    public func getStreamClient() -> RtmpStreamClient {
+        return streamClient!
     }
     
-    public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
-        super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
-        client.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+    public override func setVideoCodecImp(codec: VideoCodec) {
+        client.setVideoCodec(codec: codec)
     }
-
+    
+    public override func setAudioCodecImp(codec: AudioCodec) {
+        client.setAudioCodec(codec: codec)
+    }
+    
     public override func stopStreamRtp() {
         client.disconnect()
     }
@@ -53,6 +48,11 @@ public class RtmpDisplay: DisplayBase {
         client.connect(url: endpoint)
     }
     
+    public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
+        super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
+        client.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+    }
+    
     public override func getAacDataRtp(frame: Frame) {
         client.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
     }
@@ -63,9 +63,5 @@ public class RtmpDisplay: DisplayBase {
 
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         client.setVideoInfo(sps: sps, pps: pps, vps: vps)
-    }
-    
-    public func setLogs(enabled: Bool) {
-        client.setLogs(enabled: enabled)
     }
 }
