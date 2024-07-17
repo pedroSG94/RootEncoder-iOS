@@ -126,12 +126,12 @@ struct RtspSwiftUIView: View, ConnectChecker {
                 }.padding(.trailing, 16)
                 TextField("rtsp://ip:port/app/streamname", text: $endpoint)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color.init(hex: "#e74c3c"))
                     .padding(.top, 24)
                     .padding(.horizontal)
                     .keyboardType(.default)
-                Text(bitrateText).foregroundColor(Color.blue)
+                    .multilineTextAlignment(.center)
+                Text(bitrateText).foregroundColor(Color.init(hex: "#e74c3c"))
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bRecordText) {

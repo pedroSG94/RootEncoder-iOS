@@ -23,7 +23,7 @@ struct MainSwiftUIView: View {
                     Text("Screen")
                 }
             }
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }.accentColor(Color.init(hex: "#e74c3c")).navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
