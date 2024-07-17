@@ -35,7 +35,6 @@ import UIKit
  *
  * multiCamera.startStream(endpoint);
  * multiCamera.stopStream();
- * multiCamera.retry(delay, reason, backUpUrl);
  *
  * The rest of methods without MultiType and index means that you will execute that command in all streams.
  * Read class code if you need info about any method.

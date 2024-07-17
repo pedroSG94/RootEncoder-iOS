@@ -26,14 +26,13 @@ import Foundation
  *
  * multiDisplay.startStream(MultiType.RTMP, 1, myendpoint) //stream2 is started
  * multiDisplay.stopStream(MultiType.RTSP, 0) //stream3 is stopped
- * multiDisplay.retry(RtpType.RTMP, 0, delay, reason, backupUrl) //retry stream1
+ * multiDisplay.getStreamClient(MultiType.RTMP, 0).retry(delay, reason, backupUrl) //retry stream1
  *
  * NOTE:
  * If you call this methods nothing is executed:
  *
  * multiDisplay.startStream(endpoint)
  * multiDisplay.stopStream()
- * multiDisplay..getStreamClient(RtpType.RTMP, 0).retry(delay, reason, backupUrl)
  *
  * The rest of methods without MultiType and index means that you will execute that command in all streams.
  * Read class code if you need info about any method.
