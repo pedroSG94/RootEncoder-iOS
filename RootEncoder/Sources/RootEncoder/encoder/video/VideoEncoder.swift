@@ -64,14 +64,17 @@ public class VideoEncoder {
         self.iFrameInterval = iFrameInterval
         if err == errSecSuccess{
             guard let sess = session else { return false }
-            let bitRate = bitrate
             let frameInterval: Int32 = 60
+            let bitrateMode = if #available(iOS 16.0, *) {
+                kVTCompressionPropertyKey_ConstantBitRate
+            } else {
+                kVTCompressionPropertyKey_AverageBitRate
+            }
             VTSessionSetProperties(sess, propertyDictionary: [
+                bitrateMode: bitrate,
                 kVTCompressionPropertyKey_ProfileLevel: codec.profile,
-                kVTCompressionPropertyKey_AverageBitRate: bitRate,
                 kVTCompressionPropertyKey_MaxKeyFrameInterval: frameInterval,
                 kVTCompressionPropertyKey_RealTime: true,
-                kVTCompressionPropertyKey_Quality: 0.25,
                 kVTCompressionPropertyKey_AllowFrameReordering: true
             ] as CFDictionary)
             VTCompressionSessionPrepareToEncodeFrames(sess)

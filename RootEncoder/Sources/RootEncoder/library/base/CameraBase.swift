@@ -165,7 +165,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func startPreview() {
-        startPreview(resolution: CameraHelper.Resolution.vga640x480, facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation())
+        startPreview(resolution: .vga640x480, facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation())
     }
 
     public func stopPreview() {
