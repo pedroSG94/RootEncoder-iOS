@@ -82,7 +82,8 @@ public class RtspClient {
                     let host = groups[1]
                     let defaultPort = groups.count == 3
                     let port = defaultPort ? 554 : Int(groups[2]) ?? 554
-                    let path = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])"
+                    let streamName = groups[defaultPort ? 3 : 4].isEmpty ? "" : "/\(groups[defaultPort ? 3 : 4])"
+                    let path = "/\(groups[defaultPort ? 2 : 3])" + streamName
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     do {
                         self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port)
