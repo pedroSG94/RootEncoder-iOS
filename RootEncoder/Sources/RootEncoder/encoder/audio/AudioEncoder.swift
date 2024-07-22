@@ -133,18 +133,20 @@ public class AudioEncoder {
         var status: AVAudioConverterOutputStatus? = .endOfStream
         
         repeat {
-            status = converter?.convert(to: outputBuffer, error: nil) { inNumberFrames, status in
-                if force {
-                    status.pointee = .haveData
-                    return inputBuffer
-                } else if inNumberFrames <= ringBuffer.counts {
-                    _ = ringBuffer.render(inNumberFrames, ioData: inputBuffer.mutableAudioBufferList)
-                    inputBuffer.frameLength = inNumberFrames
-                    status.pointee = .haveData
-                    return inputBuffer
-                } else {
-                    status.pointee = .noDataNow
-                    return nil
+            autoreleasepool {
+                status = converter?.convert(to: outputBuffer, error: nil) { inNumberFrames, status in
+                    if force {
+                        status.pointee = .haveData
+                        return inputBuffer
+                    } else if inNumberFrames <= ringBuffer.counts {
+                        _ = ringBuffer.render(inNumberFrames, ioData: inputBuffer.mutableAudioBufferList)
+                        inputBuffer.frameLength = inNumberFrames
+                        status.pointee = .haveData
+                        return inputBuffer
+                    } else {
+                        status.pointee = .noDataNow
+                        return nil
+                    }
                 }
             }
             switch status {
