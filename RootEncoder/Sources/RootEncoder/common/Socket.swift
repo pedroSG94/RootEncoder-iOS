@@ -6,8 +6,7 @@ public class Socket: NSObject, StreamDelegate {
     public var host: String
     private var connection: NWConnection? = nil
     private var bufferAppend: [UInt8]? = nil
-    private let lock = DispatchQueue(label: "com.pedro.Socket.sync")
-    private let readLock = DispatchQueue(label: "com.pedro.Socket.sync.read")
+    private let thread = DispatchQueue(label: "SocketThread")
 
     /**
         TCP or TCP/TLS socket
@@ -57,7 +56,7 @@ public class Socket: NSObject, StreamDelegate {
                     break
                 }
             }
-            connection?.start(queue: .global())
+            connection?.start(queue: thread)
         }
     }
     
@@ -71,7 +70,6 @@ public class Socket: NSObject, StreamDelegate {
         try await write(data: data)
     }
 
-    
     public func write(data: Data) async throws {
         let _ = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Bool, Error>) in
             if (connection == nil) {

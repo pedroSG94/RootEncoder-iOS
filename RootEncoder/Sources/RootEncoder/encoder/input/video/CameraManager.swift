@@ -12,7 +12,7 @@ import AVFoundation
 
 public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let thread = DispatchQueue.global()
+    private let thread = DispatchQueue(label: "CameraManager")
     var session: AVCaptureSession?
     var device: AVCaptureDevice?
     var input: AVCaptureDeviceInput?

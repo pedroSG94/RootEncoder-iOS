@@ -190,7 +190,8 @@ public class RtspClient {
             do {
                 let _ = try await commandsManager.getResponse(socket: socket)
                 //Do something depend of command if required
-            } catch {
+            } catch let error {
+                connectChecker.onConnectionFailed(reason: "read error: \(error)")
             }
         }
       }

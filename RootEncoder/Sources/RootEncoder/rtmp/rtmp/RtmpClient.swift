@@ -190,8 +190,8 @@ public class RtmpClient {
     private func handleServerCommands() async {
         do {
             try await handleServerPackets()
-        } catch {
-            
+        } catch let error {
+            connectChecker.onConnectionFailed(reason: "read error \(error)")
         }
     }
     
