@@ -49,11 +49,11 @@ public class RtspDisplay: DisplayBase, StreamClientListenter {
     }
     
     public override func getAacDataRtp(frame: Frame) {
-        client.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
+        client.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
     }
 
     public override func getH264DataRtp(frame: Frame) {
-        client.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+        client.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
     }
 
     public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {

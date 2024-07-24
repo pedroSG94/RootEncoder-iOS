@@ -25,6 +25,7 @@ public class VideoEncoder {
     private(set) var rotation = 0
     private var codec = CodecUtil.H264
     private let thread = DispatchQueue(label: "VideoEncoder")
+    private let threadOutput = DispatchQueue(label: "VideoEncoderOutput")
     private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
 
     private var session: VTCompressionSession? = nil
@@ -231,8 +232,10 @@ public class VideoEncoder {
             let ppsData = NSData(bytes: pps, length: ppsSize)
 
             if (!isSpsAndPpsSend) {
-                callback.getSpsAndPps(sps: [UInt8](spsData), pps: [UInt8](ppsData),
-                        vps: vpsData != nil ? [UInt8](vpsData!) : nil)
+                threadOutput.async {
+                    self.callback.getSpsAndPps(sps: [UInt8](spsData), pps: [UInt8](ppsData),
+                            vps: vpsData != nil ? [UInt8](vpsData!) : nil)
+                }
                 isSpsAndPpsSend = true
             }
         }
@@ -274,15 +277,14 @@ public class VideoEncoder {
 
                 var rawH264 = [UInt8](data)
                 rawH264.insert(contentsOf: startCode, at: 0)
-                
-                var frame = Frame()
-                frame.buffer = rawH264
                 let end = Date().millisecondsSince1970
                 let elapsedMicroSeconds = (end - initTs) * 1000
-                frame.timeStamp = UInt64(elapsedMicroSeconds)
-                frame.length = UInt32(frame.buffer!.count)
+                let frame = Frame(buffer: rawH264, timeStamp: UInt64(elapsedMicroSeconds))
 
-                callback.getH264Data(frame: frame)
+                threadOutput.async {
+                    self.callback.getH264Data(frame: frame)
+                }
+
             }
         }
     }

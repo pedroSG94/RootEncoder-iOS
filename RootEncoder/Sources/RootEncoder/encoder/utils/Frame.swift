@@ -9,8 +9,11 @@
 import Foundation
 
 public struct Frame {
-    public var buffer: Array<UInt8>?
-    var length: UInt32?
-    public var timeStamp: UInt64?
-    var flag: Int? = 1
+    let buffer: Array<UInt8>
+    let timeStamp: UInt64
+    
+    public init(buffer: Array<UInt8>, timeStamp: UInt64) {
+        self.buffer = buffer
+        self.timeStamp = timeStamp
+    }
 }

@@ -181,19 +181,19 @@ public class MultiCamera: CameraBase, StreamClientListenter {
     
     public override func getAacDataRtp(frame: Frame) {
         for rtmp in rtmpClients {
-            rtmp.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
+            rtmp.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
         }
         for rtsp in rtspClients {
-            rtsp.sendAudio(buffer: frame.buffer!, ts: frame.timeStamp!)
+            rtsp.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
         }
     }
 
     public override func getH264DataRtp(frame: Frame) {
         for rtmp in rtmpClients {
-            rtmp.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+            rtmp.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
         }
         for rtsp in rtspClients {
-            rtsp.sendVideo(buffer: frame.buffer!, ts: frame.timeStamp!)
+            rtsp.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
         }
     }
 

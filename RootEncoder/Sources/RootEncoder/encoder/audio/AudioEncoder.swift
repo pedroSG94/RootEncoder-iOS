@@ -164,7 +164,7 @@ public class AudioEncoder {
                     self.initTs = ts
                 }
                 let elapsedMicroSeconds = ts - self.initTs
-                self.callback?.getAacData(frame: Frame(buffer: data, length: UInt32(data.count), timeStamp: elapsedMicroSeconds))
+                self.callback?.getAacData(frame: Frame(buffer: data, timeStamp: elapsedMicroSeconds))
                 self.audioTime.advanced(extraTime)
             case .error:
                 print("error")
