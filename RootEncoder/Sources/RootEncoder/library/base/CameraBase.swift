@@ -63,8 +63,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
             w = resolution.height
             h = resolution.width
         }
+        metalInterface?.setForceFps(fps: fps)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
-        cameraManager.prepare(resolution: resolution, rotation: rotation)
+        cameraManager.prepare(resolution: resolution, fps: fps, rotation: rotation)
         return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 

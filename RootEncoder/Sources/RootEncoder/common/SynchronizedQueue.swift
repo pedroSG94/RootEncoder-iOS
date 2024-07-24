@@ -22,6 +22,7 @@ public class SynchronizedQueue<T> {
     public func enqueue(_ element: T) -> Bool {
         queue.sync {
             if (elements.count >= size) {
+                semaphore.signal()
                 return false
             } else {
                 elements.append(element)

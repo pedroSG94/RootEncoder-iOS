@@ -73,4 +73,6 @@ public protocol MetalInterface {
      * When true, flips only the preview vertically
      */
     func setIsPreviewVerticalFlip(flip: Bool)
+    
+    func setForceFps(fps: Int)
 }

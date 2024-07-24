@@ -20,6 +20,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var prevLayer: AVCaptureVideoPreviewLayer?
     var videoOutput: AVCaptureVideoDataOutput?
     var cameraView: UIView? = nil
+    private var fpsLimiter = FpsLimiter()
 
     private var facing = CameraHelper.Facing.BACK
     //TODO fix use different resolution in startPreview and in prepareVideo
@@ -44,8 +45,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         running = false
     }
 
-    public func prepare(resolution: CameraHelper.Resolution, rotation: Int) {
+    public func prepare(resolution: CameraHelper.Resolution, fps: Int, rotation: Int) {
         self.resolution = resolution
+        fpsLimiter.setFps(fps: fps)
         self.rotation = rotation
     }
 
@@ -149,7 +151,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        self.callback.getYUVData(from: sampleBuffer)
+        if !fpsLimiter.limitFps() {
+            self.callback.getYUVData(from: sampleBuffer)
+        }
     }
     
     private func getOrientation(value: Int) -> AVCaptureVideoOrientation {

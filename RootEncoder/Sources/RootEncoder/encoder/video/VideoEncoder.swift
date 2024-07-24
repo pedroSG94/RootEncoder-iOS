@@ -73,6 +73,7 @@ public class VideoEncoder {
             VTSessionSetProperties(sess, propertyDictionary: [
                 bitrateMode: bitrate,
                 kVTCompressionPropertyKey_ProfileLevel: codec.profile,
+                kVTCompressionPropertyKey_ExpectedFrameRate: fps,
                 kVTCompressionPropertyKey_MaxKeyFrameInterval: frameInterval,
                 kVTCompressionPropertyKey_RealTime: true,
                 kVTCompressionPropertyKey_AllowFrameReordering: true
@@ -107,7 +108,7 @@ public class VideoEncoder {
             }
         }
     }
-
+    
     public func setCodec(codec: VideoCodec) {
         switch codec {
         case .H264:

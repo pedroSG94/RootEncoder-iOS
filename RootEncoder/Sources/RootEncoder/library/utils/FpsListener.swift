@@ -16,9 +16,9 @@ public class FpsListener {
    }
 
    public func calculateFps() {
-       if (Date().millisecondsSince1970 - time > 1000) {
-         callback?.onFps(fps: fps)
-         fps = 0
+       if Date().millisecondsSince1970 - time > 1000 {
+           callback?.onFps(fps: fps)
+           fps = 0
            time = Date().millisecondsSince1970
       }
    }

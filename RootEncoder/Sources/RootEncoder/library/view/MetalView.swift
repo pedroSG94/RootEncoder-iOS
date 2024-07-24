@@ -87,6 +87,7 @@ public class MetalView: MTKView, MetalInterface {
     private var callback: MetalViewCallback? = nil
     private var filters = [BaseFilterRender]()
     private let initialOrientation = UIDeviceOrientation(rawValue: CameraHelper.getOrientation().rawValue) ?? UIDeviceOrientation.landscapeLeft
+    private var fpsLimiter = FpsLimiter()
     
     public init() {
         super.init(frame: .zero, device: MTLCreateSystemDefaultDevice())
@@ -112,15 +113,23 @@ public class MetalView: MTKView, MetalInterface {
         framebufferOnly = false
         enableSetNeedsDisplay = true
     }
+    
+    public func setForceFps(fps: Int) {
+        fpsLimiter.setFps(fps: fps)
+    }
 }
 
 extension MetalView: MTKViewDelegate {
+
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         
     }
     
     public func draw(in view: MTKView) {
-        guard 
+        if fpsLimiter.limitFps() {
+            return
+        }
+        guard
             let currentDrawable = currentDrawable,
             let context = context,
             let render = self.render?.makeCommandBuffer() else {
