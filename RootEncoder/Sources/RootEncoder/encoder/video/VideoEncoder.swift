@@ -284,7 +284,6 @@ public class VideoEncoder {
                 threadOutput.async {
                     self.callback.getH264Data(frame: frame)
                 }
-
             }
         }
     }

@@ -110,20 +110,12 @@ public class RtspSender {
                         } else {
                             self.audioFramesSent += 1
                         }
-                        let packetSize = if (isTcp) {
-                            4 + (frame.length ?? 0)
-                        } else {
-                            (frame.length ?? 0)
-                        }
+                        let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
                         self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
                         let updated = try await self.tcpReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
                         if (updated ?? false) {
                             //bytes to bits (4 is tcp header length)
-                            let reportSize = if (isTcp) {
-                                self.tcpReport?.PACKET_LENGTH ?? (0 + 4)
-                            } else {
-                                self.tcpReport?.PACKET_LENGTH ?? 0
-                            }
+                            let reportSize = isTcp ? self.tcpReport?.PACKET_LENGTH ?? (0 + 4) : self.tcpReport?.PACKET_LENGTH ?? 0
                             self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
                         }
                     } catch let error {
