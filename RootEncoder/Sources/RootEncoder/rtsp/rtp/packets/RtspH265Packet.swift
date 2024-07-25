@@ -12,8 +12,7 @@ public class RtspH265Packet: RtspBasePacket {
         channelIdentifier = RtpConstants.trackVideo
     }
 
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
-        var packet = [RtpFrame]()
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
         var buffer = buffer
         let dts = ts * 1000
         var frame = RtpFrame()
@@ -41,7 +40,7 @@ public class RtspH265Packet: RtspBasePacket {
             frame.timeStamp = rtpTs
             frame.length = rtpBuffer.count
             frame.buffer = rtpBuffer
-            packet.append(frame)
+            callback(frame)
         }
         // Large NAL unit => Split nal unit
         else {
@@ -83,13 +82,10 @@ public class RtspH265Packet: RtspBasePacket {
                 frame.timeStamp = rtpTs
                 frame.length = rtpBuffer.count
                 frame.buffer = rtpBuffer
-                packet.append(frame)
+                callback(frame)
                 // Switch start bit
                 header[2] = header[2] & 0x7F
             }
-        }
-        if !packet.isEmpty {
-            callback(packet)
         }
     }
 

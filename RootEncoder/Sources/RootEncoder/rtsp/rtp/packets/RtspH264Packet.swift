@@ -11,8 +11,7 @@ public class RtspH264Packet: RtspBasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
-        var packet = [RtpFrame]()
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
         var buffer = buffer
         let dts = ts * 1000
         var frame = RtpFrame()
@@ -34,7 +33,7 @@ public class RtspH264Packet: RtspBasePacket {
             frame.timeStamp = rtpTs
             frame.length = rtpBuffer.count
             frame.buffer = rtpBuffer
-            packet.append(frame)
+            callback(frame)
             sendKeyFrame = true
         }
         if sendKeyFrame {
@@ -52,7 +51,7 @@ public class RtspH264Packet: RtspBasePacket {
                 frame.timeStamp = rtpTs
                 frame.length = rtpBuffer.count
                 frame.buffer = rtpBuffer
-                packet.append(frame)
+                callback(frame)
             }
             // Large NAL unit => Split nal unit
             else {
@@ -88,16 +87,13 @@ public class RtspH264Packet: RtspBasePacket {
                     frame.timeStamp = rtpTs
                     frame.length = rtpBuffer.count
                     frame.buffer = rtpBuffer
-                    packet.append(frame)
+                    callback(frame)
                     // Switch start bit
                     header[1] = header[1] & 0x7F
                 }
             }
         } else {
             print("waiting for keyframe")
-        }
-        if !packet.isEmpty {
-            callback(packet)
         }
     }
     

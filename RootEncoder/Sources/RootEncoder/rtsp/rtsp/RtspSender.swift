@@ -8,8 +8,8 @@ public class RtspSender {
     private var senderReport: BaseSenderReport?
     private var thread: Task<(), Never>? = nil
     private var running = false
-    private var cacheSize = 200
-    private let queue: SynchronizedQueue<[RtpFrame]>
+    private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
+    private let queue: SynchronizedQueue<RtpFrame>
     private let callback: ConnectChecker
     private let commandsManager: RtspCommandManager
 
@@ -23,7 +23,7 @@ public class RtspSender {
     public init(callback: ConnectChecker, commandsManager: RtspCommandManager) {
         self.callback = callback
         self.commandsManager = commandsManager
-        queue = SynchronizedQueue<[RtpFrame]>(label: "RtspSenderQueue", size: cacheSize)
+        queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: cacheSize)
         bitrateManager = BitrateManager(connectChecker: callback)
     }
 
@@ -98,28 +98,25 @@ public class RtspSender {
         senderReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         queue.clear()
         running = true
-        thread = Task(priority: .background) {
+        thread = Task(priority: .high) {
             let isTcp = self.rtpSocket is RtpSocketTcp
             while (self.running) {
                 let frame = self.queue.dequeue()
                 if let frame = frame {
                     do {
-                        for rtpFrame in frame {
-                            try self.rtpSocket?.sendFrame(rtpFrame: rtpFrame, isEnableLogs: self.isEnableLogs)
-                            if (rtpFrame.channelIdentifier == RtpConstants.trackVideo) {
-                                self.videoFramesSent += 1
-                            } else {
-                                self.audioFramesSent += 1
-                            }
-                            let packetSize = isTcp ? 4 + (rtpFrame.length ?? 0) : (rtpFrame.length ?? 0)
-                            self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
-                            let updated = try self.senderReport?.update(rtpFrame: rtpFrame, isEnableLogs: self.isEnableLogs)
-                            if (updated ?? false) {
-                                //bytes to bits (4 is tcp header length)
-                                let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
-                                self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
-                            }
-                            
+                        try self.rtpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        if (frame.channelIdentifier == RtpConstants.trackVideo) {
+                            self.videoFramesSent += 1
+                        } else {
+                            self.audioFramesSent += 1
+                        }
+                        let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
+                        self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
+                        let updated = try self.senderReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        if (updated ?? false) {
+                            //bytes to bits (4 is tcp header length)
+                            let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
+                            self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
                         }
                         self.rtpSocket?.flush()
                     } catch let error {
