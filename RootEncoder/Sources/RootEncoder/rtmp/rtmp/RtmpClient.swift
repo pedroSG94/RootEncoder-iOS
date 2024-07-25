@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class RtmpClient {
+public class RtmpClient: SocketCallback {
 
     private let connectChecker: ConnectChecker
     private var socket: Socket? = nil
@@ -59,6 +59,10 @@ public class RtmpClient {
 
     public func setVideoResolution(width: Int, height: Int) {
         commandManager.setVideoResolution(width: width, height: height)
+    }
+    
+    public func onSocketError(error: String) {
+        self.connectChecker.onConnectionFailed(reason: error)
     }
 
     public func connect(url: String?, isRetry: Bool = false) {
@@ -158,7 +162,9 @@ public class RtmpClient {
             self.disconnect(clear: false)
             Thread.sleep(forTimeInterval: Double(delay / 1000))
             let reconnectUrl = backupUrl == nil ? self.url : backupUrl
-            self.connect(url: reconnectUrl, isRetry: true)
+            if self.isStreaming {
+                self.connect(url: reconnectUrl, isRetry: true)
+            }
         }
     }
     
@@ -191,7 +197,7 @@ public class RtmpClient {
         while isStreaming {
             do {
                 try handleServerPackets()
-            } catch let error {
+            } catch {
             }
         }
     }
@@ -337,7 +343,7 @@ public class RtmpClient {
     }
 
     public func establishConnection() throws -> Bool {
-        socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port)
+        socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port, callback: self)
         try socket?.connect()
         let timeStamp = Date().millisecondsSince1970 / 1000
         let handshake = Handshake()

@@ -1,6 +1,6 @@
 import Foundation
 
-public class RtspClient {
+public class RtspClient: SocketCallback {
     
     private var socket: Socket?
     private let connectChecker: ConnectChecker
@@ -63,6 +63,10 @@ public class RtspClient {
         semaphore?.cancel()
     }
     
+    public func onSocketError(error: String) {
+        self.connectChecker.onConnectionFailed(reason: error)
+    }
+    
     public func connect(url: String?, isRetry: Bool = false) {
         if (!isRetry) {
             self.doingRetry = true
@@ -86,7 +90,7 @@ public class RtspClient {
                     let path = "/\(groups[defaultPort ? 2 : 3])" + streamName
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     do {
-                        self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port)
+                        self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self)
                         try self.socket?.connect()
                         if (!self.commandsManager.audioDisabled) {
                             self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
@@ -197,7 +201,7 @@ public class RtspClient {
             do {
                 let _ = try commandsManager.getResponse(socket: socket)
                 //Do something depend of command if required
-            } catch let error {
+            } catch {
             }
         }
       }
@@ -214,7 +218,7 @@ public class RtspClient {
         sync.enter()
         let task = Task {
             do {
-                try await self.socket?.write(data: self.commandsManager.createTeardown())
+                try self.socket?.write(data: self.commandsManager.createTeardown())
                 sync.leave()
             } catch {
                 sync.leave()
@@ -277,7 +281,9 @@ public class RtspClient {
             self.disconnect(clear: false)
             Thread.sleep(forTimeInterval: Double(delay / 1000))
             let reconnectUrl = backupUrl == nil ? self.url : backupUrl
-            self.connect(url: reconnectUrl, isRetry: true)
+            if self.streaming {
+                self.connect(url: reconnectUrl, isRetry: true)
+            }
         }
     }
     

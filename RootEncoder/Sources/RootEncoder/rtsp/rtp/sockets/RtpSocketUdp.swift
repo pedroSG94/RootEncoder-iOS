@@ -5,18 +5,20 @@
 
 import Foundation
 
-public class RtpSocketUdp: BaseRtpSocket {
+public class RtpSocketUdp: BaseRtpSocket, SocketCallback {
 
     private var videoSocket: Socket
     private var audioSocket: Socket
     private var videoPorts: Array<Int>
     private var audioPorts: Array<Int>
+    private let connectChecker: ConnectChecker
 
     public init(callback: ConnectChecker, host: String, videoPorts: Array<Int>, audioPorts: Array<Int>) {
         self.videoPorts = videoPorts
         self.audioPorts = audioPorts
-        videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1])
-        audioSocket = Socket(host: host, localPort: audioPorts[0], port: audioPorts[1])
+        self.connectChecker = callback
+        videoSocket = Socket(host: host, localPort: videoPorts[0], port: videoPorts[1], callback: nil)
+        audioSocket = Socket(host: host, localPort: audioPorts[0], port: audioPorts[1], callback: nil)
         do {
             try videoSocket.connect()
             try audioSocket.connect()
@@ -24,6 +26,8 @@ public class RtpSocketUdp: BaseRtpSocket {
             callback.onConnectionFailed(reason: error.localizedDescription)
         }
         super.init()
+        videoSocket.setCallback(callback: self)
+        audioSocket.setCallback(callback: self)
     }
 
     public override func close() {
@@ -50,5 +54,9 @@ public class RtpSocketUdp: BaseRtpSocket {
     public override func flush() {
         audioSocket.flush()
         videoSocket.flush()
+    }
+    
+    public func onSocketError(error: String) {
+        self.connectChecker.onConnectionFailed(reason: error)
     }
 }
