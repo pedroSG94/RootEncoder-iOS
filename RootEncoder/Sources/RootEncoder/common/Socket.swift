@@ -81,8 +81,8 @@ public class Socket: NSObject, StreamDelegate {
         connection?.stateUpdateHandler = nil
         connection?.forceCancel()
         connection = nil
-        inputBuffer.removeAll(keepingCapacity: false)
-        outputBuffer.removeAll(keepingCapacity: false)
+        inputBuffer = Data()
+        outputBuffer = Data()
         if connected && error != nil {
             self.callback?.onSocketError(error: error!)
         }
