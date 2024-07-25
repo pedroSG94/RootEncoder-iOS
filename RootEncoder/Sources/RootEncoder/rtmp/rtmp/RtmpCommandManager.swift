@@ -59,30 +59,32 @@ public class RtmpCommandManager {
         Int(Date().millisecondsSince1970) / 1000 - timestamp
     }
 
-    public func sendChunkSize(socket: Socket) async throws {
+    public func sendChunkSize(socket: Socket) throws {
         if (RtmpConfig.writeChunkSize != RtmpConfig.DEFAULT_CHUNK_SIZE) {
             let chunkSize = SetChunkSize(chunkSize: RtmpConfig.writeChunkSize)
             chunkSize.header.timeStamp = getCurrentTimestamp()
             chunkSize.header.messageStreamId = streamId
-            try await chunkSize.writeHeader(socket: socket)
-            try await chunkSize.writeBody(socket: socket)
+            try chunkSize.writeHeader(socket: socket)
+            try chunkSize.writeBody(socket: socket)
+            socket.flush()
         } else {
             print("using default write chunk size \(RtmpConfig.writeChunkSize)")
         }
     }
 
-    func checkAndSendAcknowledgement(socket: Socket) async throws {
+    func checkAndSendAcknowledgement(socket: Socket) throws {
         if (bytesRead >= RtmpConfig.acknowledgementWindowSize) {
             acknowledgementSequence += bytesRead
             bytesRead -= RtmpConfig.acknowledgementWindowSize
             let acknowledgement = Acknowledgement(sequenceNUmber: acknowledgementSequence)
-            try await acknowledgement.writeHeader(socket: socket)
-            try await acknowledgement.writeBody(socket: socket)
+            try acknowledgement.writeHeader(socket: socket)
+            try acknowledgement.writeBody(socket: socket)
+            socket.flush()
             print("send \(acknowledgement)")
         }
     }
     
-    public func sendConnect(auth: String, socket: Socket) async throws {
+    public func sendConnect(auth: String, socket: Socket) throws {
         commandId += 1
         let connect = CommandAmf0(name: "connect", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
                 basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
@@ -100,21 +102,22 @@ public class RtmpCommandManager {
         }
         connectInfo.setProperty(name: "objectEncoding", data: 0)
         connect.addData(amfData: connectInfo)
-        try await connect.writeHeader(socket: socket)
-        try await connect.writeBody(socket: socket)
+        try connect.writeHeader(socket: socket)
+        try connect.writeBody(socket: socket)
+        socket.flush()
         sessionHistory.setPacket(id: commandId, name: "connect")
         print("send connect: \(connect)")
     }
 
-    public func createStream(socket: Socket) async throws {
+    public func createStream(socket: Socket) throws {
         commandId += 1
         let releaseStream = CommandAmf0(name: "releaseStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
                 basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
         releaseStream.addData(amfData: AmfNull())
         releaseStream.addData(amfData: AmfString(value: streamName))
 
-        try await releaseStream.writeHeader(socket: socket)
-        try await releaseStream.writeBody(socket: socket)
+        try releaseStream.writeHeader(socket: socket)
+        try releaseStream.writeBody(socket: socket)
         sessionHistory.setPacket(id: commandId, name: "releaseStream")
 
         commandId += 1
@@ -123,8 +126,8 @@ public class RtmpCommandManager {
         fcPublish.addData(amfData: AmfNull())
         fcPublish.addData(amfData: AmfString(value: streamName))
 
-        try await fcPublish.writeHeader(socket: socket)
-        try await fcPublish.writeBody(socket: socket)
+        try fcPublish.writeHeader(socket: socket)
+        try fcPublish.writeBody(socket: socket)
         sessionHistory.setPacket(id: commandId, name: "FCPublish")
 
         commandId += 1
@@ -132,21 +135,22 @@ public class RtmpCommandManager {
                 basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_CONNECTION.rawValue)))
         createStream.addData(amfData: AmfNull())
 
-        try await createStream.writeHeader(socket: socket)
-        try await createStream.writeBody(socket: socket)
+        try createStream.writeHeader(socket: socket)
+        try createStream.writeBody(socket: socket)
+        socket.flush()
         sessionHistory.setPacket(id: commandId, name: "createStream")
         print("send createStream")
     }
 
-    public func readMessageResponse(socket: Socket) async throws -> RtmpMessage {
-        let message = try await RtmpMessage.getMessage(socket: socket, chunkSize: readChunkSize, commandSessionHistory: sessionHistory)
+    public func readMessageResponse(socket: Socket) throws -> RtmpMessage {
+        let message = try RtmpMessage.getMessage(socket: socket, chunkSize: readChunkSize, commandSessionHistory: sessionHistory)
         sessionHistory.setReadHeader(header: message.header)
         print("read message: \(message)")
         bytesRead += message.header.getPacketLength()
         return message
     }
 
-    public func sendMetadata(socket: Socket) async throws {
+    public func sendMetadata(socket: Socket) throws {
         let metadata = DataAmf0(name: "@setDataFrame", timeStamp: getCurrentTimestamp(), streamId: streamId)
         metadata.addData(amfData: AmfString(value: "onMetaData"))
         let amfEcmaArray = AmfEcmaArray()
@@ -181,11 +185,12 @@ public class RtmpCommandManager {
         amfEcmaArray.setProperty(name: "filesize", data: 0.0)
         metadata.addData(amfData: amfEcmaArray)
 
-        try await metadata.writeHeader(socket: socket)
-        try await metadata.writeBody(socket: socket)
+        try metadata.writeHeader(socket: socket)
+        try metadata.writeBody(socket: socket)
+        socket.flush()
     }
 
-    public func sendPublish(socket: Socket) async throws {
+    public func sendPublish(socket: Socket) throws {
         commandId += 1
         let closeStream = CommandAmf0(name: "publish", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
                 basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
@@ -193,36 +198,40 @@ public class RtmpCommandManager {
         closeStream.addData(amfData: AmfString(value: streamName))
         closeStream.addData(amfData: AmfString(value: "live"))
 
-        try await closeStream.writeHeader(socket: socket)
-        try await closeStream.writeBody(socket: socket)
+        try closeStream.writeHeader(socket: socket)
+        try closeStream.writeBody(socket: socket)
+        socket.flush()
         sessionHistory.setPacket(id: commandId, name: "publish")
     }
 
-    public func sendWindowAcknowledgementSize(socket: Socket) async throws {
+    public func sendWindowAcknowledgementSize(socket: Socket) throws {
         let windowAcknowledgementSize = WindowAcknowledgementSize(acknowledgementWindowSize: RtmpConfig.acknowledgementWindowSize, timeStamp: getCurrentTimestamp())
-        try await windowAcknowledgementSize.writeHeader(socket: socket)
-        try await windowAcknowledgementSize.writeBody(socket: socket)
+        try windowAcknowledgementSize.writeHeader(socket: socket)
+        try windowAcknowledgementSize.writeBody(socket: socket)
+        socket.flush()
         print("send windowAcknowledgementSize: \(windowAcknowledgementSize.description)")
     }
 
-    public func sendPong(event: Event, socket: Socket) async throws {
+    public func sendPong(event: Event, socket: Socket) throws {
         let pong = UserControl(type: ControlType.PONG_REPLY, event: event)
-        try await pong.writeHeader(socket: socket)
-        try await pong.writeBody(socket: socket)
+        try pong.writeHeader(socket: socket)
+        try pong.writeBody(socket: socket)
+        socket.flush()
     }
 
-    public func sendClose(socket: Socket) async throws {
+    public func sendClose(socket: Socket) throws {
         commandId += 1
         let closeStream = CommandAmf0(name: "closeStream", commandId: commandId, timeStamp: getCurrentTimestamp(), streamId: streamId,
                 basicHeader: BasicHeader(chunkType: ChunkType.TYPE_0, chunkStreamId: Int(ChunkStreamId.OVER_STREAM.rawValue)))
         closeStream.addData(amfData: AmfNull())
 
-        try await closeStream.writeHeader(socket: socket)
-        try await closeStream.writeBody(socket: socket)
+        try closeStream.writeHeader(socket: socket)
+        try closeStream.writeBody(socket: socket)
+        socket.flush()
         sessionHistory.setPacket(id: commandId, name: "closeStream")
     }
 
-    public func sendVideoPacket(flvPacket: FlvPacket, socket: Socket) async throws -> Int {
+    public func sendVideoPacket(flvPacket: FlvPacket, socket: Socket) throws -> Int {
         let video: Video
         if (akamaiTs) {
             var packet = flvPacket
@@ -231,12 +240,13 @@ public class RtmpCommandManager {
         } else {
             video = Video(flvPacket: flvPacket, streamId: streamId)
         }
-        try await video.writeHeader(socket: socket)
-        try await video.writeBody(socket: socket)
+        try video.writeHeader(socket: socket)
+        try video.writeBody(socket: socket)
+        socket.flush()
         return video.header.getPacketLength()
     }
 
-    public func sendAudioPacket(flvPacket: FlvPacket, socket: Socket) async throws -> Int {
+    public func sendAudioPacket(flvPacket: FlvPacket, socket: Socket) throws -> Int {
         let audio: Audio
         if (akamaiTs) {
             var packet = flvPacket
@@ -245,8 +255,9 @@ public class RtmpCommandManager {
         } else {
             audio = Audio(flvPacket: flvPacket, streamId: streamId)
         }
-        try await audio.writeHeader(socket: socket)
-        try await audio.writeBody(socket: socket)
+        try audio.writeHeader(socket: socket)
+        try audio.writeBody(socket: socket)
+        socket.flush()
         return audio.header.getPacketLength()
     }
 

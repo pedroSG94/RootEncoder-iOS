@@ -87,7 +87,7 @@ public class RtspClient {
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     do {
                         self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port)
-                        try await self.socket?.connect()
+                        try self.socket?.connect()
                         if (!self.commandsManager.audioDisabled) {
                             self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
                         }
@@ -110,19 +110,22 @@ public class RtspClient {
                             }
                         }
                         //Options
-                        try await self.socket?.write(data: self.commandsManager.createOptions())
-                        let _ = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.OPTIONS)
+                        try self.socket?.write(data: self.commandsManager.createOptions())
+                        socket?.flush()
+                        let _ = try self.commandsManager.getResponse(socket: self.socket!, method: Method.OPTIONS)
 
                         //Announce
-                        try await self.socket?.write(data: self.commandsManager.createAnnounce())
-                        let announceResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
+                        try self.socket?.write(data: self.commandsManager.createAnnounce())
+                        socket?.flush()
+                        let announceResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                         if announceResponse.status == 403 {
                             self.connectChecker.onConnectionFailed(reason: "Error configure stream, access denied")
                         } else if announceResponse.status == 401 {
                             if (self.commandsManager.canAuth()) {
                                 //Announce with auth
-                                try await self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
-                                let authResponse = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
+                                try self.socket?.write(data: self.commandsManager.createAnnounceWithAuth(authResponse: announceResponse.text))
+                                socket?.flush()
+                                let authResponse = try self.commandsManager.getResponse(socket: self.socket!, method: Method.ANNOUNCE)
                                 if authResponse.status == 401 {
                                     self.connectChecker.onAuthError()
                                 } else if authResponse.status == 200 {
@@ -139,8 +142,9 @@ public class RtspClient {
                         }
                         if !self.commandsManager.videoDisabled {
                             //Setup video
-                            try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
-                            let setupVideoStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
+                            try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getVideoTrack()))
+                            socket?.flush()
+                            let setupVideoStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupVideoStatus != 200) {
                                 self.connectChecker.onConnectionFailed(reason: "Error configure stream, setup video \(setupVideoStatus)")
                                 return
@@ -148,28 +152,30 @@ public class RtspClient {
                         }
                         if !self.commandsManager.audioDisabled {
                             //Setup audio
-                            try await self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
-                            let setupAudioStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
+                            try self.socket?.write(data: self.commandsManager.createSetup(track: self.commandsManager.getAudioTrack()))
+                            socket?.flush()
+                            let setupAudioStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.SETUP).status
                             if (setupAudioStatus != 200) {
                                 self.connectChecker.onConnectionFailed(reason: "Error configure stream, setup audio \(setupAudioStatus)")
                                 return
                             }
                         }
                         //Record
-                        try await self.socket?.write(data: self.commandsManager.createRecord())
-                        let recordStatus = try await self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
+                        try self.socket?.write(data: self.commandsManager.createRecord())
+                        socket?.flush()
+                        let recordStatus = try self.commandsManager.getResponse(socket: self.socket!, method: Method.RECORD).status
                         if (recordStatus != 200) {
                             self.connectChecker.onConnectionFailed(reason: "Error configure stream, record \(recordStatus)")
                             return
                         }
 
-                        await self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
+                        self.rtspSender.setSocketInfo(mProtocol: self.commandsManager.mProtocol, socket: self.socket!,
                                 videoClientPorts: self.commandsManager.videoClientPorts, audioClientPorts: self.commandsManager.audioClientPorts,
                                 videoServerPorts: self.commandsManager.videoServerPorts, audioServerPorts: self.commandsManager.audioServerPorts)
                         self.rtspSender.start()
                         self.connectChecker.onConnectionSuccess()
                         
-                        await self.handleServerCommands()
+                        self.handleServerCommands()
                     } catch let error {
                         self.connectChecker.onConnectionFailed(reason: error.localizedDescription)
                         return
@@ -182,17 +188,16 @@ public class RtspClient {
         }
     }
     
-    private func handleServerCommands() async {
-        //Read and print server commands received each 2 seconds
+    private func handleServerCommands() {
+        //Read and print server commands received
         while (streaming) {
             guard let socket = socket else {
                 return
             }
             do {
-                let _ = try await commandsManager.getResponse(socket: socket)
+                let _ = try commandsManager.getResponse(socket: socket)
                 //Do something depend of command if required
             } catch let error {
-                connectChecker.onConnectionFailed(reason: "read error: \(error)")
             }
         }
       }

@@ -17,7 +17,8 @@ public class RtspG711Packet: RtspBasePacket {
         channelIdentifier = RtpConstants.trackAudio
     }
     
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
+        var packet = [RtpFrame]()
         var buffer = buffer
         let naluLength = buffer.count
         let maxPayload = maxPacketSize - RtpConstants.rtpHeaderLength
@@ -43,7 +44,10 @@ public class RtspG711Packet: RtspBasePacket {
             frame.channelIdentifier = channelIdentifier
 
             sum += length
-            callback(frame)
+            packet.append(frame)
+        }
+        if !packet.isEmpty {
+            callback(packet)
         }
     }
 }

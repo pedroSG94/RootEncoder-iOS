@@ -48,8 +48,8 @@ public class BasicHeader: CustomStringConvertible {
         self.chunkStreamId = chunkStreamId
     }
 
-    public static func parseBasicHeader(socket: Socket) async throws -> BasicHeader {
-        let byte: UInt8 = try await socket.readUntil(length: 1)[0]
+    public static func parseBasicHeader(socket: Socket) throws -> BasicHeader {
+        let byte: UInt8 = try socket.readUntil(length: 1)[0]
         let chunkTypeValue = 0xff & byte >> 6
         guard let chunkType = ChunkType.init(rawValue: chunkTypeValue) else {
             throw IOException.runtimeError("Unknown chunk type value: \(chunkTypeValue)")
@@ -59,11 +59,11 @@ public class BasicHeader: CustomStringConvertible {
             throw IOException.runtimeError("Unknown chunk stream id value: \(chunkStreamIdValue)")
         }
         if (chunkStreamIdValue == 0) { //Basic header 2 Bytes
-            let b: UInt8 = try await socket.readUntil(length: 1)[0]
+            let b: UInt8 = try socket.readUntil(length: 1)[0]
             chunkStreamIdValue = Int(b) - 64
         } else if (chunkStreamIdValue == 1) { //Basic header 3 Bytes
-            let a: UInt8 = try await socket.readUntil(length: 1)[0]
-            let b: UInt8 = try await socket.readUntil(length: 1)[0]
+            let a: UInt8 = try socket.readUntil(length: 1)[0]
+            let b: UInt8 = try socket.readUntil(length: 1)[0]
             let value = b & 0xff << 8 & a
             chunkStreamIdValue = Int(value) - 64
         }

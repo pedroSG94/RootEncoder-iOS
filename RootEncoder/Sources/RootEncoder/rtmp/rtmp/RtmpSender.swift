@@ -21,7 +21,7 @@ public class RtmpSender {
     var droppedAudioFrames = 0
     var droppedVideoFrames = 0
     private let bitrateManager: BitrateManager
-    var isEnableLogs = true
+    var isEnableLogs = false
 
     public init(callback: ConnectChecker, commandManager: RtmpCommandManager) {
         self.callback = callback
@@ -92,14 +92,14 @@ public class RtmpSender {
                 if let flvPacket = flvPacket {
                     do {
                         if (flvPacket.type == FlvType.VIDEO) {
-                            let size = try await self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
+                            let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
                             if (self.isEnableLogs) {
                                 print("wrote Video packet, size: \(size)")
                             }
                             self.videoFramesSent += 1
                             self.bitrateManager.calculateBitrate(size: Int64(size * 8))
                         } else {
-                            let size = try await self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
+                            let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
                             if (self.isEnableLogs) {
                                 print("wrote Audio packet, size: \(size)")
                             }

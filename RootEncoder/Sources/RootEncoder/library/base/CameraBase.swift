@@ -70,7 +70,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Da
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation())
+        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 20000 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation())
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {

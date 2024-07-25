@@ -5,9 +5,11 @@ public class Socket: NSObject, StreamDelegate {
 
     public var host: String
     private var connection: NWConnection? = nil
-    private var bufferAppend: [UInt8]? = nil
     private let thread = DispatchQueue(label: "SocketThread")
-
+    private let semaphore = DispatchSemaphore(value: 0)
+    private var inputBuffer = Data()
+    private var outputBuffer = Data()
+    
     /**
         TCP or TCP/TLS socket
      */
@@ -28,36 +30,31 @@ public class Socket: NSObject, StreamDelegate {
         connection = NWConnection(host: NWEndpoint.Host(host), port: NWEndpoint.Port("\(port)")!, using: parameters)
     }
     
-    public func connect() async throws {
-        let _ = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<String?, Error>) in
-            connection?.stateUpdateHandler = { (newState) in
-                switch (newState) {
-                case .ready:
-                    continuation.resume(returning: nil)
-                    self.connection?.stateUpdateHandler = nil
-                    return
-                case .setup:
-                    break
-                case .waiting(_):
-                    continuation.resume(throwing: IOException.runtimeError("connection not found"))
-                    self.connection?.stateUpdateHandler = nil
-                    return
-                case .preparing:
-                     break
-                case .cancelled:
-                    continuation.resume(throwing: IOException.runtimeError("connection cancelled"))
-                    self.connection?.stateUpdateHandler = nil
-                    return
-                case .failed(_):
-                    continuation.resume(throwing: IOException.runtimeError("connection failed"))
-                    self.connection?.stateUpdateHandler = nil
-                    return
-                @unknown default:
-                    break
-                }
+    public func connect() throws {
+        connection?.stateUpdateHandler = { (newState) in
+            switch (newState) {
+            case .ready:
+                self.connection?.stateUpdateHandler = nil
+                self.onDataReceived(connection: self.connection!)
+                return
+            case .setup:
+                break
+            case .waiting(_):
+                self.connection?.stateUpdateHandler = nil
+                return
+            case .preparing:
+                 break
+            case .cancelled:
+                self.connection?.stateUpdateHandler = nil
+                return
+            case .failed(_):
+                self.connection?.stateUpdateHandler = nil
+                return
+            @unknown default:
+                break
             }
-            connection?.start(queue: thread)
         }
+        connection?.start(queue: thread)
     }
     
     public func disconnect() {
@@ -65,84 +62,91 @@ public class Socket: NSObject, StreamDelegate {
         connection = nil
     }
 
-    public func write(buffer: [UInt8]) async throws {
+    public func write(buffer: [UInt8]) throws {
         let data = Data(buffer)
-        try await write(data: data)
+        try write(data: data)
     }
 
-    public func write(data: Data) async throws {
-        let _ = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Bool, Error>) in
-            if (connection == nil) {
-                continuation.resume(throwing: IOException.runtimeError("socket closed"))
-            } else {
-                connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(( { error in
-                    if (error != nil) {
-                        continuation.resume(throwing: IOException.runtimeError("\(String(describing: error))"))
-                    } else {
-                        continuation.resume(returning: true)
-                    }
-                })))
-            }
-        }
-    }
-
-    public func write(buffer: [UInt8], size: Int) async throws {
-        let data = Data(bytes: buffer, count: size)
-        try await write(data: data)
+    public func write(data: Data) throws {
+        outputBuffer.append(data)
     }
     
-    public func write(data: String) async throws {
-        let buffer = [UInt8](data.utf8)
-        try await self.write(buffer: buffer)
+    public func flush() {
+        let data = outputBuffer
+        if !data.isEmpty {
+            outputBuffer.removeFirst(data.count)
+            connection?.send(content: data, completion: .contentProcessed { error in
+            })
+        }
     }
 
-    public func read() async throws -> [UInt8] {
-        let data: Data = try await read()
-        var bytes = [UInt8](data)
-        if (bufferAppend != nil) {
-            bytes.insert(contentsOf: bufferAppend!, at: 0)
-        }
+    public func write(buffer: [UInt8], size: Int) throws {
+        let data = Data(bytes: buffer, count: size)
+        try write(data: data)
+    }
+    
+    public func write(data: String) throws {
+        let buffer = [UInt8](data.utf8)
+        try self.write(buffer: buffer)
+    }
+
+    public func read() throws -> [UInt8] {
+        let data: Data = try read()
+        let bytes = [UInt8](data)
         return bytes
     }
 
-    public func readString() async throws -> String {
-        let data: Data = try await read()
+    public func readString() throws -> String {
+        let data: Data = try read()
         let message = String(data: data, encoding: String.Encoding.utf8)
         return message ?? ""
     }
 
-    public func read() async throws -> Data {
-        try await readUntil(length: 65536)
+    public func read() throws -> Data {
+        if !inputBuffer.isEmpty {
+            let data = inputBuffer
+            inputBuffer.removeFirst(data.count)
+            return data
+        } else {
+            let result = semaphore.wait(timeout: .now() + 5)
+            if result == DispatchTimeoutResult.success {
+                return try read()
+            } else {
+                throw IOException.runtimeError("read timeout")
+            }
+        }
     }
 
-    public func readUntil(length: Int) async throws -> [UInt8] {
-        let data: Data = try await readUntil(length: length)
-        var bytes = [UInt8](data)
-        if (bufferAppend != nil) {
-            bytes.insert(contentsOf: bufferAppend!, at: 0)
-        }
+    public func readUntil(length: Int) throws -> [UInt8] {
+        let data: Data = try readUntil(length: length)
+        let bytes = [UInt8](data)
         return bytes
     }
     
-    private func readUntil(length: Int) async throws -> Data {
-        let result = try await withUnsafeThrowingContinuation { (continuation: UnsafeContinuation<Data, Error>) in
-            if (connection == nil) {
-                continuation.resume(throwing: IOException.runtimeError("socket closed"))
+    private func readUntil(length: Int) throws -> Data {
+        if inputBuffer.count >= length {
+            let data = inputBuffer.prefix(length)
+            inputBuffer.removeFirst(data.count)
+            return data
+        } else {
+            let result = semaphore.wait(timeout: .now() + 5)
+            if result == DispatchTimeoutResult.success {
+                return try readUntil(length: length)
             } else {
-                connection?.receiveDiscontiguous(minimumIncompleteLength: 1, maximumLength: length, completion: { data, context, isComplete, error in
-                    if let data = data {
-                        continuation.resume(returning: Data(data))
-                    } else if let error = error {
-                        let e = "fail to read \(error)"
-                        continuation.resume(throwing: IOException.runtimeError(e))
-                    } else if isComplete {
-                        let e = "fail to read EOF"
-                        continuation.resume(throwing: IOException.runtimeError(e))
-                    }
-                })
+                throw IOException.runtimeError("read timeout")
             }
         }
-        return result
+    }
+    
+    private func onDataReceived(connection: NWConnection) {
+        connection.receive(minimumIncompleteLength: 0, maximumLength: 256) { [weak self] data, _, _, _ in
+            guard let self = self, let data = data else {
+                return
+            }
+            inputBuffer.append(data)
+            semaphore.signal()
+            onDataReceived(connection: connection)
+        }
     }
 }
 

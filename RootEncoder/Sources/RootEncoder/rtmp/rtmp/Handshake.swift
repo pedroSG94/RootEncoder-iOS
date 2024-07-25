@@ -50,24 +50,27 @@ public class Handshake {
     private let handshakeSize = 1536
     private var timestampC1 = 0
 
-    func sendHandshake(socket: Socket) async throws -> Bool {
-        try await writeC0(socket: socket)
-        let c1 = try await writeC1(socket: socket)
-        let _ = try await readS0(socket: socket)
-        let s1 = try await readS1(socket: socket)
-        try await writeC2(socket: socket, s1: s1)
-        let _ = try await readS2(socket: socket, c1: c1)
+    func sendHandshake(socket: Socket) throws -> Bool {
+        try writeC0(socket: socket)
+        socket.flush()
+        let c1 = try writeC1(socket: socket)
+        socket.flush()
+        let _ = try readS0(socket: socket)
+        let s1 = try readS1(socket: socket)
+        try writeC2(socket: socket, s1: s1)
+        socket.flush()
+        let _ = try readS2(socket: socket, c1: c1)
         return true
     }
 
-    private func writeC0(socket: Socket) async throws {
+    private func writeC0(socket: Socket) throws {
         print("writing C0")
         let c0 = [UInt8](arrayLiteral: protocolVersion)
-        try await socket.write(buffer: c0)
+        try socket.write(buffer: c0)
         print("write C0 successful")
     }
 
-    private func writeC1(socket: Socket) async throws -> [UInt8] {
+    private func writeC1(socket: Socket) throws -> [UInt8] {
         print("writing C1")
         var c1 = [UInt8](repeating: 0x00, count: handshakeSize)
 
@@ -88,20 +91,20 @@ public class Handshake {
             randomData[index] = UInt8(UInt8.random(in: 0...UInt8.max))
         }
         c1[timestampData.count + zeroData.count...c1.count - 1] = randomData[0...randomData.count - 1]
-        try await socket.write(buffer: c1)
+        try socket.write(buffer: c1)
         print("write C1 successful")
         return c1
     }
 
-    private func writeC2(socket: Socket, s1: [UInt8]) async throws {
+    private func writeC2(socket: Socket, s1: [UInt8]) throws {
         print("writing C2")
-        try await socket.write(buffer: s1)
+        try socket.write(buffer: s1)
         print("write C2 successful")
     }
 
-    private func readS0(socket: Socket) async throws -> [UInt8] {
+    private func readS0(socket: Socket) throws -> [UInt8] {
         print("reading S0")
-        let s0: [UInt8] = try await socket.readUntil(length: 1)
+        let s0: [UInt8] = try socket.readUntil(length: 1)
         let response = s0[0]
         if (response == protocolVersion || response == 72) {
             return [UInt8](arrayLiteral: response)
@@ -110,16 +113,16 @@ public class Handshake {
         }
     }
 
-    private func readS1(socket: Socket) async throws -> [UInt8] {
+    private func readS1(socket: Socket) throws -> [UInt8] {
         print("reading S1")
-        let s1: [UInt8] = try await socket.readUntil(length: handshakeSize)
+        let s1: [UInt8] = try socket.readUntil(length: handshakeSize)
         print("read S1 successful")
         return s1
     }
 
-    private func readS2(socket: Socket, c1: [UInt8]) async throws -> [UInt8] {
+    private func readS2(socket: Socket, c1: [UInt8]) throws -> [UInt8] {
         print("reading S2")
-        let s2: [UInt8] = try await socket.readUntil(length: handshakeSize)
+        let s2: [UInt8] = try socket.readUntil(length: handshakeSize)
         if (!s2.elementsEqual(c1)) {
             print("S2 content is different that C1")
         }
