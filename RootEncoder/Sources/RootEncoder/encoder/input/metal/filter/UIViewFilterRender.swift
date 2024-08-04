@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ViewFilterRender.swift
 //
 //
 //  Created by Pedro  on 4/8/24.
@@ -18,7 +18,7 @@ public class ViewFilterRender: BaseFilterRender {
     }
     
     public func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage {
-        let filterView = view.asCIImage()
+        let filterView = toCIImage(view: view)
         guard let filterView = filterView else { return image }
         let filterWidth = filterView.extent.width
         let filterHeight = filterView.extent.height
@@ -32,20 +32,13 @@ public class ViewFilterRender: BaseFilterRender {
         let scaled = filterView.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         return scaled.composited(over: image)
     }
-}
-
-extension UIView {
-    func asUIImage() -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, false, 0)
-        drawHierarchy(in: bounds, afterScreenUpdates: false)
+    
+    private func toCIImage(view: UIView) -> CIImage? {
+        UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0)
+        view.drawHierarchy(in: view.bounds, afterScreenUpdates: false)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return image
-    }
-
-    func asCIImage() -> CIImage? {
-        let uiImage = self.asUIImage()
-        guard let image = uiImage else { return nil }
+        guard let image = image else { return nil }
         return CIImage(image: image)
     }
 }
