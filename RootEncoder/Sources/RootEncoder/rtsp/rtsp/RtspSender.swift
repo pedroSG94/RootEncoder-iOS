@@ -4,8 +4,8 @@ public class RtspSender {
     
     private var audioPacketizer: RtspBasePacket?
     private var videoPacketizer: RtspBasePacket?
-    private var tcpSocket: BaseRtpSocket?
-    private var tcpReport: BaseSenderReport?
+    private var rtpSocket: BaseRtpSocket?
+    private var senderReport: BaseSenderReport?
     private var thread: Task<(), Never>? = nil
     private var running = false
     private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
@@ -27,19 +27,19 @@ public class RtspSender {
         bitrateManager = BitrateManager(connectChecker: callback)
     }
 
-    public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>, videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) async {
+    public func setSocketInfo(mProtocol: Protocol, socket: Socket, videoClientPorts: Array<Int>, audioClientPorts: Array<Int>, videoServerPorts: Array<Int>, audioServerPorts: Array<Int>) {
         switch (mProtocol) {
         case .TCP:
-            tcpSocket = RtpSocketTcp(socket: socket)
-            tcpReport = SenderReportTcp(socket: socket)
+            rtpSocket = RtpSocketTcp(socket: socket)
+            senderReport = SenderReportTcp(socket: socket)
             break
         case .UDP:
             let videoReportPorts = Array<Int>(arrayLiteral: videoClientPorts[1], videoServerPorts[1])
             let audioReportPorts = Array<Int>(arrayLiteral: audioClientPorts[1], audioServerPorts[1])
             let videoSocketPorts = Array<Int>(arrayLiteral: videoClientPorts[0], videoServerPorts[0])
             let audioSocketPorts = Array<Int>(arrayLiteral: audioClientPorts[0], audioServerPorts[0])
-            tcpSocket = await RtpSocketUdp(callback: callback, host: socket.host, videoPorts: videoSocketPorts, audioPorts: audioSocketPorts)
-            tcpReport = await SenderReportUdp(callback: callback, host: socket.host, videoPorts: videoReportPorts, audioPorts: audioReportPorts)
+            rtpSocket = RtpSocketUdp(callback: callback, host: socket.host, videoPorts: videoSocketPorts, audioPorts: audioSocketPorts)
+            senderReport = SenderReportUdp(callback: callback, host: socket.host, videoPorts: videoReportPorts, audioPorts: audioReportPorts)
             break
         }
     }
@@ -66,7 +66,7 @@ public class RtspSender {
         if (running) {
             videoPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
-                callback: { (rtpFrame) in
+                callback: { rtpFrame in
                     if (!queue.enqueue(rtpFrame)) {
                         print("Video frame discarded")
                         droppedVideoFrames += 1
@@ -80,7 +80,7 @@ public class RtspSender {
         if (running) {
             audioPacketizer?.createAndSendPacket(
                 buffer: buffer, ts: ts,
-                callback: { (rtpFrame) in
+                callback: { rtpFrame in
                     if (!queue.enqueue(rtpFrame)) {
                         print("Audio frame discarded")
                         droppedAudioFrames += 1
@@ -95,16 +95,16 @@ public class RtspSender {
         let ssrcAudio = UInt64(Int.random(in: 0..<Int.max))
         videoPacketizer?.setSSRC(ssrc: ssrcVideo)
         audioPacketizer?.setSSRC(ssrc: ssrcAudio)
-        tcpReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
+        senderReport?.setSSRC(ssrcVideo: ssrcVideo, ssrcAudio: ssrcAudio)
         queue.clear()
         running = true
-        thread = Task(priority: .background) {
-            let isTcp = self.tcpSocket is RtpSocketTcp
+        thread = Task(priority: .high) {
+            let isTcp = self.rtpSocket is RtpSocketTcp
             while (self.running) {
                 let frame = self.queue.dequeue()
                 if let frame = frame {
                     do {
-                        try await self.tcpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        try self.rtpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
                         if (frame.channelIdentifier == RtpConstants.trackVideo) {
                             self.videoFramesSent += 1
                         } else {
@@ -112,12 +112,13 @@ public class RtspSender {
                         }
                         let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
                         self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
-                        let updated = try await self.tcpReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
+                        let updated = try self.senderReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
                         if (updated ?? false) {
                             //bytes to bits (4 is tcp header length)
-                            let reportSize = isTcp ? self.tcpReport?.PACKET_LENGTH ?? (0 + 4) : self.tcpReport?.PACKET_LENGTH ?? 0
+                            let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
                             self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
                         }
+                        self.rtpSocket?.flush()
                     } catch let error {
                         self.callback.onConnectionFailed(reason: error.localizedDescription)
                         return
@@ -131,7 +132,7 @@ public class RtspSender {
         running = false
         thread?.cancel()
         thread = nil
-        tcpReport?.close()
+        senderReport?.close()
         queue.clear()
         videoFramesSent = 0
         audioFramesSent = 0

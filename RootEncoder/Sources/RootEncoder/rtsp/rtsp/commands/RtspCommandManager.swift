@@ -181,8 +181,8 @@ public class RtspCommandManager {
         self.vps = vps
     }
     
-    public func getResponse(socket: Socket, method: Method = Method.UNKNOWN) async throws -> RtspCommand {
-        let response = try await socket.readString()
+    public func getResponse(socket: Socket, method: Method = Method.UNKNOWN) throws -> RtspCommand {
+        let response = try socket.readString()
         print(response)
         if (method == Method.UNKNOWN) {
             return commandParser.parseCommand(commandText: response)

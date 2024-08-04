@@ -34,10 +34,11 @@ public class SynchronizedQueue<T> {
 
     public func dequeue() -> T? {
         var result: T?
-        let _ = semaphore.wait(timeout: .now() + 0.01)
         queue.sync {
             if (!elements.isEmpty) {
                 result = elements.removeFirst()
+            } else {
+                let _ = semaphore.wait(timeout: .now() + 0.01)
             }
         }
         return result
