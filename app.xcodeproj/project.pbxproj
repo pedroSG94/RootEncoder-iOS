@@ -20,6 +20,7 @@
 		EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC318B52B9E79BF003C7526 /* Utils.swift */; };
 		EBC8FD302C09214600345CFC /* ScreenSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC8FD2F2C09214600345CFC /* ScreenSwiftUIView.swift */; };
 		EBDA58A72BEE915E002F85A2 /* RootEncoder in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A62BEE915E002F85A2 /* RootEncoder */; };
+		EBE05D492C6034A100C57A4D /* FilterUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE05D482C6034A100C57A4D /* FilterUIView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspSwiftUIView.swift; sourceTree = "<group>"; };
 		EBC318B52B9E79BF003C7526 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		EBC8FD2F2C09214600345CFC /* ScreenSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenSwiftUIView.swift; sourceTree = "<group>"; };
+		EBE05D482C6034A100C57A4D /* FilterUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +166,7 @@
 			children = (
 				EBA400112ABA7AED00249638 /* ToastView.swift */,
 				EBA4FFD42ABA62E500249638 /* CameraUIView.swift */,
+				EBE05D482C6034A100C57A4D /* FilterUIView.swift */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				EBA400122ABA7AED00249638 /* ToastView.swift in Sources */,
 				EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */,
 				EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */,
+				EBE05D492C6034A100C57A4D /* FilterUIView.swift in Sources */,
 				EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */,
 				EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */,
 			);
