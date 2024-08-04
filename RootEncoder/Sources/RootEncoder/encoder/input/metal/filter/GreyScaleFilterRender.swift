@@ -14,7 +14,7 @@ public class GreyScaleFilterRender: BaseFilterRender {
     
     public init() {}
     
-    public func draw(image: CIImage) -> CIImage {
+    public func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage {
         filter?.setValue(image, forKey: kCIInputImageKey)
         filter?.setValue(CIColor(red: 0.75, green: 0.75, blue: 0.75), forKey: kCIInputColorKey)
         filter?.setValue(1.0, forKey: kCIInputIntensityKey)

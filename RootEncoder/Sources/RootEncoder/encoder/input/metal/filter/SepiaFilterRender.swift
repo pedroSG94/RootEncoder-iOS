@@ -14,7 +14,7 @@ public class SepiaFilterRender: BaseFilterRender {
     
     public init() {}
     
-    public func draw(image: CIImage) -> CIImage {
+    public func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage {
         filter?.setValue(image, forKey: kCIInputImageKey)
         filter?.setValue(1.0, forKey: kCIInputIntensityKey)
         return filter?.outputImage ?? image

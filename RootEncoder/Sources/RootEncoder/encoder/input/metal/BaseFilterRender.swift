@@ -9,5 +9,5 @@ import Foundation
 import CoreImage
 
 public protocol BaseFilterRender {
-    func draw(image: CIImage) -> CIImage
+    func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage
 }
