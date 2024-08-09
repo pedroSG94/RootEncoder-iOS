@@ -144,14 +144,15 @@ extension MetalView: MTKViewDelegate {
         //this image will be modified acording with filters
         var streamImage = CIImage(cvPixelBuffer: image)
         
+        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
+        
         //apply filters
         for filter in filters {
-            streamImage = filter.draw(image: streamImage)
+            streamImage = filter.draw(image: streamImage, orientation: orientation)
         }
         
         var w = streamImage.extent.width
         var h = streamImage.extent.height
-        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
         
         let rotated = drawableSize.width > drawableSize.height && h > w 
             || drawableSize.height > drawableSize.width && w > h
