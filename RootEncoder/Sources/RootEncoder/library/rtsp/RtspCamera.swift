@@ -39,28 +39,27 @@ public class RtspCamera: CameraBase, StreamClientListenter {
         client.setAudioCodec(codec: codec)
     }
 
-    public override func stopStreamRtp() {
+    public override func stopStreamImp() {
         client.disconnect()
     }
 
-    public override func startStreamRtp(endpoint: String) {
+    public override func startStreamImp(endpoint: String) {
         client.connect(url: endpoint)
     }
     
-    public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
-        super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
+    public override func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {
         client.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
     }
     
-    public override func getAacDataRtp(frame: Frame) {
+    public override func getAudioDataImp(frame: Frame) {
         client.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
     }
 
-    public override func getH264DataRtp(frame: Frame) {
+    public override func getVideoDataImp(frame: Frame) {
         client.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
     }
 
-    public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+    public override func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         client.setVideoInfo(sps: sps, pps: pps, vps: vps)
     }
 }

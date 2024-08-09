@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264Data {
+public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData {
 
     private var microphone: MicrophoneManager!
     private var screenManager: ScreenManager!
@@ -28,7 +28,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         audioEncoder = AudioEncoder(callback: self)
     }
 
-    public func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {}
+    public func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
@@ -37,7 +37,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         if !createResult {
             return false
         }
-        prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
+        onAudioInfoImp(sampleRate: sampleRate, isStereo: isStereo)
         return audioEncoder.prepareAudio(sampleRate: Double(sampleRate), channels: UInt32(channels), bitrate: bitrate)
     }
 
@@ -74,7 +74,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         videoEncoder.stop()
     }
     
-    public func startStreamRtp(endpoint: String) {}
+    public func startStreamImp(endpoint: String) {}
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
@@ -83,16 +83,16 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         }
         onPreview = true
         streaming = true
-        startStreamRtp(endpoint: endpoint)
+        startStreamImp(endpoint: endpoint)
     }
 
-    public func stopStreamRtp() {}
+    public func stopStreamImp() {}
 
     public func stopStream() {
         if (!isRecording()) {
             stopEncoders()
         }
-        stopStreamRtp()
+        stopStreamImp()
         endpoint = ""
         streaming = false
     }
@@ -147,11 +147,11 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
     
     public func setAudioCodecImp(codec: AudioCodec) {}
     
-    public func getAacDataRtp(frame: Frame) {}
+    public func getAudioDataImp(frame: Frame) {}
 
-    public func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
+    public func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
 
-    public func getH264DataRtp(frame: Frame) {}
+    public func getVideoDataImp(frame: Frame) {}
 
     public func getPcmData(frame: PcmFrame) {
         recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
@@ -163,16 +163,16 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAacData, GetH264D
         videoEncoder.encodeFrame(buffer: buffer)
     }
 
-    public func getAacData(frame: Frame) {
-        getAacDataRtp(frame: frame)
+    public func getAudioData(frame: Frame) {
+        getAudioDataImp(frame: frame)
     }
 
-    public func getH264Data(frame: Frame) {
+    public func getVideoData(frame: Frame) {
         fpsListener.calculateFps()
-        getH264DataRtp(frame: frame)
+        getVideoDataImp(frame: frame)
     }
 
-    public func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        onSpsPpsVpsRtp(sps: sps, pps: pps, vps: vps)
+    public func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+        onVideoInfoImp(sps: sps, pps: pps, vps: vps)
     }
 }

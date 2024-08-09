@@ -9,9 +9,9 @@
 import Foundation
 import CoreMedia
 
-public protocol GetH264Data {
+public protocol GetVideoData {
     
-    func getH264Data(frame: Frame)
+    func getVideoData(frame: Frame)
     
-    func getSpsAndPps(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?)
+    func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?)
 }

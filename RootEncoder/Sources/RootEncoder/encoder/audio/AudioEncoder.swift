@@ -12,7 +12,7 @@ public class AudioEncoder {
     
     private var converter: AVAudioConverter? = nil
     private var outputFormat: AVAudioFormat? = nil
-    private var callback: GetAacData?
+    private var callback: GetAudioData?
     private var running = false
     private var initTs: UInt64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
@@ -23,7 +23,7 @@ public class AudioEncoder {
     private var ringBuffer: AudioRingBuffer? = nil
     private let audioTime = AudioTime()
     
-    public init(callback: GetAacData) {
+    public init(callback: GetAudioData) {
         self.callback = callback
         
     }
@@ -166,7 +166,7 @@ public class AudioEncoder {
                     self.initTs = ts
                 }
                 let elapsedMicroSeconds = ts - self.initTs
-                self.callback?.getAacData(frame: Frame(buffer: data, timeStamp: elapsedMicroSeconds))
+                self.callback?.getAudioData(frame: Frame(buffer: data, timeStamp: elapsedMicroSeconds))
                 self.audioTime.advanced(extraTime)
             case .error:
                 print("error")
