@@ -29,9 +29,9 @@ public class VideoEncoder {
     private let syncQueue = SynchronizedQueue<VideoFrame>(label: "VideoEncodeQueue", size: 60)
 
     private var session: VTCompressionSession? = nil
-    private let callback: GetH264Data
+    private let callback: GetVideoData
     
-    public init(callback: GetH264Data) {
+    public init(callback: GetVideoData) {
         self.callback = callback
     }
 
@@ -233,7 +233,7 @@ public class VideoEncoder {
 
             if (!isSpsAndPpsSend) {
                 threadOutput.async {
-                    self.callback.getSpsAndPps(sps: [UInt8](spsData), pps: [UInt8](ppsData),
+                    self.callback.onVideoInfo(sps: [UInt8](spsData), pps: [UInt8](ppsData),
                             vps: vpsData != nil ? [UInt8](vpsData!) : nil)
                 }
                 isSpsAndPpsSend = true
@@ -282,7 +282,7 @@ public class VideoEncoder {
                 let frame = Frame(buffer: rawH264, timeStamp: UInt64(elapsedMicroSeconds))
 
                 threadOutput.async {
-                    self.callback.getH264Data(frame: frame)
+                    self.callback.getVideoData(frame: frame)
                 }
             }
         }

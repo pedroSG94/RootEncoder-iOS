@@ -161,16 +161,14 @@ public class MultiCamera: CameraBase, StreamClientListenter {
         }
     }
     
-    public override func stopStreamRtp() {
+    public override func stopStreamImp() {
         
     }
     
-    public override func startStreamRtp(endpoint: String) {
-        
+    public override func startStreamImp(endpoint: String) {
     }
     
-    public override func prepareAudioRtp(sampleRate: Int, isStereo: Bool) {
-        super.prepareAudioRtp(sampleRate: sampleRate, isStereo: isStereo)
+    public override func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {
         for rtmp in rtmpClients {
             rtmp.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
         }
@@ -179,7 +177,7 @@ public class MultiCamera: CameraBase, StreamClientListenter {
         }
     }
     
-    public override func getAacDataRtp(frame: Frame) {
+    public override func getAudioDataImp(frame: Frame) {
         for rtmp in rtmpClients {
             rtmp.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
         }
@@ -188,7 +186,7 @@ public class MultiCamera: CameraBase, StreamClientListenter {
         }
     }
 
-    public override func getH264DataRtp(frame: Frame) {
+    public override func getVideoDataImp(frame: Frame) {
         for rtmp in rtmpClients {
             rtmp.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
         }
@@ -197,7 +195,7 @@ public class MultiCamera: CameraBase, StreamClientListenter {
         }
     }
 
-    public override func onSpsPpsVpsRtp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+    public override func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         for rtmp in rtmpClients {
             rtmp.setVideoInfo(sps: sps, pps: pps, vps: vps)
         }

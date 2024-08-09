@@ -167,11 +167,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                         }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
-                        if rtmpCamera.isMuted() {
-                            rtmpCamera.unmute()
-                        } else {
-                            rtmpCamera.mute()
-                        }
+                        rtmpCamera.switchCamera()
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)

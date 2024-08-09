@@ -1,5 +1,5 @@
 //
-//  GetAacData.swift
+//  GetAudioData.swift
 //  app
 //
 //  Created by Pedro on 12/09/2020.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-public protocol GetAacData {
-    func getAacData(frame: Frame)
+public protocol GetAudioData {
+    func getAudioData(frame: Frame)
 }
