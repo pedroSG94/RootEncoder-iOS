@@ -86,7 +86,6 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     var body: some View {
         ZStack {
             let filter = FilterUIView()
-            let _ = filter.view.setTitle("Hello world", for: .normal)
             filter.edgesIgnoringSafeArea(.all)
             
             let camera = CameraUIView()
@@ -106,6 +105,8 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                     rtmpCamera.stopPreview()
                 }
             }
+            
+            
             
             VStack {
                 HStack {
@@ -127,7 +128,10 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                             Text("Sepia")
                         }
                         Button(action: {
-                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: ViewFilterRender(view: filter.view))
+                            let filterView = ViewFilterRender(view: filter.view)
+                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: filterView)
+                            filterView.setScale(percentX: 100, percentY: 100)
+                            filterView.translateTo(translation: .CENTER)
                         }) {
                             Text("View")
                         }

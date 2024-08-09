@@ -86,7 +86,6 @@ struct RtspSwiftUIView: View, ConnectChecker {
     var body: some View {
         ZStack {
             let filter = FilterUIView()
-            let _ = filter.view.setTitle("Hello world", for: .normal)
             filter.edgesIgnoringSafeArea(.all)
             
             let camera = CameraUIView()
@@ -127,7 +126,11 @@ struct RtspSwiftUIView: View, ConnectChecker {
                             Text("Sepia")
                         }
                         Button(action: {
-                            rtspCamera.metalInterface?.setFilter(baseFilterRender: ViewFilterRender(view: filter.view))
+                            let filterView = ViewFilterRender(view: filter.view)
+                            rtspCamera.metalInterface?.setFilter(baseFilterRender: filterView)
+                            filterView.setScale(percentX: 100, percentY: 100)
+                            filterView.translateTo(translation: .CENTER)
+                            
                         }) {
                             Text("View")
                         }

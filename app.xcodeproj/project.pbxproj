@@ -12,6 +12,7 @@
 		0441384C2501A02500732969 /* appTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0441384B2501A02500732969 /* appTests.swift */; };
 		044138572501A02500732969 /* appUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044138562501A02500732969 /* appUITests.swift */; };
 		659B73BF320E14A5662BBE0E /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 659B7C7C942D059E7C4F1424 /* .gitignore */; };
+		EB2D9C3C2C66BCD500FF1C95 /* ViewFilter.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB2D9C3B2C66BCD500FF1C95 /* ViewFilter.xib */; };
 		EBA400102ABA6A1600249638 /* MainSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */; };
 		EBA400122ABA7AED00249638 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA400112ABA7AED00249638 /* ToastView.swift */; };
 		EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */; };
@@ -65,6 +66,7 @@
 		044138582501A02500732969 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		659B7C7C942D059E7C4F1424 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = file.gitignore; path = .gitignore; sourceTree = "<group>"; };
 		EB07EC4B2B0D51FD0001309D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EB2D9C3B2C66BCD500FF1C95 /* ViewFilter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewFilter.xib; sourceTree = "<group>"; };
 		EB733D882C2FE3B1002318DA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		EB94C7272BDC2286002CCC0B /* RootEncoder */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RootEncoder; sourceTree = "<group>"; };
 		EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSwiftUIView.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				EBA400112ABA7AED00249638 /* ToastView.swift */,
 				EBA4FFD42ABA62E500249638 /* CameraUIView.swift */,
 				EBE05D482C6034A100C57A4D /* FilterUIView.swift */,
+				EB2D9C3B2C66BCD500FF1C95 /* ViewFilter.xib */,
 			);
 			path = components;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 			files = (
 				0441383E2501A02500732969 /* Assets.xcassets in Resources */,
 				659B73BF320E14A5662BBE0E /* .gitignore in Resources */,
+				EB2D9C3C2C66BCD500FF1C95 /* ViewFilter.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
