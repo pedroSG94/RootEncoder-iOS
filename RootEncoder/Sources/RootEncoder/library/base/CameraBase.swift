@@ -36,7 +36,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
         audioEncoder = AudioEncoder(callback: self)
     }
 
-    public func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
+    func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
@@ -77,7 +77,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
         fpsListener.setCallback(callback: fpsCallback)
     }
 
-    public func startStreamImp(endpoint: String) {}
+    func startStreamImp(endpoint: String) {}
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
@@ -104,7 +104,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
         videoEncoder.stop()
     }
     
-    public func stopStreamImp() {}
+    func stopStreamImp() {}
 
     public func stopStream() {
         if (!isRecording()) {
@@ -188,15 +188,15 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
         audioEncoder.setCodec(codec: codec)
     }
 
-    public func setVideoCodecImp(codec: VideoCodec) {}
+    func setVideoCodecImp(codec: VideoCodec) {}
     
-    public func setAudioCodecImp(codec: AudioCodec) {}
+    func setAudioCodecImp(codec: AudioCodec) {}
     
-    public func getAudioDataImp(frame: Frame) {}
+    func getAudioDataImp(frame: Frame) {}
 
-    public func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
+    func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
 
-    public func getVideoDataImp(frame: Frame) {}
+    func getVideoDataImp(frame: Frame) {}
 
     public func getPcmData(frame: PcmFrame) {
         recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
