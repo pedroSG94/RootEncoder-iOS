@@ -8,18 +8,15 @@
 import Foundation
 import UIKit
 
-public class RtmpDisplay: DisplayBase, StreamClientListenter {
+public class RtmpDisplay: DisplayBase {
 
-    public func onRequestKeyframe() {
-        videoEncoder.forceKeyFrame()
-    }
     private var client: RtmpClient!
     private var streamClient: RtmpStreamClient?
 
     public init(connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
         super.init()
-        streamClient = RtmpStreamClient(client: client, listener: self)
+        streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
     }
     
     public func getStreamClient() -> RtmpStreamClient {

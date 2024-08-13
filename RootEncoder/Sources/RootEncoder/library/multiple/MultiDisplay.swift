@@ -37,11 +37,8 @@ import Foundation
  * The rest of methods without MultiType and index means that you will execute that command in all streams.
  * Read class code if you need info about any method.
  */
-public class MultiDisplay: DisplayBase, StreamClientListenter {
+public class MultiDisplay: DisplayBase {
     
-    public func onRequestKeyframe() {
-        videoEncoder.forceKeyFrame()
-    }
     private var rtmpClients = Array<RtmpClient>()
     private var rtspClients = Array<RtspClient>()
     private var rtmpStreamClients = Array<RtmpStreamClient>()
@@ -49,15 +46,16 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
     
     public init(connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
         super.init()
+        let streamClientListener = videoEncoder.createStreamClientListener()
         for i in connectCheckerRtmpList ?? [] {
             let client = RtmpClient(connectChecker: i)
             rtmpClients.append(client)
-            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: self))
+            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: streamClientListener))
         }
         for i in connectCheckerRtspList ?? [] {
             let client = RtspClient(connectChecker: i)
             rtspClients.append(client)
-            rtspStreamClients.append(RtspStreamClient(client: client, listener: self))
+            rtspStreamClients.append(RtspStreamClient(client: client, listener: streamClientListener))
         }
     }
     

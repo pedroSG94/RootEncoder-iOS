@@ -7,24 +7,22 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class RtmpCamera: CameraBase, StreamClientListenter {
+public class RtmpCamera: CameraBase {
     
-    public func onRequestKeyframe() {
-        videoEncoder.forceKeyFrame()
-    }
     private let client: RtmpClient
     private var streamClient: RtmpStreamClient?
 
     public init(view: UIView, connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
         super.init(view: view)
-        streamClient = RtmpStreamClient(client: client, listener: self)
+        streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
+        
     }
 
     public init(view: MetalView, connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
         super.init(view: view)
-        streamClient = RtmpStreamClient(client: client, listener: self)
+        streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
     }
     
     public func getStreamClient() -> RtmpStreamClient {

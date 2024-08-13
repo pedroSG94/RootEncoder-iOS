@@ -7,7 +7,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData, MetalViewCallback {
+public class CameraBase {
 
     private var microphone: MicrophoneManager!
     private var cameraManager: CameraManager!
@@ -20,20 +20,25 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
     private var previewResolution = CameraHelper.Resolution.vga640x480
     private let recordController = RecordController()
     private(set) public var metalInterface: MetalInterface? = nil
+    private var callback: CameraBaseCallback? = nil
 
     public init(view: UIView) {
-        cameraManager = CameraManager(cameraView: view, callback: self)
-        microphone = MicrophoneManager(callback: self)
-        videoEncoder = VideoEncoder(callback: self)
-        audioEncoder = AudioEncoder(callback: self)
+        let callback = createCameraBaseCallbacks()
+        self.callback = callback
+        cameraManager = CameraManager(cameraView: view, callback: callback)
+        microphone = MicrophoneManager(callback: callback)
+        videoEncoder = VideoEncoder(callback: callback)
+        audioEncoder = AudioEncoder(callback: callback)
     }
     
     public init(view: MetalView) {
         self.metalInterface = view
-        cameraManager = CameraManager(callback: self)
-        microphone = MicrophoneManager(callback: self)
-        videoEncoder = VideoEncoder(callback: self)
-        audioEncoder = AudioEncoder(callback: self)
+        let callback = createCameraBaseCallbacks()
+        self.callback = callback
+        cameraManager = CameraManager(callback: callback)
+        microphone = MicrophoneManager(callback: callback)
+        videoEncoder = VideoEncoder(callback: callback)
+        audioEncoder = AudioEncoder(callback: callback)
     }
 
     func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
@@ -94,7 +99,7 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
         videoEncoder.start()
         microphone.start()
         cameraManager.start()
-        metalInterface?.setCallback(callback: self)
+        metalInterface?.setCallback(callback: callback)
     }
     
     private func stopEncoders() {
@@ -197,36 +202,52 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
     func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
 
     func getVideoDataImp(frame: Frame) {}
+}
 
-    public func getPcmData(frame: PcmFrame) {
-        recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
-        audioEncoder.encodeFrame(frame: frame)
-    }
+protocol CameraBaseCallback: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData, MetalViewCallback {}
 
-    public func getYUVData(from buffer: CMSampleBuffer) {
-        guard let metalInterface = metalInterface else {
-            recordController.recordVideo(buffer: buffer)
-            videoEncoder.encodeFrame(buffer: buffer)
-            return
+extension CameraBase {
+    func createCameraBaseCallbacks() -> CameraBaseCallback {
+        class CameraBaseCallbackHandler: CameraBaseCallback {
+            
+            private let cameraBase: CameraBase
+            
+            init(cameraBase: CameraBase) {
+                self.cameraBase = cameraBase
+            }
+            
+            func getPcmData(frame: PcmFrame) {
+                cameraBase.recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
+                cameraBase.audioEncoder.encodeFrame(frame: frame)
+            }
+
+            func getYUVData(from buffer: CMSampleBuffer) {
+                guard let metalInterface = cameraBase.metalInterface else {
+                    cameraBase.recordController.recordVideo(buffer: buffer)
+                    cameraBase.videoEncoder.encodeFrame(buffer: buffer)
+                    return
+                }
+                metalInterface.sendBuffer(buffer: buffer)
+            }
+
+            func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+                cameraBase.recordController.recordVideo(pixelBuffer: pixelBuffer, pts: pts)
+                cameraBase.videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
+            }
+            
+            func getAudioData(frame: Frame) {
+                cameraBase.getAudioDataImp(frame: frame)
+            }
+
+            func getVideoData(frame: Frame) {
+                cameraBase.fpsListener.calculateFps()
+                cameraBase.getVideoDataImp(frame: frame)
+            }
+
+            func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+                cameraBase.onVideoInfoImp(sps: sps, pps: pps, vps: vps)
+            }
         }
-        metalInterface.sendBuffer(buffer: buffer)
-    }
-
-    public func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
-        recordController.recordVideo(pixelBuffer: pixelBuffer, pts: pts)
-        videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
-    }
-    
-    public func getAudioData(frame: Frame) {
-        getAudioDataImp(frame: frame)
-    }
-
-    public func getVideoData(frame: Frame) {
-        fpsListener.calculateFps()
-        getVideoDataImp(frame: frame)
-    }
-
-    public func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
-        onVideoInfoImp(sps: sps, pps: pps, vps: vps)
+        return CameraBaseCallbackHandler(cameraBase: self)
     }
 }

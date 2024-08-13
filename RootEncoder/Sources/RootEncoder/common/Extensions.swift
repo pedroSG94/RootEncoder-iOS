@@ -59,3 +59,21 @@ public extension String {
 public func intToBytes<T>(from value: T) -> [UInt8] where T: FixedWidthInteger {
     withUnsafeBytes(of: value.littleEndian, Array.init)
 }
+
+public extension VideoEncoder {
+    func createStreamClientListener() -> StreamClientListener {
+        class StreamClientHandler: StreamClientListener {
+            
+            private let encoder: VideoEncoder
+            
+            init(encoder: VideoEncoder) {
+                self.encoder = encoder
+            }
+            
+            func onRequestKeyframe() {
+                encoder.forceKeyFrame()
+            }
+        }
+        return StreamClientHandler(encoder: self)
+    }
+}
