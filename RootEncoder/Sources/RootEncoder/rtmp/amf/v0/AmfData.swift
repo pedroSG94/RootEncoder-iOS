@@ -55,7 +55,7 @@ public class AmfData: AmfActions {
     }
 
     public func writeHeader(socket: Socket) async throws {
-        try await socket.write(buffer: writeHeader())
+        try socket.write(buffer: writeHeader())
     }
 
     public func readBody(buffer: inout [UInt8]) throws {
