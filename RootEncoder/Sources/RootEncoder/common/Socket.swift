@@ -104,9 +104,8 @@ public class Socket: NSObject, StreamDelegate {
             return
         }
         let data = outputBuffer
-        let count = data.count
-        if !data.isEmpty && count > 0 {
-            outputBuffer.removeFirst(count)
+        if !data.isEmpty && data.count > 0 {
+            outputBuffer.removeFirst(data.count)
             connection?.send(content: data, completion: .contentProcessed { error in
                 if error != nil {
                     self.disconnect(error: "write error")
@@ -161,7 +160,9 @@ public class Socket: NSObject, StreamDelegate {
     private func readUntil(length: Int) throws -> Data {
         if inputBuffer.count >= length {
             let data = inputBuffer.prefix(length)
-            inputBuffer.removeFirst(data.count)
+            if inputBuffer.count >= data.count {
+                inputBuffer.removeFirst(data.count)
+            }
             return data
         } else {
             let result = semaphore.wait(timeout: .now() + .seconds(5))
