@@ -171,6 +171,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
     
+    @discardableResult
     public func configureCaptureSession(with configuration: @escaping (AVCaptureSession) -> Bool) -> Bool {
         if let session {
             return configuration(session)
