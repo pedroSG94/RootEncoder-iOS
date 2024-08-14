@@ -170,4 +170,12 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             return .landscapeLeft
         }
     }
+    
+    public func configureCaptureSession(with configuration: @escaping (AVCaptureSession) -> Bool) -> Bool {
+        if let session {
+            return configuration(session)
+        }
+        return false
+    }
+    
 }

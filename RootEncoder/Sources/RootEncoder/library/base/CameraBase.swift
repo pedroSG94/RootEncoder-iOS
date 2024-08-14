@@ -229,4 +229,9 @@ public class CameraBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVide
     public func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         onVideoInfoImp(sps: sps, pps: pps, vps: vps)
     }
+    
+    public func getCameraManager() -> CameraManager {
+        cameraManager
+    }
+    
 }
