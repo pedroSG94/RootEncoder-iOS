@@ -33,13 +33,14 @@ public class CameraHelper {
         case FRONT
     }
 
-    public enum Resolution {
+    public enum Resolution: Equatable {
         case cif352x288
         case vga640x480
         case hd1280x720
         case fhd1920x1080
         case fhd1920x1440
         case uhd3840x2160
+        case custom(width: Int, height: Int, preset: AVCaptureSession.Preset)
 
         public var width: Int {
             switch self {
@@ -55,6 +56,8 @@ public class CameraHelper {
                 return 1920
             case .uhd3840x2160:
                 return 3840
+            case let .custom(width, _, _):
+                return width
             }
         }
 
@@ -72,6 +75,8 @@ public class CameraHelper {
                 return 1440
             case .uhd3840x2160:
                 return 2160
+            case let .custom(_, height, _):
+                return height
             }
         }
 
@@ -89,6 +94,8 @@ public class CameraHelper {
                 return .hd1920x1080
             case .uhd3840x2160:
                 return .hd4K3840x2160
+            case let .custom(_, _, preset):
+                return preset
             }
         }
     }

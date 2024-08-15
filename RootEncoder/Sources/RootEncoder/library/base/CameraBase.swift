@@ -250,4 +250,9 @@ extension CameraBase {
         }
         return CameraBaseCallbackHandler(cameraBase: self)
     }
+    
+    public func getCameraManager() -> CameraManager {
+        cameraManager
+    }
+    
 }

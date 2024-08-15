@@ -39,6 +39,8 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
 
     public func stop() {
+        prevLayer?.removeFromSuperlayer()
+        prevLayer = nil
         session?.stopRunning()
         session?.removeOutput(output!)
         session?.removeInput(input!)
@@ -170,4 +172,9 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             return .landscapeLeft
         }
     }
+    
+    public func getCaptureSession() -> AVCaptureSession? {
+        session
+    }
+    
 }
