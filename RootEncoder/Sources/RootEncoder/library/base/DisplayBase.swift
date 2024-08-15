@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData {
+public class DisplayBase {
 
     private var microphone: MicrophoneManager!
     private var screenManager: ScreenManager!
@@ -22,13 +22,14 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVid
     private let recordController = RecordController()
 
     public init() {
-        screenManager = ScreenManager(callbackVideo: self, callbackAudio: nil)
-        microphone = MicrophoneManager(callback: self)
-        videoEncoder = VideoEncoder(callback: self)
-        audioEncoder = AudioEncoder(callback: self)
+        let callback = createDisplayBaseCallbacks()
+        screenManager = ScreenManager(callbackVideo: callback, callbackAudio: nil)
+        microphone = MicrophoneManager(callback: callback)
+        videoEncoder = VideoEncoder(callback: callback)
+        audioEncoder = AudioEncoder(callback: callback)
     }
 
-    public func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
+    func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
 
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
@@ -74,7 +75,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVid
         videoEncoder.stop()
     }
     
-    public func startStreamImp(endpoint: String) {}
+    func startStreamImp(endpoint: String) {}
         
     public func startStream(endpoint: String) {
         self.endpoint = endpoint
@@ -86,7 +87,7 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVid
         startStreamImp(endpoint: endpoint)
     }
 
-    public func stopStreamImp() {}
+    func stopStreamImp() {}
 
     public func stopStream() {
         if (!isRecording()) {
@@ -143,15 +144,15 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVid
         audioEncoder.setCodec(codec: codec)
     }
 
-    public func setVideoCodecImp(codec: VideoCodec) {}
+    func setVideoCodecImp(codec: VideoCodec) {}
     
-    public func setAudioCodecImp(codec: AudioCodec) {}
+    func setAudioCodecImp(codec: AudioCodec) {}
     
-    public func getAudioDataImp(frame: Frame) {}
+    func getAudioDataImp(frame: Frame) {}
 
-    public func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
+    func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
 
-    public func getVideoDataImp(frame: Frame) {}
+    func getVideoDataImp(frame: Frame) {}
 
     public func getPcmData(frame: PcmFrame) {
         recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
@@ -174,5 +175,44 @@ public class DisplayBase: GetMicrophoneData, GetCameraData, GetAudioData, GetVid
 
     public func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         onVideoInfoImp(sps: sps, pps: pps, vps: vps)
+    }
+}
+
+protocol DisplayBaseCallback: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData {}
+
+extension DisplayBase {
+    func createDisplayBaseCallbacks() -> DisplayBaseCallback {
+        class DisplayBaseCallbackHandler: DisplayBaseCallback {
+            
+            private let displayBase: DisplayBase
+            
+            init(displayBase: DisplayBase) {
+                self.displayBase = displayBase
+            }
+            
+            public func getPcmData(frame: PcmFrame) {
+                displayBase.recordController.recordAudio(pcmBuffer: frame.buffer, time: frame.time)
+                displayBase.audioEncoder.encodeFrame(frame: frame)
+            }
+
+            public func getYUVData(from buffer: CMSampleBuffer) {
+                displayBase.recordController.recordVideo(buffer: buffer)
+                displayBase.videoEncoder.encodeFrame(buffer: buffer)
+            }
+
+            public func getAudioData(frame: Frame) {
+                displayBase.getAudioDataImp(frame: frame)
+            }
+
+            public func getVideoData(frame: Frame) {
+                displayBase.fpsListener.calculateFps()
+                displayBase.getVideoDataImp(frame: frame)
+            }
+
+            public func onVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+                displayBase.onVideoInfoImp(sps: sps, pps: pps, vps: vps)
+            }
+        }
+        return DisplayBaseCallbackHandler(displayBase: self)
     }
 }

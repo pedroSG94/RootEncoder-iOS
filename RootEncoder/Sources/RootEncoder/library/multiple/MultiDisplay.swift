@@ -37,11 +37,8 @@ import Foundation
  * The rest of methods without MultiType and index means that you will execute that command in all streams.
  * Read class code if you need info about any method.
  */
-public class MultiDisplay: DisplayBase, StreamClientListenter {
+public class MultiDisplay: DisplayBase {
     
-    public func onRequestKeyframe() {
-        videoEncoder.forceKeyFrame()
-    }
     private var rtmpClients = Array<RtmpClient>()
     private var rtspClients = Array<RtspClient>()
     private var rtmpStreamClients = Array<RtmpStreamClient>()
@@ -49,15 +46,16 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
     
     public init(connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
         super.init()
+        let streamClientListener = videoEncoder.createStreamClientListener()
         for i in connectCheckerRtmpList ?? [] {
             let client = RtmpClient(connectChecker: i)
             rtmpClients.append(client)
-            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: self))
+            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: streamClientListener))
         }
         for i in connectCheckerRtspList ?? [] {
             let client = RtspClient(connectChecker: i)
             rtspClients.append(client)
-            rtspStreamClients.append(RtspStreamClient(client: client, listener: self))
+            rtspStreamClients.append(RtspStreamClient(client: client, listener: streamClientListener))
         }
     }
     
@@ -69,7 +67,7 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
     
-    public override func setVideoCodecImp(codec: VideoCodec) {
+    override func setVideoCodecImp(codec: VideoCodec) {
         for rtmp in rtmpClients {
             rtmp.setVideoCodec(codec: codec)
         }
@@ -78,7 +76,7 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
     
-    public override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: AudioCodec) {
         for rtmp in rtmpClients {
             rtmp.setAudioCodec(codec: codec)
         }
@@ -145,15 +143,11 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
     
-    public override func stopStreamImp() {
-        
-    }
+    override func stopStreamImp() { }
     
-    public override func startStreamImp(endpoint: String) {
-        
-    }
+    override func startStreamImp(endpoint: String) { }
     
-    public override func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {
+    override func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {
         for rtmp in rtmpClients {
             rtmp.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
         }
@@ -162,7 +156,7 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
     
-    public override func getAudioDataImp(frame: Frame) {
+    override func getAudioDataImp(frame: Frame) {
         for rtmp in rtmpClients {
             rtmp.sendAudio(buffer: frame.buffer, ts: frame.timeStamp)
         }
@@ -171,7 +165,7 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
 
-    public override func getVideoDataImp(frame: Frame) {
+    override func getVideoDataImp(frame: Frame) {
         for rtmp in rtmpClients {
             rtmp.sendVideo(buffer: frame.buffer, ts: frame.timeStamp)
         }
@@ -180,7 +174,7 @@ public class MultiDisplay: DisplayBase, StreamClientListenter {
         }
     }
 
-    public override func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+    override func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         for rtmp in rtmpClients {
             rtmp.setVideoInfo(sps: sps, pps: pps, vps: vps)
         }

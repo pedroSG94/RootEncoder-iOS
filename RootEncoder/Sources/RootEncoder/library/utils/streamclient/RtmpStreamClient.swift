@@ -10,9 +10,9 @@ import Foundation
 public class RtmpStreamClient: StreamBaseClient {
     
     private let client: RtmpClient
-    private let listener: StreamClientListenter?
+    private let listener: StreamClientListener?
     
-    public init(client: RtmpClient, listener: StreamClientListenter?) {
+    public init(client: RtmpClient, listener: StreamClientListener?) {
         self.client = client
         self.listener = listener
     }

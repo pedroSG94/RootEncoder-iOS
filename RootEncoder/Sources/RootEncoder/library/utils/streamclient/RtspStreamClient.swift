@@ -10,9 +10,9 @@ import Foundation
 public class RtspStreamClient: StreamBaseClient {
     
     private let client: RtspClient
-    private let listener: StreamClientListenter?
+    private let listener: StreamClientListener?
     
-    public init(client: RtspClient, listener: StreamClientListenter?) {
+    public init(client: RtspClient, listener: StreamClientListener?) {
         self.client = client
         self.listener = listener
     }

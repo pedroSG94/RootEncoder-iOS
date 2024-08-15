@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol StreamClientListenter {
+public protocol StreamClientListener {
     func onRequestKeyframe()
 }
