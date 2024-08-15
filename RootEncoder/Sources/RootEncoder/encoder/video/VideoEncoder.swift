@@ -38,10 +38,6 @@ public class VideoEncoder {
     public func prepareVideo() -> Bool {
         prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
-
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
-        prepareVideo(width: resolution.width, height: resolution.height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
-    }
     
     public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
         let w = if (rotation == 90 || rotation == 270) {
