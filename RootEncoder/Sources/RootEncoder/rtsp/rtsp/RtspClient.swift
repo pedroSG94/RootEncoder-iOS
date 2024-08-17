@@ -296,7 +296,7 @@ public class RtspClient: SocketCallback {
     }
     
     public func setLogs(enabled: Bool) {
-        rtspSender.setLogs(enable: enabled)
+        rtspSender.isEnableLogs = enabled
     }
     
     public func resizeCache(newSize: Int) {

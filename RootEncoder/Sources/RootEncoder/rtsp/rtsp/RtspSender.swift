@@ -8,7 +8,7 @@ public class RtspSender {
     private var senderReport: BaseSenderReport?
     private var thread: Task<(), Never>? = nil
     private var running = false
-    private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
+    private var cacheSize = 200
     private let queue: SynchronizedQueue<[RtpFrame]>
     private let callback: ConnectChecker
     private let commandsManager: RtspCommandManager
@@ -119,7 +119,7 @@ public class RtspSender {
                             self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
                             if (try self.senderReport?.update(rtpFrame: frame) == true) {
                                 //bytes to bits (4 is tcp header length)
-                                let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
+                                let reportSize = isTcp ? RtpConstants.REPORT_PACKET_LENGTH + 4 : RtpConstants.REPORT_PACKET_LENGTH
                                 self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
                                 if isEnableLogs {
                                     print("wrote report")
@@ -169,9 +169,5 @@ public class RtspSender {
     
     public func clearCache() {
         queue.clear()
-    }
-    
-    public func setLogs(enable: Bool) {
-        isEnableLogs = enable
     }
 }

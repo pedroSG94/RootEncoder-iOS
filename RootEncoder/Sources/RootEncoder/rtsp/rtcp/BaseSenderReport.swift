@@ -8,7 +8,6 @@ import Foundation
 public class BaseSenderReport {
 
     private let interval = 3000 //3s
-    let PACKET_LENGTH: UInt64 = 28
 
     private var videoBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
     private var audioBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
@@ -36,9 +35,9 @@ public class BaseSenderReport {
         audioBuffer[1] = 0xC8
 
         /* Byte 2,3          ->  Length                             */
-        let nVideo: UInt64 = PACKET_LENGTH / 4 - 1
+        let nVideo: UInt64 = RtpConstants.REPORT_PACKET_LENGTH / 4 - 1
         setLong(buffer: &videoBuffer, n: nVideo, begin: 2, end: 4)
-        let nAudio: UInt64 = PACKET_LENGTH / 4 - 1
+        let nAudio: UInt64 = RtpConstants.REPORT_PACKET_LENGTH / 4 - 1
         setLong(buffer: &audioBuffer, n: nAudio, begin: 2, end: 4)
         /* Byte 4,5,6,7      ->  SSRC                            */
         /* Byte 8,9,10,11    ->  NTP timestamp hb                 */

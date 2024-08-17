@@ -37,9 +37,9 @@ public class SenderReportUdp: BaseSenderReport, SocketCallback {
 
     public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame) throws {
         if (rtpFrame.isVideoFrame()) {
-            try videoSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
+            try videoSocket.write(buffer: buffer, size: Int(RtpConstants.REPORT_PACKET_LENGTH))
         } else {
-            try audioSocket.write(buffer: buffer, size: Int(PACKET_LENGTH))
+            try audioSocket.write(buffer: buffer, size: Int(RtpConstants.REPORT_PACKET_LENGTH))
         }
     }
     
