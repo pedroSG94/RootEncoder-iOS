@@ -145,6 +145,19 @@ public class VideoEncoder {
         syncQueue.clear()
     }
     
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        guard let session = self.session else { return }
+        self.bitrate = bitrate
+        let bitrateMode = if #available(iOS 16.0, *) {
+            kVTCompressionPropertyKey_ConstantBitRate
+        } else {
+            kVTCompressionPropertyKey_AverageBitRate
+        }
+        VTSessionSetProperties(session, propertyDictionary: [
+            bitrateMode: bitrate
+        ] as CFDictionary)
+    }
+    
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in
         guard let sampleBuffer = sampleBuffer else {
             print("nil buffer")

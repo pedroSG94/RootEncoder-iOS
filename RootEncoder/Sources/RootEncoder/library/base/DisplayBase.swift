@@ -153,6 +153,10 @@ public class DisplayBase {
         screenManager.unmute()
     }
     
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        videoEncoder.setVideoBitrateOnFly(bitrate: bitrate)
+    }
+    
     public func setVideoCodec(codec: VideoCodec) {
         setVideoCodecImp(codec: codec)
         recordController.setVideoCodec(codec: codec)

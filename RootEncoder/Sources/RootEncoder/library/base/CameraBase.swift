@@ -167,6 +167,9 @@ public class CameraBase {
         cameraManager
     }
     
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        videoEncoder.setVideoBitrateOnFly(bitrate: bitrate)
+    }
     /**
      * Get supported resolutions of back camera in px.
      *
