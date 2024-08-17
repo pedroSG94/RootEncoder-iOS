@@ -104,23 +104,33 @@ public class RtspSender {
                 let frames = self.queue.dequeue()
                 if let frames = frames {
                     do {
+                        var size = 0
+                        var isVideo = false
                         for frame in frames {
-                            try self.rtpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
-                            if (frame.channelIdentifier == RtpConstants.trackVideo) {
+                            try self.rtpSocket?.sendFrame(rtpFrame: frame)
+                            let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
+                            size += packetSize
+                            isVideo = frame.isVideoFrame()
+                            if (isVideo) {
                                 self.videoFramesSent += 1
                             } else {
                                 self.audioFramesSent += 1
                             }
-                            let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
                             self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
-                            let updated = try self.senderReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
-                            if (updated ?? false) {
+                            if (try self.senderReport?.update(rtpFrame: frame) == true) {
                                 //bytes to bits (4 is tcp header length)
                                 let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
                                 self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
+                                if isEnableLogs {
+                                    print("wrote report")
+                                }
                             }
                         }
                         self.rtpSocket?.flush()
+                        if isEnableLogs {
+                            let type = if isVideo { "Video" } else { "Audio" }
+                            print("wrote \(type) packet, size \(size)")
+                        }
                     } catch let error {
                         self.callback.onConnectionFailed(reason: error.localizedDescription)
                         return

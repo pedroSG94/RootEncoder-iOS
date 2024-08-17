@@ -17,7 +17,7 @@ public class RtpSocketTcp: BaseRtpSocket {
         self.socket = socket
     }
     
-    public override func sendFrame(rtpFrame: RtpFrame, isEnableLogs: Bool) throws {
+    public override func sendFrame(rtpFrame: RtpFrame) throws {
         var buffer = rtpFrame.buffer
         header[1] = UInt8(2 * rtpFrame.channelIdentifier!)
         header[2] = UInt8(rtpFrame.length! >> 8)
@@ -25,9 +25,6 @@ public class RtpSocketTcp: BaseRtpSocket {
         buffer?.insert(contentsOf: header, at: 0)
         
         try socket.write(buffer: buffer!)
-        if (isEnableLogs) {
-            print("wrote packet: \(rtpFrame.channelIdentifier == RtpConstants.trackAudio ? "Audio" : "Video"), size: \(buffer!.count)")
-        }
     }
     
     public override func flush() {
