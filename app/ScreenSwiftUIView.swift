@@ -75,7 +75,7 @@ struct ScreenSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtsp://192.168.0.160:8554/live/pedro"
+    @State private var endpoint = "rtsp://192.168.0.176:8554/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
