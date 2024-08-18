@@ -19,12 +19,12 @@ public class RtpSocketTcp: BaseRtpSocket {
     
     public override func sendFrame(rtpFrame: RtpFrame) throws {
         var buffer = rtpFrame.buffer
-        header[1] = UInt8(2 * rtpFrame.channelIdentifier!)
-        header[2] = UInt8(rtpFrame.length! >> 8)
-        header[3] = UInt8(rtpFrame.length! & 0xFF)
-        buffer?.insert(contentsOf: header, at: 0)
+        header[1] = UInt8(2 * rtpFrame.channelIdentifier)
+        header[2] = UInt8(rtpFrame.length >> 8)
+        header[3] = UInt8(rtpFrame.length & 0xFF)
+        buffer.insert(contentsOf: header, at: 0)
         
-        try socket.write(buffer: buffer!)
+        try socket.write(buffer: buffer)
     }
     
     public override func flush() {

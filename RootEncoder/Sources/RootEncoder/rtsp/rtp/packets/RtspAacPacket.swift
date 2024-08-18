@@ -9,13 +9,12 @@ public class RtspAacPacket: RtspBasePacket {
     }
     
     public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
-        var frames = [RtpFrame]()
-        var buffer = buffer
-        let naluLength = buffer.count
+        var fixedBuffer = buffer
+        let naluLength = fixedBuffer.count
         let dts = ts * 1000
         let maxPayload = maxPacketSize - RtpConstants.rtpHeaderLength
-        
         var sum = 0
+        var frames = [RtpFrame]()
         while (sum < naluLength) {
             let length = if (naluLength - sum < maxPayload) {
                 naluLength - sum
@@ -23,7 +22,7 @@ public class RtspAacPacket: RtspBasePacket {
                 maxPayload
             }
             var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 4)
-            buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 4, length: length)
+            fixedBuffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 4, length: length)
             markPacket(buffer: &rtpBuffer)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             
@@ -40,11 +39,7 @@ public class RtspAacPacket: RtspBasePacket {
             rtpBuffer[RtpConstants.rtpHeaderLength + 3] |= 0x00
             
             updateSeq(buffer: &rtpBuffer)
-            var frame = RtpFrame()
-            frame.timeStamp = rtpTs
-            frame.length = rtpBuffer.count
-            frame.buffer = rtpBuffer
-            frame.channelIdentifier = channelIdentifier
+            let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
 
             sum += length
             frames.append(frame)

@@ -108,7 +108,7 @@ public class RtspSender {
                         var isVideo = false
                         for frame in frames {
                             try self.rtpSocket?.sendFrame(rtpFrame: frame)
-                            let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
+                            let packetSize = isTcp ? 4 + frame.length : frame.length
                             size += packetSize
                             isVideo = frame.isVideoFrame()
                             if (isVideo) {

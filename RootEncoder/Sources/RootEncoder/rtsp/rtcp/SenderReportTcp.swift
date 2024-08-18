@@ -20,7 +20,7 @@ public class SenderReportTcp: BaseSenderReport {
 
     public override func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame) throws {
         var report = buffer
-        header[1] = UInt8(2 * rtpFrame.channelIdentifier! + 1)
+        header[1] = UInt8(2 * rtpFrame.channelIdentifier + 1)
         report.insert(contentsOf: header, at: 0)
         try socket.write(buffer: report, size: Int(RtpConstants.REPORT_PACKET_LENGTH) + header.count)
     }

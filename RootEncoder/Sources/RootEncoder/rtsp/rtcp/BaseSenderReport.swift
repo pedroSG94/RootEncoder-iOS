@@ -65,7 +65,7 @@ public class BaseSenderReport {
 
     private func updateAudio(rtpFrame: RtpFrame) throws -> Bool {
         audioPacketCount += 1
-        audioOctetCount += UInt64(rtpFrame.length!)
+        audioOctetCount += UInt64(rtpFrame.length)
 
         setLong(buffer: &audioBuffer, n: audioPacketCount, begin: 20, end: 24)
         setLong(buffer: &audioBuffer, n: audioOctetCount, begin: 24, end: 28);
@@ -73,7 +73,7 @@ public class BaseSenderReport {
         if (millis - audioTime >= interval) {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp)
             try sendReport(buffer: audioBuffer, rtpFrame: rtpFrame)
             return true
         }
@@ -82,7 +82,7 @@ public class BaseSenderReport {
 
     private func updateVideo(rtpFrame: RtpFrame) throws -> Bool {
         videoPacketCount += 1
-        videoOctetCount += UInt64(rtpFrame.length!)
+        videoOctetCount += UInt64(rtpFrame.length)
 
         setLong(buffer: &videoBuffer, n: videoPacketCount, begin: 20, end: 24)
         setLong(buffer: &videoBuffer, n: videoOctetCount, begin: 24, end: 28);
@@ -90,7 +90,7 @@ public class BaseSenderReport {
         if (millis - videoTime >= interval) {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
+            setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp)
             try sendReport(buffer: videoBuffer, rtpFrame: rtpFrame)
             return true
         }

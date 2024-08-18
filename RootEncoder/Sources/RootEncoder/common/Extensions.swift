@@ -8,6 +8,14 @@
 import Foundation
 import CryptoKit
 
+
+public extension Array {
+    mutating func get(destiny: inout Array, index: Int, length: Int) {
+        destiny[index...index + length - 1] = self[0...length - 1]
+        self.removeFirst(length)
+    }
+}
+
 public extension Date {
     var millisecondsSince1970: Int64 {
         Int64((timeIntervalSince1970 * 1000.0).rounded())

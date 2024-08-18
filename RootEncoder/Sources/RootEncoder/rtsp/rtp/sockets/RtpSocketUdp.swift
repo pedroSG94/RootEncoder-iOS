@@ -37,9 +37,9 @@ public class RtpSocketUdp: BaseRtpSocket, SocketCallback {
 
     public override func sendFrame(rtpFrame: RtpFrame) throws {
         if (rtpFrame.isVideoFrame()) {
-            try videoSocket.write(buffer: rtpFrame.buffer!)
+            try videoSocket.write(buffer: rtpFrame.buffer)
         } else {
-            try audioSocket.write(buffer: rtpFrame.buffer!)
+            try audioSocket.write(buffer: rtpFrame.buffer)
         }
     }
     
