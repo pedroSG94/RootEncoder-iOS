@@ -185,7 +185,7 @@ public class CameraBase {
 
     public func startPreview(preset: AVCaptureSession.Preset, facing: CameraHelper.Facing = .BACK, rotation: Int? = nil) {
         if (!isOnPreview()) {
-            cameraManager.start(facing: facing, preset: preset, rotation: rotation ?? CameraHelper.getCameraOrientation())
+            cameraManager.start(preset: preset, facing: facing, rotation: rotation ?? CameraHelper.getCameraOrientation())
             onPreview = true
         }
     }

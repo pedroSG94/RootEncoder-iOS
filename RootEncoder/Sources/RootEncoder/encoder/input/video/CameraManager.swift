@@ -53,11 +53,11 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     }
 
     public func start() {
-        start(facing: facing, preset: preset, rotation: rotation)
+        start(preset: preset, facing: facing, rotation: rotation)
     }
 
     public func start(preset: AVCaptureSession.Preset) {
-        start(facing: facing, preset: preset, rotation: rotation)
+        start(preset: preset, facing: facing, rotation: rotation)
     }
 
     public func switchCamera() {
@@ -68,7 +68,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (running) {
             stop()
-            start(facing: facing, preset: preset, rotation: rotation)
+            start(preset: preset, facing: facing, rotation: rotation)
         }
     }
     
@@ -89,7 +89,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         return sizes
     }
     
-    public func start(facing: CameraHelper.Facing, preset: AVCaptureSession.Preset, rotation: Int) {
+    public func start(preset: AVCaptureSession.Preset, facing: CameraHelper.Facing, rotation: Int) {
         self.facing = facing
         if (running) {
             if (preset != self.preset || rotation != self.rotation) {
