@@ -8,8 +8,8 @@ public class RtspSender {
     private var senderReport: BaseSenderReport?
     private var thread: Task<(), Never>? = nil
     private var running = false
-    private var cacheSize = 10 * 1024 * 1024 / RtpConstants.MTU
-    private let queue: SynchronizedQueue<RtpFrame>
+    private var cacheSize = 200
+    private let queue: SynchronizedQueue<[RtpFrame]>
     private let callback: ConnectChecker
     private let commandsManager: RtspCommandManager
 
@@ -23,7 +23,7 @@ public class RtspSender {
     public init(callback: ConnectChecker, commandsManager: RtspCommandManager) {
         self.callback = callback
         self.commandsManager = commandsManager
-        queue = SynchronizedQueue<RtpFrame>(label: "RtspSenderQueue", size: cacheSize)
+        queue = SynchronizedQueue<[RtpFrame]>(label: "RtspSenderQueue", size: cacheSize)
         bitrateManager = BitrateManager(connectChecker: callback)
     }
 
@@ -101,24 +101,36 @@ public class RtspSender {
         thread = Task(priority: .high) {
             let isTcp = self.rtpSocket is RtpSocketTcp
             while (self.running) {
-                let frame = self.queue.dequeue()
-                if let frame = frame {
+                let frames = self.queue.dequeue()
+                if let frames = frames {
                     do {
-                        try self.rtpSocket?.sendFrame(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
-                        if (frame.channelIdentifier == RtpConstants.trackVideo) {
-                            self.videoFramesSent += 1
-                        } else {
-                            self.audioFramesSent += 1
-                        }
-                        let packetSize = isTcp ? 4 + (frame.length ?? 0) : (frame.length ?? 0)
-                        self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
-                        let updated = try self.senderReport?.update(rtpFrame: frame, isEnableLogs: self.isEnableLogs)
-                        if (updated ?? false) {
-                            //bytes to bits (4 is tcp header length)
-                            let reportSize = isTcp ? self.senderReport?.PACKET_LENGTH ?? (0 + 4) : self.senderReport?.PACKET_LENGTH ?? 0
-                            self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
+                        var size = 0
+                        var isVideo = false
+                        for frame in frames {
+                            try self.rtpSocket?.sendFrame(rtpFrame: frame)
+                            let packetSize = isTcp ? 4 + frame.length : frame.length
+                            size += packetSize
+                            isVideo = frame.isVideoFrame()
+                            if (isVideo) {
+                                self.videoFramesSent += 1
+                            } else {
+                                self.audioFramesSent += 1
+                            }
+                            self.bitrateManager.calculateBitrate(size: Int64(packetSize * 8))
+                            if (try self.senderReport?.update(rtpFrame: frame) == true) {
+                                //bytes to bits (4 is tcp header length)
+                                let reportSize = isTcp ? RtpConstants.REPORT_PACKET_LENGTH + 4 : RtpConstants.REPORT_PACKET_LENGTH
+                                self.bitrateManager.calculateBitrate(size: Int64(reportSize) * 8)
+                                if isEnableLogs {
+                                    print("wrote report")
+                                }
+                            }
                         }
                         self.rtpSocket?.flush()
+                        if isEnableLogs {
+                            let type = if isVideo { "Video" } else { "Audio" }
+                            print("wrote \(type) packet, size \(size)")
+                        }
                     } catch let error {
                         self.callback.onConnectionFailed(reason: error.localizedDescription)
                         return
@@ -157,9 +169,5 @@ public class RtspSender {
     
     public func clearCache() {
         queue.clear()
-    }
-    
-    public func setLogs(enable: Bool) {
-        isEnableLogs = enable
     }
 }

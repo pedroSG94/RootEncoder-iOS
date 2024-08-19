@@ -8,7 +8,6 @@ import Foundation
 public class BaseSenderReport {
 
     private let interval = 3000 //3s
-    let PACKET_LENGTH: UInt64 = 28
 
     private var videoBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
     private var audioBuffer = Array<UInt8>(repeating: 0, count: RtpConstants.MTU)
@@ -36,9 +35,9 @@ public class BaseSenderReport {
         audioBuffer[1] = 0xC8
 
         /* Byte 2,3          ->  Length                             */
-        let nVideo: UInt64 = PACKET_LENGTH / 4 - 1
+        let nVideo: UInt64 = RtpConstants.REPORT_PACKET_LENGTH / 4 - 1
         setLong(buffer: &videoBuffer, n: nVideo, begin: 2, end: 4)
-        let nAudio: UInt64 = PACKET_LENGTH / 4 - 1
+        let nAudio: UInt64 = RtpConstants.REPORT_PACKET_LENGTH / 4 - 1
         setLong(buffer: &audioBuffer, n: nAudio, begin: 2, end: 4)
         /* Byte 4,5,6,7      ->  SSRC                            */
         /* Byte 8,9,10,11    ->  NTP timestamp hb                 */
@@ -56,17 +55,17 @@ public class BaseSenderReport {
         setLong(buffer: &audioBuffer, n: ssrcAudio, begin: 4, end: 8)
     }
 
-    public func update(rtpFrame: RtpFrame, isEnableLogs: Bool) throws -> Bool {
+    public func update(rtpFrame: RtpFrame) throws -> Bool {
         if (rtpFrame.channelIdentifier == RtpConstants.trackVideo) {
-            return try updateVideo(rtpFrame: rtpFrame, isEnableLogs: isEnableLogs)
+            return try updateVideo(rtpFrame: rtpFrame)
         } else {
-            return try updateAudio(rtpFrame: rtpFrame, isEnableLogs: isEnableLogs)
+            return try updateAudio(rtpFrame: rtpFrame)
         }
     }
 
-    private func updateAudio(rtpFrame: RtpFrame, isEnableLogs: Bool) throws -> Bool {
+    private func updateAudio(rtpFrame: RtpFrame) throws -> Bool {
         audioPacketCount += 1
-        audioOctetCount += UInt64(rtpFrame.length!)
+        audioOctetCount += UInt64(rtpFrame.length)
 
         setLong(buffer: &audioBuffer, n: audioPacketCount, begin: 20, end: 24)
         setLong(buffer: &audioBuffer, n: audioOctetCount, begin: 24, end: 28);
@@ -74,16 +73,16 @@ public class BaseSenderReport {
         if (millis - audioTime >= interval) {
             audioTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            try sendReport(buffer: audioBuffer, rtpFrame: rtpFrame, packets: audioPacketCount, octet: audioOctetCount, isEnableLogs: isEnableLogs)
+            setData(buffer: &audioBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp)
+            try sendReport(buffer: audioBuffer, rtpFrame: rtpFrame)
             return true
         }
         return false
     }
 
-    private func updateVideo(rtpFrame: RtpFrame, isEnableLogs: Bool) throws -> Bool {
+    private func updateVideo(rtpFrame: RtpFrame) throws -> Bool {
         videoPacketCount += 1
-        videoOctetCount += UInt64(rtpFrame.length!)
+        videoOctetCount += UInt64(rtpFrame.length)
 
         setLong(buffer: &videoBuffer, n: videoPacketCount, begin: 20, end: 24)
         setLong(buffer: &videoBuffer, n: videoOctetCount, begin: 24, end: 28);
@@ -91,8 +90,8 @@ public class BaseSenderReport {
         if (millis - videoTime >= interval) {
             videoTime = UInt64(Date().millisecondsSince1970)
             let nano = UInt64(Date().millisecondsSince1970) * 1000000
-            setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp!)
-            try sendReport(buffer: videoBuffer, rtpFrame: rtpFrame, packets: videoPacketCount, octet: videoOctetCount, isEnableLogs: isEnableLogs)
+            setData(buffer: &videoBuffer, ntpts: nano, rtpts: rtpFrame.timeStamp)
+            try sendReport(buffer: videoBuffer, rtpFrame: rtpFrame)
             return true
         }
         return false
@@ -101,7 +100,7 @@ public class BaseSenderReport {
     /**
      This method must be overridden
      */
-    func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame, packets: UInt64, octet: UInt64, isEnableLogs: Bool) throws {
+    func sendReport(buffer: Array<UInt8>, rtpFrame: RtpFrame) throws {
         
     }
 

@@ -20,9 +20,11 @@ public class DisplayBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
+    private var callback: DisplayBaseCallback? = nil
 
     public init() {
         let callback = createDisplayBaseCallbacks()
+        self.callback = callback
         screenManager = ScreenManager(callbackVideo: callback, callbackAudio: nil)
         microphone = MicrophoneManager(callback: callback)
         videoEncoder = VideoEncoder(callback: callback)
@@ -31,9 +33,22 @@ public class DisplayBase {
 
     func onAudioInfoImp(sampleRate: Int, isStereo: Bool) {}
 
+    public func prepareInternalAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
+        let channels = isStereo ? 2 : 1
+        recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
+        screenManager.setAudioCallback(callbackAudio: callback)
+        onAudioInfoImp(sampleRate: sampleRate, isStereo: isStereo)
+        return audioEncoder.prepareAudio(sampleRate: Double(sampleRate), channels: UInt32(channels), bitrate: bitrate)
+    }
+    
+    public func prepareInternalAudio() -> Bool {
+        prepareInternalAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
+    }
+
     public func prepareAudio(bitrate: Int, sampleRate: Int, isStereo: Bool) -> Bool {
         let channels = isStereo ? 2 : 1
         recordController.setAudioFormat(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
+        screenManager.setAudioCallback(callbackAudio: nil)
         let createResult = microphone.createMicrophone()
         if !createResult {
             return false
@@ -46,15 +61,15 @@ public class DisplayBase {
         prepareAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
-        let w = screenManager.getWidth()
-        let h = screenManager.getHeight()
-        recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
-        return videoEncoder.prepareVideo(width: w, height: h, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
+        recordController.setVideoFormat(witdh: width, height: height, bitrate: bitrate)
+        return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: 0)
+        let w = screenManager.getWidth()
+        let h = screenManager.getHeight()
+        return prepareVideo(width: w, height: h, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: 0)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -121,15 +136,25 @@ public class DisplayBase {
     }
 
     public func isMuted() -> Bool {
-        return microphone.isMuted()
+        if screenManager.recordingInternalAudio {
+            return screenManager.isMuted()
+        } else {
+            return microphone.isMuted()
+        }
     }
     
     public func mute() {
         microphone.mute()
+        screenManager.mute()
     }
     
     public func unmute() {
         microphone.unmute()
+        screenManager.unmute()
+    }
+    
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        videoEncoder.setVideoBitrateOnFly(bitrate: bitrate)
     }
     
     public func setVideoCodec(codec: VideoCodec) {

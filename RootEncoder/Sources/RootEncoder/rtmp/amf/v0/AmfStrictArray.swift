@@ -35,14 +35,9 @@ public class AmfStrictArray: AmfData, CustomStringConvertible {
     }
 
     public override func writeBody() -> [UInt8] {
-        //write number of items in the list as UInt32
         var bytes = [UInt8]()
-        let buffer = withUnsafePointer(to: UInt32(items.count)) {
-            $0.withMemoryRebound(to: UInt8.self, capacity: getSize()) {
-                Array(UnsafeBufferPointer(start: $0, count: getSize()))
-            }
-        }
-        bytes.append(contentsOf: buffer)
+        //write number of items in the list as UInt32
+        bytes.append(contentsOf: byteArray(from: UInt32(items.count)))
         //write items
         for amfData in items {
             bytes.append(contentsOf: amfData.writeHeader())

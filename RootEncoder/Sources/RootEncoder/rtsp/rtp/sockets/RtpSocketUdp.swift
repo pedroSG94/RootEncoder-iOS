@@ -35,20 +35,12 @@ public class RtpSocketUdp: BaseRtpSocket, SocketCallback {
         audioSocket.disconnect()
     }
 
-    public override func sendFrame(rtpFrame: RtpFrame, isEnableLogs: Bool) throws {
-        let isAudio = rtpFrame.channelIdentifier == RtpConstants.trackAudio
-        var port = 0
-        if (isAudio) {
-            try audioSocket.write(buffer: rtpFrame.buffer!)
-            port = audioPorts[1]
+    public override func sendFrame(rtpFrame: RtpFrame) throws {
+        if (rtpFrame.isVideoFrame()) {
+            try videoSocket.write(buffer: rtpFrame.buffer)
         } else {
-            try videoSocket.write(buffer: rtpFrame.buffer!)
-            port = videoPorts[1]
+            try audioSocket.write(buffer: rtpFrame.buffer)
         }
-        if (isEnableLogs) {
-            print("wrote packet: \(isAudio ? "Audio" : "Video"), size: \(rtpFrame.buffer!.count), port: \(port)")
-        }
-        
     }
     
     public override func flush() {

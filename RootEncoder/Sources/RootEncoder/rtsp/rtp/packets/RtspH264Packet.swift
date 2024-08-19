@@ -11,18 +11,16 @@ public class RtspH264Packet: RtspBasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
-        var buffer = buffer
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
+        var fixedBuffer = buffer
         let dts = ts * 1000
-        var frame = RtpFrame()
-        frame.channelIdentifier = channelIdentifier
         
         var header = Array<UInt8>(repeating: 0, count: 5)
-        buffer = buffer.get(destiny: &header, index: 0, length: 5)
+        fixedBuffer.get(destiny: &header, index: 0, length: header.count)
 
-        let naluLength = Int(buffer.count)
+        let naluLength = Int(fixedBuffer.count)
         let type: UInt8 = header[4] & 0x1F
-
+        var frames = [RtpFrame]()
         if type == RtpConstants.IDR {
             var rtpBuffer = getBuffer(size: stapA!.count + RtpConstants.rtpHeaderLength)
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
@@ -30,10 +28,8 @@ public class RtspH264Packet: RtspBasePacket {
             rtpBuffer[RtpConstants.rtpHeaderLength...RtpConstants.rtpHeaderLength + stapA!.count - 1] = stapA![0...stapA!.count - 1]
             updateSeq(buffer: &rtpBuffer)
             
-            frame.timeStamp = rtpTs
-            frame.length = rtpBuffer.count
-            frame.buffer = rtpBuffer
-            callback(frame)
+            let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
+            frames.append(frame)
             sendKeyFrame = true
         }
         if sendKeyFrame {
@@ -42,16 +38,14 @@ public class RtspH264Packet: RtspBasePacket {
                 var rtpBuffer = getBuffer(size: naluLength + RtpConstants.rtpHeaderLength + 1)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[4]
                 
-                buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 1, length: naluLength)
+                fixedBuffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 1, length: naluLength)
                 
                 let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                 markPacket(buffer: &rtpBuffer)
                 updateSeq(buffer: &rtpBuffer)
                 
-                frame.timeStamp = rtpTs
-                frame.length = rtpBuffer.count
-                frame.buffer = rtpBuffer
-                callback(frame)
+                let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
+                frames.append(frame)
             }
             // Large NAL unit => Split nal unit
             else {
@@ -67,7 +61,7 @@ public class RtspH264Packet: RtspBasePacket {
                     let length = if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
                         maxPacketSize - RtpConstants.rtpHeaderLength - 2
                     } else {
-                        buffer.count
+                        fixedBuffer.count
                     }
                     var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 2)
                     rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
@@ -75,7 +69,7 @@ public class RtspH264Packet: RtspBasePacket {
 
                     let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
                     
-                    buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 2, length: length)
+                    fixedBuffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 2, length: length)
                     
                     sum += length
                     if sum >= naluLength {
@@ -84,10 +78,8 @@ public class RtspH264Packet: RtspBasePacket {
                     }
                     updateSeq(buffer: &rtpBuffer)
 
-                    frame.timeStamp = rtpTs
-                    frame.length = rtpBuffer.count
-                    frame.buffer = rtpBuffer
-                    callback(frame)
+                    let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
+                    frames.append(frame)
                     // Switch start bit
                     header[1] = header[1] & 0x7F
                 }
@@ -95,6 +87,7 @@ public class RtspH264Packet: RtspBasePacket {
         } else {
             print("waiting for keyframe")
         }
+        callback(frames)
     }
     
     private func setSpsPps(sps: Array<UInt8>, pps: Array<UInt8>) {

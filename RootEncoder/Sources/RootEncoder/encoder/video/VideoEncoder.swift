@@ -38,10 +38,6 @@ public class VideoEncoder {
     public func prepareVideo() -> Bool {
         prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
-
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
-        prepareVideo(width: resolution.width, height: resolution.height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
-    }
     
     public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
         let w = if (rotation == 90 || rotation == 270) {
@@ -147,6 +143,19 @@ public class VideoEncoder {
         isSpsAndPpsSend = false
         forceKey = false
         syncQueue.clear()
+    }
+    
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        guard let session = self.session else { return }
+        self.bitrate = bitrate
+        let bitrateMode = if #available(iOS 16.0, *) {
+            kVTCompressionPropertyKey_ConstantBitRate
+        } else {
+            kVTCompressionPropertyKey_AverageBitRate
+        }
+        VTSessionSetProperties(session, propertyDictionary: [
+            bitrateMode: bitrate
+        ] as CFDictionary)
     }
     
     private var videoCallback: VTCompressionOutputCallback = {(outputCallbackRefCon: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, status: OSStatus, flags: VTEncodeInfoFlags, sampleBuffer: CMSampleBuffer?) in

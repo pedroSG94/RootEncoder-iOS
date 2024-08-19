@@ -12,35 +12,30 @@ public class RtspH265Packet: RtspBasePacket {
         channelIdentifier = RtpConstants.trackVideo
     }
 
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: (RtpFrame) -> Void) {
-        var buffer = buffer
+    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
+        var fixedBuffer = buffer
         let dts = ts * 1000
-        var frame = RtpFrame()
-        frame.channelIdentifier = channelIdentifier
 
         var header = Array<UInt8>(repeating: 0, count: 6)
-        buffer = buffer.get(destiny: &header, index: 0, length: 6)
-        //128, 224, 0, 3, 0, 169, 138, 199, 7, 91, 205, 21, 98, 1, 64
+        fixedBuffer.get(destiny: &header, index: 0, length: header.count)
         
-        let naluLength = Int(buffer.count)
+        let naluLength = Int(fixedBuffer.count)
         let type: UInt8 = header[4] >> (1 & 0x3F)
-
+        var frames = [RtpFrame]()
         // Small NAL unit => Single NAL unit
         if (naluLength <= maxPacketSize - RtpConstants.rtpHeaderLength - 2) {
             var rtpBuffer = getBuffer(size: naluLength + RtpConstants.rtpHeaderLength + 2)
             rtpBuffer[RtpConstants.rtpHeaderLength] = header[4]
             rtpBuffer[RtpConstants.rtpHeaderLength + 1] = header[5]
 
-            buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 2, length: naluLength)
+            fixedBuffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 2, length: naluLength)
 
             let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
             markPacket(buffer: &rtpBuffer)
             updateSeq(buffer: &rtpBuffer)
 
-            frame.timeStamp = rtpTs
-            frame.length = rtpBuffer.count
-            frame.buffer = rtpBuffer
-            callback(frame)
+            let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
+            frames.append(frame)
         }
         // Large NAL unit => Split nal unit
         else {
@@ -61,7 +56,7 @@ public class RtspH265Packet: RtspBasePacket {
                 let length = if (naluLength - sum > maxPacketSize - RtpConstants.rtpHeaderLength - 3) {
                     maxPacketSize - RtpConstants.rtpHeaderLength - 3
                 } else {
-                    buffer.count
+                    fixedBuffer.count
                 }
                 var rtpBuffer = getBuffer(size: length + RtpConstants.rtpHeaderLength + 3)
                 rtpBuffer[RtpConstants.rtpHeaderLength] = header[0]
@@ -70,7 +65,7 @@ public class RtspH265Packet: RtspBasePacket {
                 
                 let rtpTs = updateTimeStamp(buffer: &rtpBuffer, timeStamp: dts)
 
-                buffer = buffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 3, length: length)
+                fixedBuffer.get(destiny: &rtpBuffer, index: RtpConstants.rtpHeaderLength + 3, length: length)
 
                 sum += length
                 if sum >= naluLength {
@@ -79,14 +74,13 @@ public class RtspH265Packet: RtspBasePacket {
                 }
                 updateSeq(buffer: &rtpBuffer)
 
-                frame.timeStamp = rtpTs
-                frame.length = rtpBuffer.count
-                frame.buffer = rtpBuffer
-                callback(frame)
+                let frame = RtpFrame(buffer: rtpBuffer, length: rtpBuffer.count, timeStamp: rtpTs, channelIdentifier: channelIdentifier!)
+                frames.append(frame)
                 // Switch start bit
                 header[2] = header[2] & 0x7F
             }
         }
+        callback(frames)
     }
 
     override public func reset() {

@@ -17,7 +17,8 @@ public class CameraBase {
     private var streaming = false
     private var onPreview = false
     private var fpsListener = FpsListener()
-    private var previewResolution = CameraHelper.Resolution.vga640x480
+    private var previewWidth: Int = 640
+    private var previewHeight: Int = 480
     private let recordController = RecordController()
     private(set) public var metalInterface: MetalInterface? = nil
     private var callback: CameraBaseCallback? = nil
@@ -58,24 +59,24 @@ public class CameraBase {
         prepareAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(resolution: CameraHelper.Resolution, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
-        if (previewResolution != resolution || rotation != cameraManager.rotation) {
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int, preset: AVCaptureSession.Preset) -> Bool {
+        if (previewWidth != width || previewHeight != height || rotation != cameraManager.rotation) {
             cameraManager.stop()
         }
-        var w = resolution.width
-        var h = resolution.height
+        var w = width
+        var h = height
         if (rotation == 90 || rotation == 270) {
-            w = resolution.height
-            h = resolution.width
+            w = height
+            h = width
         }
         metalInterface?.setForceFps(fps: fps)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
-        cameraManager.prepare(resolution: resolution, fps: fps, rotation: rotation)
-        return videoEncoder.prepareVideo(resolution: resolution, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
+        cameraManager.prepare(preset: preset, fps: fps, rotation: rotation)
+        return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(resolution: .vga640x480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation())
+        prepareVideo(width: 640, height: 480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation(), preset: .high)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -161,17 +162,43 @@ public class CameraBase {
     public func unmute() {
         microphone.unmute()
     }
+    
+    public func getCameraManager() -> CameraManager {
+        cameraManager
+    }
+    
+    public func setVideoBitrateOnFly(bitrate: Int) {
+        videoEncoder.setVideoBitrateOnFly(bitrate: bitrate)
+    }
+    /**
+     * Get supported resolutions of back camera in px.
+     *
+     * @return list of resolutions supported by back camera
+     */
+    public func getResolutionsBack() -> [CMVideoDimensions] {
+      return cameraManager.getBackCameraResolutions()
+    }
 
-    public func startPreview(resolution: CameraHelper.Resolution, facing: CameraHelper.Facing = .BACK, rotation: Int) {
+    /**
+     * Get supported resolutions of front camera in px.
+     *
+     * @return list of resolutions supported by front camera
+     */
+    public func getResolutionsFront() -> [CMVideoDimensions] {
+      return cameraManager.getFrontCameraResolutions()
+    }
+
+    public func startPreview(width: Int, height: Int, facing: CameraHelper.Facing = .BACK, rotation: Int, preset: AVCaptureSession.Preset) {
         if (!isOnPreview()) {
-            cameraManager.start(facing: facing, resolution: resolution, rotation: rotation)
-            previewResolution = resolution
+            cameraManager.start(facing: facing, preset: preset, rotation: rotation)
+            previewWidth = width
+            previewHeight = height
             onPreview = true
         }
     }
 
     public func startPreview() {
-        startPreview(resolution: .vga640x480, facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation())
+        startPreview(width: 640, height: 480, facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation(), preset: .high)
     }
 
     public func stopPreview() {
@@ -250,9 +277,4 @@ extension CameraBase {
         }
         return CameraBaseCallbackHandler(cameraBase: self)
     }
-    
-    public func getCameraManager() -> CameraManager {
-        cameraManager
-    }
-    
 }

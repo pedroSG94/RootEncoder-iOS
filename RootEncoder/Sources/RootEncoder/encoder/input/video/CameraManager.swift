@@ -23,8 +23,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var fpsLimiter = FpsLimiter()
 
     private var facing = CameraHelper.Facing.BACK
-    //TODO fix use different resolution in startPreview and in prepareVideo
-    private var resolution: CameraHelper.Resolution = .vga640x480
+    private var preset: AVCaptureSession.Preset = .high
     public var rotation: Int = 0
     private(set) var running = false
     private var callback: GetCameraData
@@ -47,18 +46,18 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         running = false
     }
 
-    public func prepare(resolution: CameraHelper.Resolution, fps: Int, rotation: Int) {
-        self.resolution = resolution
+    public func prepare(preset: AVCaptureSession.Preset, fps: Int, rotation: Int) {
+        self.preset = preset
         fpsLimiter.setFps(fps: fps)
         self.rotation = rotation
     }
 
     public func start() {
-        start(facing: facing, resolution: resolution, rotation: rotation)
+        start(facing: facing, preset: preset, rotation: rotation)
     }
 
-    public func start(resolution: CameraHelper.Resolution) {
-        start(facing: facing, resolution: resolution, rotation: rotation)
+    public func start(preset: AVCaptureSession.Preset) {
+        start(facing: facing, preset: preset, rotation: rotation)
     }
 
     public func switchCamera() {
@@ -69,23 +68,39 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (running) {
             stop()
-            start(facing: facing, resolution: resolution, rotation: rotation)
+            start(facing: facing, preset: preset, rotation: rotation)
         }
     }
     
-    public func start(facing: CameraHelper.Facing, resolution: CameraHelper.Resolution, rotation: Int) {
+    public func getBackCameraResolutions() -> [CMVideoDimensions] {
+        return getResolutionsByFace(facing: .BACK)
+    }
+    
+    public func getFrontCameraResolutions() -> [CMVideoDimensions] {
+        return getResolutionsByFace(facing: .FRONT)
+    }
+    
+    public func getResolutionsByFace(facing: CameraHelper.Facing) -> [CMVideoDimensions] {
+        let position = facing == CameraHelper.Facing.BACK ? AVCaptureDevice.Position.back : AVCaptureDevice.Position.front
+        let devices = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: position)
+        let device = devices.devices[0]
+        let descriptions = device.formats.map(\.formatDescription)
+        let sizes = descriptions.map(\.dimensions)
+        return sizes
+    }
+    
+    public func start(facing: CameraHelper.Facing, preset: AVCaptureSession.Preset, rotation: Int) {
         self.facing = facing
         if (running) {
-            if (resolution != self.resolution || rotation != self.rotation) {
+            if (preset != self.preset || rotation != self.rotation) {
                 stop()
             } else {
                 return
             }
         }
         self.rotation = rotation
-        self.resolution = resolution
+        self.preset = preset
         session = AVCaptureSession()
-        let preset: AVCaptureSession.Preset = resolution.value
         session?.sessionPreset = preset
         let position = facing == CameraHelper.Facing.BACK ? AVCaptureDevice.Position.back : AVCaptureDevice.Position.front
         let devices = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: position)
