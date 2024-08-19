@@ -57,9 +57,10 @@ public class CameraBase {
         prepareAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int) -> Bool {
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int? = nil) -> Bool {
         var w = width
         var h = height
+        let rotation = rotation ?? cameraManager.rotation
         if (rotation == 90 || rotation == 270) {
             w = height
             h = width
@@ -70,7 +71,7 @@ public class CameraBase {
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(width: 640, height: 480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2, rotation: CameraHelper.getCameraOrientation())
+        prepareVideo(width: 640, height: 480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -182,15 +183,15 @@ public class CameraBase {
       return cameraManager.getFrontCameraResolutions()
     }
 
-    public func startPreview(facing: CameraHelper.Facing = .BACK, rotation: Int, preset: AVCaptureSession.Preset) {
+    public func startPreview(preset: AVCaptureSession.Preset, facing: CameraHelper.Facing = .BACK, rotation: Int? = nil) {
         if (!isOnPreview()) {
-            cameraManager.start(facing: facing, preset: preset, rotation: rotation)
+            cameraManager.start(facing: facing, preset: preset, rotation: rotation ?? CameraHelper.getCameraOrientation())
             onPreview = true
         }
     }
 
     public func startPreview() {
-        startPreview(facing: CameraHelper.Facing.BACK, rotation: CameraHelper.getCameraOrientation(), preset: .high)
+        startPreview(preset: .high)
     }
 
     public func stopPreview() {
