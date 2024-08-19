@@ -105,7 +105,7 @@ public class Socket: NSObject, StreamDelegate {
         }
         let data = outputBuffer
         if !data.isEmpty && data.count > 0 {
-            outputBuffer.removeFirst(data.count)
+            outputBuffer.removeSubrange(0..<data.count)
             connection?.send(content: data, completion: .contentProcessed { error in
                 if error != nil {
                     self.disconnect(error: "write error")
