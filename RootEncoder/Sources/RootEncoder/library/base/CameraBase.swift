@@ -54,24 +54,24 @@ public class CameraBase {
     }
 
     public func prepareAudio() -> Bool {
-        prepareAudio(bitrate: 128 * 1024, sampleRate: 32000, isStereo: true)
+        prepareAudio(bitrate: 128 * 1000, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int? = nil) -> Bool {
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int = 2, rotation: Int = CameraHelper.getCameraOrientation(), preset: AVCaptureSession.Preset = .vga640x480) -> Bool {
         var w = width
         var h = height
-        let rotation = rotation ?? cameraManager.rotation
         if (rotation == 90 || rotation == 270) {
             w = height
             h = width
         }
         metalInterface?.setForceFps(fps: fps)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
+        cameraManager.prepare(preset: preset, fps: fps, rotation: rotation)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
     public func prepareVideo() -> Bool {
-        prepareVideo(width: 640, height: 480, fps: 30, bitrate: 1200 * 1024, iFrameInterval: 2)
+        prepareVideo(width: 640, height: 480, fps: 30, bitrate: 1200 * 1000)
     }
 
     public func setFpsListener(fpsCallback: FpsCallback) {
@@ -183,15 +183,11 @@ public class CameraBase {
       return cameraManager.getFrontCameraResolutions()
     }
 
-    public func startPreview(preset: AVCaptureSession.Preset, facing: CameraHelper.Facing = .BACK, rotation: Int? = nil) {
+    public func startPreview(preset: AVCaptureSession.Preset = .vga640x480, facing: CameraHelper.Facing = .BACK, rotation: Int = CameraHelper.getCameraOrientation()) {
         if (!isOnPreview()) {
-            cameraManager.start(preset: preset, facing: facing, rotation: rotation ?? CameraHelper.getCameraOrientation())
+            cameraManager.start(preset: preset, facing: facing, rotation: rotation)
             onPreview = true
         }
-    }
-
-    public func startPreview() {
-        startPreview(preset: .high)
     }
 
     public func stopPreview() {

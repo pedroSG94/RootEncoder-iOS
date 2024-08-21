@@ -191,5 +191,4 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     public func getCaptureSession() -> AVCaptureSession? {
         session
     }
-    
 }

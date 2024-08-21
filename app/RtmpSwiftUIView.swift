@@ -106,8 +106,6 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                 }
             }
             
-            
-            
             VStack {
                 HStack {
                     Spacer()
