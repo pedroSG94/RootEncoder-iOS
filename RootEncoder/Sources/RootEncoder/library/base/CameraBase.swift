@@ -146,9 +146,16 @@ public class CameraBase {
         cameraManager.switchCamera()
     }
     
-    @discardableResult
-    public func setTorch(isOn: Bool) -> Bool {
-        cameraManager.setTorch(isOn: isOn)
+    public func enableLantern() {
+      cameraManager.setTorch(isOn: true);
+    }
+
+    public func disableLantern() {
+      cameraManager.setTorch(isOn: false);
+    }
+
+    public func isLanternEnabled() -> Bool {
+      return cameraManager.isTorchEnabled();
     }
     
     public func isMuted() -> Bool {

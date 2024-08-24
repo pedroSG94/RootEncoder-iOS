@@ -90,6 +90,13 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
     
+    public func isTorchEnabled() -> Bool {
+        guard let device, device.hasTorch else {
+            return false
+        }
+        return device.isTorchActive
+    }
+    
     public func getBackCameraResolutions() -> [CMVideoDimensions] {
         return getResolutionsByFace(facing: .BACK)
     }
