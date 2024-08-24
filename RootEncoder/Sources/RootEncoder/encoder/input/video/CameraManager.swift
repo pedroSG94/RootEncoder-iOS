@@ -72,6 +72,24 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
     
+    @discardableResult
+    public func setTorch(isOn: Bool) -> Bool {
+        guard let device, device.hasTorch else {
+            return false
+        }
+        do {
+            let torchMode: AVCaptureDevice.TorchMode = isOn ? .on : .off
+            try device.lockForConfiguration()
+            if device.isTorchModeSupported(torchMode) {
+                device.torchMode = torchMode
+            }
+            device.unlockForConfiguration()
+            return true
+        } catch {
+            return false
+        }
+    }
+    
     public func getBackCameraResolutions() -> [CMVideoDimensions] {
         return getResolutionsByFace(facing: .BACK)
     }

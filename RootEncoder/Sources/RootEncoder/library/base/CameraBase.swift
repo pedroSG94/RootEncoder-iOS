@@ -151,6 +151,11 @@ public class CameraBase {
         cameraManager.switchCamera()
     }
     
+    @discardableResult
+    public func setTorch(isOn: Bool) -> Bool {
+        cameraManager.setTorch(isOn: isOn)
+    }
+    
     public func isMuted() -> Bool {
         return microphone.isMuted()
     }
