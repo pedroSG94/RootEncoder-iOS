@@ -12,12 +12,9 @@ struct MainSwiftUIView: View {
         
     var body: some View {
         NavigationView {
-            VStack(spacing: 24) {
-                NavigationLink(destination: RtmpSwiftUIView()) {
-                    Text("RTMP")
-                }
-                NavigationLink(destination: RtspSwiftUIView()) {
-                    Text("RTSP")
+            VStack(spacing: 64) {
+                NavigationLink(destination: CameraSwiftUIView()) {
+                    Text("Camera")
                 }
                 NavigationLink(destination: ScreenSwiftUIView()) {
                     Text("Screen")

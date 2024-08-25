@@ -1,5 +1,5 @@
 //
-//  RtspSwiftUIView.swift
+//  RtmpSwiftUIView.swift
 //  app
 //
 //  Created by Pedro  on 20/9/23.
@@ -8,8 +8,9 @@
 
 import SwiftUI
 import RootEncoder
+import Photos
 
-struct RtspSwiftUIView: View, ConnectChecker {
+struct CameraSwiftUIView: View, ConnectChecker {
     
     func onConnectionSuccess() {
         print("connection success")
@@ -22,14 +23,14 @@ struct RtspSwiftUIView: View, ConnectChecker {
     
     func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
-        if (rtspCamera.getStreamClient().reTry(delay: 5000, reason: reason)) {
+        if (genericCamera.getStreamClient().reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 isShowingToast = false
             }
         } else {
-            rtspCamera.stopStream()
+            genericCamera.stopStream()
             bStreamText = "Start stream"
             bitrateText = ""
             toastText = "connection failed: \(reason)"
@@ -73,22 +74,22 @@ struct RtspSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtsp://192.168.0.176:8554/live/pedro"
+    @State private var endpoint = ""
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
     @State private var toastText = ""
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
-    @State private var rtspCamera: RtspCamera!
+    @State private var genericCamera: GenericCamera!
     
     @State private var scale: CGFloat = 1.0
     
     private var zoomGesture: some Gesture {
         MagnificationGesture().onChanged { value in
-            rtspCamera?.setZoom(level: value)
+            genericCamera?.setZoom(level: value)
         }.onEnded { value in
-            rtspCamera?.setZoom(level: value)
+            genericCamera?.setZoom(level: value)
         }
     }
     
@@ -102,16 +103,16 @@ struct RtspSwiftUIView: View, ConnectChecker {
             camera.edgesIgnoringSafeArea(.all)
             
             camera.onAppear {
-                rtspCamera = RtspCamera(view: cameraView, connectChecker: self)
-                rtspCamera.getStreamClient().setRetries(reTries: 10)
-                rtspCamera.startPreview()
+                genericCamera = GenericCamera(view: cameraView, connectChecker: self)
+                genericCamera.getStreamClient().setRetries(reTries: 10)
+                genericCamera.startPreview()
             }
             camera.onDisappear {
-                if (rtspCamera.isStreaming()) {
-                    rtspCamera.stopStream()
+                if (genericCamera.isStreaming()) {
+                    genericCamera.stopStream()
                 }
-                if (rtspCamera.isOnPreview()) {
-                    rtspCamera.stopPreview()
+                if (genericCamera.isOnPreview()) {
+                    genericCamera.stopPreview()
                 }
             }
             
@@ -120,32 +121,31 @@ struct RtspSwiftUIView: View, ConnectChecker {
                     Spacer()
                     Menu("Filters") {
                         Button(action: {
-                            rtspCamera.metalInterface.clearFilters()
+                            genericCamera.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtspCamera.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
+                            genericCamera.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
                         }) {
                             Text("GreyScale")
                         }
                         Button(action: {
-                            rtspCamera.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
+                            genericCamera.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
                         }) {
                             Text("Sepia")
                         }
                         Button(action: {
                             let filterView = ViewFilterRender(view: filter.view)
-                            rtspCamera.metalInterface.setFilter(baseFilterRender: filterView)
+                            genericCamera.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)
-                            
                         }) {
                             Text("View")
                         }
                     }
                 }.padding(.trailing, 16)
-                TextField("rtsp://ip:port/app/streamname", text: $endpoint)
+                TextField("protocol://ip:port/app/streamname", text: $endpoint)
                     .padding()
                     .foregroundColor(Color.init(hex: "#e74c3c"))
                     .padding(.top, 24)
@@ -156,17 +156,17 @@ struct RtspSwiftUIView: View, ConnectChecker {
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bRecordText) {
-                        if (!rtspCamera.isRecording()) {
-                            if (rtspCamera.prepareAudio() && rtspCamera.prepareVideo()) {
+                        if (!genericCamera.isRecording()) {
+                            if (genericCamera.prepareAudio() && genericCamera.prepareVideo()) {
                                 let url = getVideoUrl()
                                 if (url != nil) {
                                     filePath = url
-                                    rtspCamera.startRecord(path: url!)
+                                    genericCamera.startRecord(path: url!)
                                     bRecordText = "Stop record"
                                 }
                             }
                         } else {
-                            rtspCamera.stopRecord()
+                            genericCamera.stopRecord()
                             if (filePath != nil) {
                                 saveVideoToGallery(videoURL: filePath!)
                                 filePath = nil
@@ -176,19 +176,19 @@ struct RtspSwiftUIView: View, ConnectChecker {
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button(bStreamText) {
                         let endpoint = endpoint
-                        if (!rtspCamera.isStreaming()) {
-                            if (rtspCamera.prepareAudio() && rtspCamera.prepareVideo()) {
-                                rtspCamera.startStream(endpoint: endpoint)
+                        if (!genericCamera.isStreaming()) {
+                            if (genericCamera.prepareAudio() && genericCamera.prepareVideo()) {
+                                genericCamera.startStream(endpoint: endpoint)
                                 bStreamText = "Stop stream"
                             }
                         } else {
-                            rtspCamera.stopStream()
+                            genericCamera.stopStream()
                             bStreamText = "Start stream"
                             bitrateText = ""
                         }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
-                        rtspCamera.switchCamera()
+                        genericCamera.switchCamera()
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
@@ -197,5 +197,6 @@ struct RtspSwiftUIView: View, ConnectChecker {
 }
 
 #Preview {
-    RtspSwiftUIView()
+    CameraSwiftUIView()
 }
+

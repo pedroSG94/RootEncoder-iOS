@@ -15,9 +15,8 @@
 		EB2D9C3C2C66BCD500FF1C95 /* ViewFilter.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB2D9C3B2C66BCD500FF1C95 /* ViewFilter.xib */; };
 		EBA400102ABA6A1600249638 /* MainSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */; };
 		EBA400122ABA7AED00249638 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA400112ABA7AED00249638 /* ToastView.swift */; };
-		EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */; };
+		EBA4FFD32ABA5C1300249638 /* CameraSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD22ABA5C1300249638 /* CameraSwiftUIView.swift */; };
 		EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD42ABA62E500249638 /* CameraUIView.swift */; };
-		EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */; };
 		EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC318B52B9E79BF003C7526 /* Utils.swift */; };
 		EBC8FD302C09214600345CFC /* ScreenSwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC8FD2F2C09214600345CFC /* ScreenSwiftUIView.swift */; };
 		EBDA58A72BEE915E002F85A2 /* RootEncoder in Frameworks */ = {isa = PBXBuildFile; productRef = EBDA58A62BEE915E002F85A2 /* RootEncoder */; };
@@ -71,9 +70,8 @@
 		EB94C7272BDC2286002CCC0B /* RootEncoder */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RootEncoder; sourceTree = "<group>"; };
 		EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA400112ABA7AED00249638 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
-		EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtmpSwiftUIView.swift; sourceTree = "<group>"; };
+		EBA4FFD22ABA5C1300249638 /* CameraSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA4FFD42ABA62E500249638 /* CameraUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraUIView.swift; sourceTree = "<group>"; };
-		EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RtspSwiftUIView.swift; sourceTree = "<group>"; };
 		EBC318B52B9E79BF003C7526 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		EBC8FD2F2C09214600345CFC /* ScreenSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenSwiftUIView.swift; sourceTree = "<group>"; };
 		EBE05D482C6034A100C57A4D /* FilterUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterUIView.swift; sourceTree = "<group>"; };
@@ -137,8 +135,7 @@
 				EBA400152ABBAF3400249638 /* components */,
 				044138342501A02300732969 /* StreamerApp.swift */,
 				0441383D2501A02500732969 /* Assets.xcassets */,
-				EBA4FFD22ABA5C1300249638 /* RtmpSwiftUIView.swift */,
-				EBA4FFD62ABA652100249638 /* RtspSwiftUIView.swift */,
+				EBA4FFD22ABA5C1300249638 /* CameraSwiftUIView.swift */,
 				EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */,
 				EBC8FD2F2C09214600345CFC /* ScreenSwiftUIView.swift */,
 			);
@@ -330,9 +327,8 @@
 				EBA400102ABA6A1600249638 /* MainSwiftUIView.swift in Sources */,
 				EBA400122ABA7AED00249638 /* ToastView.swift in Sources */,
 				EBC318B62B9E79BF003C7526 /* Utils.swift in Sources */,
-				EBA4FFD32ABA5C1300249638 /* RtmpSwiftUIView.swift in Sources */,
+				EBA4FFD32ABA5C1300249638 /* CameraSwiftUIView.swift in Sources */,
 				EBE05D492C6034A100C57A4D /* FilterUIView.swift in Sources */,
-				EBA4FFD72ABA652100249638 /* RtspSwiftUIView.swift in Sources */,
 				EBA4FFD52ABA62E500249638 /* CameraUIView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
