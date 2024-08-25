@@ -24,14 +24,14 @@ struct ScreenSwiftUIView: View, ConnectChecker {
     
     func onConnectionFailed(reason: String) {
         print("connection failed: \(reason)")
-        if (rtspDisplay.getStreamClient().reTry(delay: 5000, reason: reason)) {
+        if (genericDisplay.getStreamClient().reTry(delay: 5000, reason: reason)) {
             toastText = "Retry"
             isShowingToast = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 isShowingToast = false
             }
         } else {
-            rtspDisplay.stopStream()
+            genericDisplay.stopStream()
             bStreamText = "Start stream"
             bitrateText = ""
             toastText = "connection failed: \(reason)"
@@ -75,7 +75,7 @@ struct ScreenSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtsp://192.168.0.176:8554/live/pedro"
+    @State private var endpoint = ""
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
@@ -83,7 +83,7 @@ struct ScreenSwiftUIView: View, ConnectChecker {
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
 
-    @State private var rtspDisplay: RtspDisplay!
+    @State private var genericDisplay: GenericDisplay!
     
     var body: some View {
         ZStack {
@@ -91,12 +91,12 @@ struct ScreenSwiftUIView: View, ConnectChecker {
             camera.edgesIgnoringSafeArea(.all)
             
             camera.onAppear {
-                rtspDisplay = RtspDisplay(connectChecker: self)
-                rtspDisplay.getStreamClient().setRetries(reTries: 10)
+                genericDisplay = GenericDisplay(connectChecker: self)
+                genericDisplay.getStreamClient().setRetries(reTries: 10)
             }
             camera.onDisappear {
-                if (rtspDisplay.isStreaming()) {
-                    rtspDisplay.stopStream()
+                if (genericDisplay.isStreaming()) {
+                    genericDisplay.stopStream()
                 }
             }
             
@@ -123,7 +123,7 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                          */
                     }
                 }.padding(.trailing, 16)
-                TextField("rtsp://ip:port/app/streamname", text: $endpoint)
+                TextField("protocol://ip:port/app/streamname", text: $endpoint)
                     .padding()
                     .foregroundColor(Color.init(hex: "#e74c3c"))
                     .padding(.top, 24)
@@ -134,17 +134,17 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                 Spacer()
                 HStack(alignment: .center, spacing: 16, content: {
                     Button(bRecordText) {
-                        if (!rtspDisplay.isRecording()) {
-                            if (rtspDisplay.prepareAudio() && rtspDisplay.prepareVideo()) {
+                        if (!genericDisplay.isRecording()) {
+                            if (genericDisplay.prepareAudio() && genericDisplay.prepareVideo()) {
                                 let url = getVideoUrl()
                                 if (url != nil) {
                                     filePath = url
-                                    rtspDisplay.startRecord(path: url!)
+                                    genericDisplay.startRecord(path: url!)
                                     bRecordText = "Stop record"
                                 }
                             }
                         } else {
-                            rtspDisplay.stopRecord()
+                            genericDisplay.stopRecord()
                             if (filePath != nil) {
                                 saveVideoToGallery(videoURL: filePath!)
                                 filePath = nil
@@ -154,13 +154,13 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button(bStreamText) {
                         let endpoint = endpoint
-                        if (!rtspDisplay.isStreaming()) {
-                            if (rtspDisplay.prepareAudio() && rtspDisplay.prepareVideo()) {
-                                rtspDisplay.startStream(endpoint: endpoint)
+                        if (!genericDisplay.isStreaming()) {
+                            if (genericDisplay.prepareAudio() && genericDisplay.prepareVideo()) {
+                                genericDisplay.startStream(endpoint: endpoint)
                                 bStreamText = "Stop stream"
                             }
                         } else {
-                            rtspDisplay.stopStream()
+                            genericDisplay.stopStream()
                             bStreamText = "Start stream"
                             bitrateText = ""
                         }
