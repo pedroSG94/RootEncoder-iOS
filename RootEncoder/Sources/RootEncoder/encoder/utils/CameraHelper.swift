@@ -129,11 +129,10 @@ public class CameraHelper {
                 return actualResolution
             } else {
                 let actualAspectRatio = actualResolution.width / actualResolution.height
-                let validResolutions = resolutionsSupported.filter { $0.width / $0.height == actualAspectRatio }
-                if (!validResolutions.isEmpty) {
-                    var resolutions = validResolutions
+                var resolutions = resolutionsSupported.filter { $0.width / $0.height == actualAspectRatio }
+                if (!resolutions.isEmpty) {
                     resolutions.append(actualResolution)
-                    resolutions.sort(by: { $0.height > $1.height })
+                    resolutions.sort(by: { $0.width + $0.height > $1.width + $1.height })
                     var index = 0
                     for (i, item) in resolutions.enumerated() {
                         if item.width == actualResolution.width && item.height == actualResolution.height {
