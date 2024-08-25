@@ -152,6 +152,23 @@ public class CameraBase {
       return cameraManager.isTorchEnabled();
     }
     
+    @discardableResult
+    public func setZoom(level: CGFloat) -> Bool {
+        return cameraManager.setZoom(level: level)
+    }
+    
+    public func getZoom() -> CGFloat {
+        return cameraManager.getZoom()
+    }
+    
+    public func getMinZoom() -> CGFloat {
+        return cameraManager.getMinZoom()
+    }
+    
+    public func getMaxZoom() -> CGFloat {
+        return cameraManager.getMaxZoom()
+    }
+    
     public func isMuted() -> Bool {
         return microphone.isMuted()
     }
