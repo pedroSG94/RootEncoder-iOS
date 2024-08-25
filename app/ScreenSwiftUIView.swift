@@ -106,17 +106,17 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                     Menu("Filters") {
                         /*
                         Button(action: {
-                            rtspDisplay.metalInterface?.clearFilters()
+                            rtspDisplay.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtspDisplay.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                            rtspDisplay.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
                         }) {
                             Text("GreyScale")
                         }
                         Button(action: {
-                            rtspDisplay.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                            rtspDisplay.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
                         }) {
                             Text("Sepia")
                         }

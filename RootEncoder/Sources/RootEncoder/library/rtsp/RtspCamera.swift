@@ -12,12 +12,6 @@ public class RtspCamera: CameraBase {
     private var client: RtspClient!
     private var streamClient: RtspStreamClient?
 
-    public init(view: UIView, connectChecker: ConnectChecker) {
-        client = RtspClient(connectChecker: connectChecker)
-        super.init(view: view)
-        streamClient = RtspStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
-    }
-
     public init(view: MetalView, connectChecker: ConnectChecker) {
         client = RtspClient(connectChecker: connectChecker)
         super.init(view: view)

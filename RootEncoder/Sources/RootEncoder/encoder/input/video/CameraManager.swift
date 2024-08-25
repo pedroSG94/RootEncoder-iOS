@@ -19,19 +19,16 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     var output: AVCaptureVideoDataOutput?
     var prevLayer: AVCaptureVideoPreviewLayer?
     var videoOutput: AVCaptureVideoDataOutput?
-    var cameraView: UIView? = nil
     private var fpsLimiter = FpsLimiter()
 
     private var facing = CameraHelper.Facing.BACK
-    private var preset: AVCaptureSession.Preset = .high
+    private var width: Int = 640
+    private var height: Int = 480
+    private var resolution = CameraHelper.Resolution.vga640x480
     public var rotation: Int = 0
     private(set) var running = false
     private var callback: GetCameraData
-    
-    public init(cameraView: UIView, callback: GetCameraData) {
-        self.cameraView = cameraView
-        self.callback = callback
-    }
+    private var prepared = false
     
     public init(callback: GetCameraData) {
         self.callback = callback
@@ -46,21 +43,36 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         running = false
     }
 
-    public func prepare(preset: AVCaptureSession.Preset, fps: Int, rotation: Int) {
-        self.preset = preset
-        fpsLimiter.setFps(fps: fps)
-        self.rotation = rotation
+    public func prepare(width: Int, height: Int, fps: Int, rotation: Int, facing: CameraHelper.Facing = .BACK) -> Bool {
+        let resolutions = facing == .BACK ? getBackCameraResolutions() : getFrontCameraResolutions()
+        guard let lowerResolution = resolutions.first else { return false }
+        guard let higherResolution = resolutions.last else { return false }
+        if width < lowerResolution.width || height < lowerResolution.height { return false }
+        if width > higherResolution.width || height > higherResolution.height { return false }
+        do {
+            let resolution = try CameraHelper.Resolution.getOptimalResolution(width: width, height: height)
+            self.width = width
+            self.height = height
+            self.resolution = resolution
+            fpsLimiter.setFps(fps: fps)
+            self.rotation = rotation
+            self.facing = facing
+            prepared = true
+            return true
+        } catch {
+            return false
+        }
     }
 
     public func start() {
-        start(preset: preset, facing: facing, rotation: rotation)
+        start(width: width, height: height, facing: facing, rotation: rotation)
     }
 
-    public func start(preset: AVCaptureSession.Preset) {
-        start(preset: preset, facing: facing, rotation: rotation)
+    public func start(width: Int, height: Int) {
+        start(width: width, height: width, facing: facing, rotation: rotation)
     }
 
-    public func switchCamera() {
+    public func switchCamera() throws {
         if (facing == .FRONT) {
             facing = .BACK
         } else if (facing == .BACK) {
@@ -68,7 +80,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         if (running) {
             stop()
-            start(preset: preset, facing: facing, rotation: rotation)
+            start(width: width, height: height, facing: facing, rotation: rotation)
         }
     }
     
@@ -111,22 +123,40 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         let device = devices.devices[0]
         let descriptions = device.formats.map(\.formatDescription)
         let sizes = descriptions.map(\.dimensions)
-        return sizes
+        var resolutions = [CMVideoDimensions]()
+        for size in sizes {
+            var exists = false
+            for r in resolutions {
+                if r.width == size.width && r.height == size.height
+                    //Currently the higher preset is 3840x2160
+                    //More than 3840 width or 2160 height is not allowed because this need rescale producing bad image quality.
+                    || size.height > 2160 || size.width > 3840 {
+                    exists = true
+                    break
+                }
+            }
+            if !exists {
+                resolutions.append(size)
+            }
+        }
+        return resolutions.sorted(by: { $0.height < $1.height })
     }
     
-    public func start(preset: AVCaptureSession.Preset, facing: CameraHelper.Facing, rotation: Int) {
+    public func start(width: Int, height: Int, facing: CameraHelper.Facing, rotation: Int) {
+        if !prepared {
+            fatalError("CameraManager not prepared")
+        }
         self.facing = facing
         if (running) {
-            if (preset != self.preset || rotation != self.rotation) {
+            if (width != self.width || height != self.height || rotation != self.rotation) {
                 stop()
             } else {
                 return
             }
         }
         self.rotation = rotation
-        self.preset = preset
         session = AVCaptureSession()
-        session?.sessionPreset = preset
+        session?.sessionPreset = self.resolution.preset
         let position = facing == CameraHelper.Facing.BACK ? AVCaptureDevice.Position.back : AVCaptureDevice.Position.front
         let devices = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: position)
         device = devices.devices[0]
@@ -147,19 +177,6 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         output?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: NSNumber(value: kCVPixelFormatType_32BGRA)]
 
         session?.addOutput(output!)
-
-        prevLayer = AVCaptureVideoPreviewLayer(session: session!)
-        if (cameraView != nil) {
-            prevLayer?.frame.size = cameraView!.frame.size
-        }
-        prevLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        if let interfaceOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation {
-            let orientation = UIInterfaceOrientation(rawValue: interfaceOrientation.rawValue)!
-            prevLayer?.connection?.videoOrientation = transformOrientation(orientation: orientation)
-        }
-        if (cameraView != nil) {
-            cameraView!.layer.addSublayer(prevLayer!)
-        }
         output?.connections.filter { $0.isVideoOrientationSupported }.forEach {
             $0.videoOrientation = getOrientation(value: rotation)
         }

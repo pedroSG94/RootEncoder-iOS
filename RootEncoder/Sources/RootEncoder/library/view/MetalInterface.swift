@@ -10,6 +10,8 @@ import CoreMedia
 
 public protocol MetalInterface {
     
+    func setEncoderSize(width: Int, height: Int)
+        
     func setCallback(callback: MetalViewCallback?)
     
     func sendBuffer(buffer: CMSampleBuffer)

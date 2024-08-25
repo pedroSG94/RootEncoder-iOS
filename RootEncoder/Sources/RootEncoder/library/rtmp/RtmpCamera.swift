@@ -12,13 +12,6 @@ public class RtmpCamera: CameraBase {
     private let client: RtmpClient
     private var streamClient: RtmpStreamClient?
 
-    public init(view: UIView, connectChecker: ConnectChecker) {
-        client = RtmpClient(connectChecker: connectChecker)
-        super.init(view: view)
-        streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
-        
-    }
-
     public init(view: MetalView, connectChecker: ConnectChecker) {
         client = RtmpClient(connectChecker: connectChecker)
         super.init(view: view)

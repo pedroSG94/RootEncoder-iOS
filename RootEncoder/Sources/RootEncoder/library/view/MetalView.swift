@@ -79,6 +79,8 @@ public class MetalView: MTKView, MetalInterface {
     private let aspectRatioMode = AspectRatioMode.ADJUST
     private var buffer: CMSampleBuffer? = nil
     private var context: CIContext? = nil
+    private var width: CGFloat = 640
+    private var height: CGFloat = 480
     private lazy var render: (any MTLCommandQueue)? = {
         return device?.makeCommandQueue()
     }()
@@ -117,6 +119,11 @@ public class MetalView: MTKView, MetalInterface {
     public func setForceFps(fps: Int) {
         fpsLimiter.setFps(fps: fps)
     }
+    
+    public func setEncoderSize(width: Int, height: Int) {
+        self.width = CGFloat(width)
+        self.height = CGFloat(height)
+    }
 }
 
 extension MetalView: MTKViewDelegate {
@@ -143,7 +150,9 @@ extension MetalView: MTKViewDelegate {
         }
         //this image will be modified acording with filters
         var streamImage = CIImage(cvPixelBuffer: image)
-        
+            .cropToAspectRatio(aspectRatio: self.width / self.height)
+            .scaleTo(width: self.width, height: self.height)
+
         let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
         
         //apply filters

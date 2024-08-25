@@ -45,21 +45,6 @@ public class MultiCamera: CameraBase {
     private var rtspClients = Array<RtspClient>()
     private var rtmpStreamClients = Array<RtmpStreamClient>()
     private var rtspStreamClients = Array<RtspStreamClient>()
-    
-    public init(view: UIView, connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
-        super.init(view: view)
-        let streamClientListener = videoEncoder.createStreamClientListener()
-        for i in connectCheckerRtmpList ?? [] {
-            let client = RtmpClient(connectChecker: i)
-            rtmpClients.append(client)
-            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: streamClientListener))
-        }
-        for i in connectCheckerRtspList ?? [] {
-            let client = RtspClient(connectChecker: i)
-            rtspClients.append(client)
-            rtspStreamClients.append(RtspStreamClient(client: client, listener: streamClientListener))
-        }
-    }
 
     public init(view: MetalView, connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
         super.init(view: view)

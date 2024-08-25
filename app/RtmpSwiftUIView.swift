@@ -111,23 +111,23 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                     Spacer()
                     Menu("Filters") {
                         Button(action: {
-                            rtmpCamera.metalInterface?.clearFilters()
+                            rtmpCamera.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                            rtmpCamera.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
                         }) {
                             Text("GreyScale")
                         }
                         Button(action: {
-                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                            rtmpCamera.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
                         }) {
                             Text("Sepia")
                         }
                         Button(action: {
                             let filterView = ViewFilterRender(view: filter.view)
-                            rtmpCamera.metalInterface?.setFilter(baseFilterRender: filterView)
+                            rtmpCamera.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)
                         }) {

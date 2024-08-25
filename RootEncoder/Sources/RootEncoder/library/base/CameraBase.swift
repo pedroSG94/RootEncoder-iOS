@@ -18,17 +18,8 @@ public class CameraBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
-    private(set) public var metalInterface: MetalInterface? = nil
+    public let metalInterface: MetalInterface
     private var callback: CameraBaseCallback? = nil
-
-    public init(view: UIView) {
-        let callback = createCameraBaseCallbacks()
-        self.callback = callback
-        cameraManager = CameraManager(cameraView: view, callback: callback)
-        microphone = MicrophoneManager(callback: callback)
-        videoEncoder = VideoEncoder(callback: callback)
-        audioEncoder = AudioEncoder(callback: callback)
-    }
     
     public init(view: MetalView) {
         self.metalInterface = view
@@ -57,16 +48,19 @@ public class CameraBase {
         prepareAudio(bitrate: 128 * 1000, sampleRate: 32000, isStereo: true)
     }
 
-    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int = 2, rotation: Int = CameraHelper.getCameraOrientation(), preset: AVCaptureSession.Preset = .vga640x480) -> Bool {
+    public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int = 2, rotation: Int = CameraHelper.getCameraOrientation()) -> Bool {
         var w = width
         var h = height
         if (rotation == 90 || rotation == 270) {
             w = height
             h = width
         }
-        metalInterface?.setForceFps(fps: fps)
+        if !cameraManager.prepare(width: width, height: height, fps: 30, rotation: rotation) {
+            return false
+        }
+        metalInterface.setEncoderSize(width: w, height: h)
+        metalInterface.setForceFps(fps: fps)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
-        cameraManager.prepare(preset: preset, fps: fps, rotation: rotation)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
 
@@ -95,11 +89,11 @@ public class CameraBase {
         videoEncoder.start()
         microphone.start()
         cameraManager.start()
-        metalInterface?.setCallback(callback: callback)
+        metalInterface.setCallback(callback: callback)
     }
     
     private func stopEncoders() {
-        metalInterface?.setCallback(callback: nil)
+        metalInterface.setCallback(callback: nil)
         microphone.stop()
         audioEncoder.stop()
         videoEncoder.stop()
@@ -195,11 +189,24 @@ public class CameraBase {
       return cameraManager.getFrontCameraResolutions()
     }
 
-    public func startPreview(preset: AVCaptureSession.Preset = .vga640x480, facing: CameraHelper.Facing = .BACK, rotation: Int = CameraHelper.getCameraOrientation()) {
+    @discardableResult
+    public func startPreview(width: Int = 640, height: Int = 480, facing: CameraHelper.Facing = .BACK, rotation: Int = CameraHelper.getCameraOrientation()) -> Bool {
         if (!isOnPreview()) {
-            cameraManager.start(preset: preset, facing: facing, rotation: rotation)
+            var w = width
+            var h = height
+            if (rotation == 90 || rotation == 270) {
+                w = height
+                h = width
+            }
+            if !cameraManager.prepare(width: width, height: height, fps: 30, rotation: rotation, facing: facing) {
+                fatalError("Camera resolution not supported")
+            }
+            metalInterface.setEncoderSize(width: w, height: h)
+            cameraManager.start()
             onPreview = true
+            return true
         }
+        return false
     }
 
     public func stopPreview() {
@@ -250,12 +257,7 @@ extension CameraBase {
             }
 
             func getYUVData(from buffer: CMSampleBuffer) {
-                guard let metalInterface = cameraBase.metalInterface else {
-                    cameraBase.recordController.recordVideo(buffer: buffer)
-                    cameraBase.videoEncoder.encodeFrame(buffer: buffer)
-                    return
-                }
-                metalInterface.sendBuffer(buffer: buffer)
+                cameraBase.metalInterface.sendBuffer(buffer: buffer)
             }
 
             func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {

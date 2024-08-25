@@ -111,23 +111,23 @@ struct RtspSwiftUIView: View, ConnectChecker {
                     Spacer()
                     Menu("Filters") {
                         Button(action: {
-                            rtspCamera.metalInterface?.clearFilters()
+                            rtspCamera.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtspCamera.metalInterface?.setFilter(baseFilterRender: GreyScaleFilterRender())
+                            rtspCamera.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
                         }) {
                             Text("GreyScale")
                         }
                         Button(action: {
-                            rtspCamera.metalInterface?.setFilter(baseFilterRender: SepiaFilterRender())
+                            rtspCamera.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
                         }) {
                             Text("Sepia")
                         }
                         Button(action: {
                             let filterView = ViewFilterRender(view: filter.view)
-                            rtspCamera.metalInterface?.setFilter(baseFilterRender: filterView)
+                            rtspCamera.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)
                             
