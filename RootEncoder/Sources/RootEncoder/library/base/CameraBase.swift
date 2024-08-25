@@ -152,8 +152,7 @@ public class CameraBase {
       return cameraManager.isTorchEnabled();
     }
     
-    @discardableResult
-    public func setZoom(level: CGFloat) -> Bool {
+    public func setZoom(level: CGFloat) {
         return cameraManager.setZoom(level: level)
     }
     

@@ -83,6 +83,16 @@ struct RtmpSwiftUIView: View, ConnectChecker {
     @State private var filePath: URL? = nil
     @State private var rtmpCamera: RtmpCamera!
     
+    @State private var scale: CGFloat = 1.0
+    
+    private var zoomGesture: some Gesture {
+        MagnificationGesture().onChanged { value in
+            rtmpCamera?.setZoom(level: value)
+        }.onEnded { value in
+            rtmpCamera?.setZoom(level: value)
+        }
+    }
+    
     var body: some View {
         ZStack {
             let filter = FilterUIView()
@@ -182,7 +192,7 @@ struct RtmpSwiftUIView: View, ConnectChecker {
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
-        }.showToast(text: toastText, isShowing: $isShowingToast)
+        }.gesture(zoomGesture).showToast(text: toastText, isShowing: $isShowingToast)
     }
 }
 

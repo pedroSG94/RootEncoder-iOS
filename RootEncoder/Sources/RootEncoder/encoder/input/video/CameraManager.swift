@@ -109,19 +109,21 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         return device.isTorchActive
     }
     
-    @discardableResult
-    public func setZoom(level: CGFloat) -> Bool {
-        guard let device else {
-            return false
+    public func setZoom(level: CGFloat) {
+        guard let device else { return }
+        if level < getMinZoom() {
+            setZoom(level: getMinZoom())
+            return
+        }
+        if level > getMaxZoom() {
+            setZoom(level: getMaxZoom())
+            return
         }
         do {
             try device.lockForConfiguration()
             device.videoZoomFactor = level
             device.unlockForConfiguration()
-            return true
-        } catch {
-            return false
-        }
+        } catch { }
     }
     
     public func getZoom() -> CGFloat {

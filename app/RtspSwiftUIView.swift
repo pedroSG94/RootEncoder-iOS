@@ -80,8 +80,17 @@ struct RtspSwiftUIView: View, ConnectChecker {
     @State private var toastText = ""
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
-
     @State private var rtspCamera: RtspCamera!
+    
+    @State private var scale: CGFloat = 1.0
+    
+    private var zoomGesture: some Gesture {
+        MagnificationGesture().onChanged { value in
+            rtspCamera?.setZoom(level: value)
+        }.onEnded { value in
+            rtspCamera?.setZoom(level: value)
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -183,7 +192,7 @@ struct RtspSwiftUIView: View, ConnectChecker {
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
-        }.showToast(text: toastText, isShowing: $isShowingToast)
+        }.gesture(zoomGesture).showToast(text: toastText, isShowing: $isShowingToast)
     }
 }
 
