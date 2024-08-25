@@ -72,7 +72,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         start(width: width, height: width, facing: facing, rotation: rotation)
     }
 
-    public func switchCamera() throws {
+    public func switchCamera() {
         if (facing == .FRONT) {
             facing = .BACK
         } else if (facing == .BACK) {
