@@ -10,6 +10,12 @@ import CoreMedia
 
 public protocol MetalInterface {
     
+    func muteVideo()
+    
+    func unMuteVideo()
+    
+    func isVideoMuted() -> Bool
+    
     func setEncoderSize(width: Int, height: Int)
         
     func setCallback(callback: MetalViewCallback?)

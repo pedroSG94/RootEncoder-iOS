@@ -188,7 +188,12 @@ struct CameraSwiftUIView: View, ConnectChecker {
                         }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                     Button("Switch camera") {
-                        genericCamera.switchCamera()
+                        //genericCamera.switchCamera()
+                        if genericCamera.metalInterface.isVideoMuted() {
+                            genericCamera.metalInterface.unMuteVideo()
+                        } else {
+                            genericCamera.metalInterface.muteVideo()
+                        }
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)

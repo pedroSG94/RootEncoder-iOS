@@ -10,6 +10,17 @@ import MetalKit
 import CoreMedia
 
 public class MetalView: MTKView, MetalInterface {
+    public func muteVideo() {
+        muted = true
+    }
+    
+    public func unMuteVideo() {
+        muted = false
+    }
+    
+    public func isVideoMuted() -> Bool {
+        return muted
+    }
     
     public func setCallback(callback: MetalViewCallback?) {
         self.callback = callback
@@ -72,6 +83,8 @@ public class MetalView: MTKView, MetalInterface {
         isPreviewVerticalFlip = flip
     }
     
+    private let blackFilter = CIFilter(name: "CIColorMatrix")
+    private var muted = false
     private var isPreviewHorizontalFlip = false
     private var isPreviewVerticalFlip = false
     private var isStreamHorizontalFlip = false
@@ -228,7 +241,10 @@ extension MetalView: MTKViewDelegate {
                     .transformed(by: CGAffineTransform(translationX: offset * scaleX, y: 0))
                 rect = CGRect(x: 0, y: 0, width: scaledWidth, height: streamImage.extent.height)
             }
-            
+        }
+        
+        if muted {
+            streamImage = muteImage(image: streamImage)
         }
         
         guard let callback = callback else { return }
@@ -248,5 +264,15 @@ extension MetalView: MTKViewDelegate {
         }
 
         return pixelBuffer
+    }
+    
+    private func muteImage(image: CIImage) -> CIImage {
+        blackFilter?.setValue(image, forKey: kCIInputImageKey)
+        blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputRVector")
+        blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputGVector")
+        blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputBVector")
+        blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 1), forKey: "inputAVector") // Preserva el canal alfa
+
+        return blackFilter?.outputImage ?? image
     }
 }

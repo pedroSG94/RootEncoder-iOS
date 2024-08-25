@@ -106,21 +106,21 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                     Menu("Filters") {
                         /*
                         Button(action: {
-                            rtspDisplay.metalInterface.clearFilters()
+                            genericDisplay.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtspDisplay.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
+                            genericDisplay.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
                         }) {
                             Text("GreyScale")
                         }
                         Button(action: {
-                            rtspDisplay.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
+                            genericDisplay.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
                         }) {
                             Text("Sepia")
                         }
-                         */
+                        */
                     }
                 }.padding(.trailing, 16)
                 TextField("protocol://ip:port/app/streamname", text: $endpoint)
