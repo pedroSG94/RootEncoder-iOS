@@ -13,6 +13,21 @@ public class SizeCalculator {
     
     public init() { }
     
+    public static func processMatrix(initialOrientation: Int) -> CGImagePropertyOrientation {
+        switch initialOrientation {
+        case 90:
+            return SizeCalculator.processMatrix(initialOrientation: UIDeviceOrientation.portrait)
+        case 270:
+            return SizeCalculator.processMatrix(initialOrientation: UIDeviceOrientation.portraitUpsideDown)
+        case 0:
+            return SizeCalculator.processMatrix(initialOrientation: UIDeviceOrientation.landscapeLeft)
+        case 180:
+            return SizeCalculator.processMatrix(initialOrientation: UIDeviceOrientation.landscapeRight)
+        default:
+            return SizeCalculator.processMatrix(initialOrientation: UIDeviceOrientation.landscapeLeft)
+        }
+    }
+    
     public static func processMatrix(initialOrientation: UIDeviceOrientation) -> CGImagePropertyOrientation {
         switch initialOrientation {
         case .landscapeLeft:

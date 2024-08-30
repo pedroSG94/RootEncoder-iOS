@@ -18,11 +18,12 @@ public class CameraBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
-    public let metalInterface: MetalInterface
+    public let metalInterface: MetalStreamInterface
     private var callback: CameraBaseCallback? = nil
     
     public init(view: MetalView) {
-        self.metalInterface = view
+        self.metalInterface = MetalStreamInterface()
+        self.metalInterface.attachToMTKView(view)
         let callback = createCameraBaseCallbacks()
         self.callback = callback
         cameraManager = CameraManager(callback: callback)
@@ -60,6 +61,7 @@ public class CameraBase {
         }
         metalInterface.setEncoderSize(width: w, height: h)
         metalInterface.setForceFps(fps: fps)
+        metalInterface.setOrientation(orientation: rotation)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
