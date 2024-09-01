@@ -5,7 +5,6 @@
 
 import Foundation
 import AVFoundation
-import UIKit
 import MetalKit
 
 public class CameraBase {

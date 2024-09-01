@@ -11,7 +11,6 @@ import RootEncoder
 
 struct CameraUIView: UIViewRepresentable {
     
-    //let view = UIView(frame: .zero)
     let view = MetalView(frame: .zero)
     
     public func makeUIView(context: Context) -> UIView {

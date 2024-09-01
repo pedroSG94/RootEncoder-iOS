@@ -40,7 +40,6 @@ public class MetalStreamInterface: MetalInterface {
     private var fpsLimiter = FpsLimiter()
     private var device: MTLDevice!
     private let commandQueue: MTLCommandQueue
-    private let commandBuffer: MTLCommandBuffer
     private var context: CIContext!
     private var textureCache: CVMetalTextureCache?
     private var filters = [BaseFilterRender]()
@@ -60,7 +59,6 @@ public class MetalStreamInterface: MetalInterface {
         self.device = MTLCreateSystemDefaultDevice()
         self.commandQueue = device.makeCommandQueue()!
         self.context = CIContext(mtlDevice: device)
-        self.commandBuffer = commandQueue.makeCommandBuffer()!
         CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
         sensorManager.start(callback: { orientation in
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
@@ -105,14 +103,39 @@ public class MetalStreamInterface: MetalInterface {
             streamImage = filter.draw(image: streamImage, orientation: orientation)
         }
         
-        if let mtkView = mtkView {
-            let previewWidth = mtkView.drawableSize.width
-            let previewHeight = mtkView.drawableSize.height
-            print("view size: \(previewWidth)x\(previewHeight)")
-            if let texture = mtkView.currentDrawable?.texture {
-                let rect = CGRect(origin: .zero, size: mtkView.drawableSize)
-                context.render(streamImage, to: texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
+        if let mtkView = mtkView, let drawable = mtkView.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() {
+            var previewImage = streamImage
+            
+            var w = previewImage.extent.width
+            var h = previewImage.extent.height
+                    
+            if (rotated) {
+                w = previewImage.extent.height
+                h = previewImage.extent.width
             }
+            
+            let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: mtkView.drawableSize.width, previewHeight: mtkView.drawableSize.height)
+                
+            previewImage = previewImage
+                .oriented(orientation)
+                .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
+                .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
+            
+            if (isPreviewVerticalFlip) {
+                previewImage = previewImage
+                    .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
+                    .transformed(by: CGAffineTransform(translationX: 0, y: mtkView.drawableSize.height))
+            }
+            if (isPreviewHorizontalFlip) {
+                previewImage = previewImage
+                    .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+                    .transformed(by: CGAffineTransform(translationX: mtkView.drawableSize.width, y: 0))
+            }
+            
+            let rect = CGRect(origin: .zero, size: mtkView.drawableSize)
+            context.render(previewImage, to: drawable.texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
+            commandBuffer.present(drawable)
+            commandBuffer.commit()
         }
         
         if (isStreamVerticalFlip) {
@@ -217,45 +240,16 @@ public class MetalStreamInterface: MetalInterface {
     }
     
     public func attachPreview(mtkView: MTKView) {
+        mtkView.autoResizeDrawable = true
+        mtkView.framebufferOnly = false
+        mtkView.device = device
+        mtkView.setNeedsDisplay()
         self.mtkView = mtkView
     }
-
-    public func deAttachPreview() {
-        self.mtkView = nil
-    }
     
-    private func handlePreview(metalView: MetalView, streamImage: CIImage, orientation: CGImagePropertyOrientation) -> CIImage? {
-        var w = streamImage.extent.width
-        var h = streamImage.extent.height
-                
-        if (rotated) {
-            w = streamImage.extent.height
-            h = streamImage.extent.width
-        }
-        
-        guard let previewWidth = metalView.currentDrawable?.texture.width else { return nil }
-        guard let previewHeight = metalView.currentDrawable?.texture.height else { return nil }
-        
-        let pw = CGFloat(previewWidth)
-        let ph = CGFloat(previewHeight)
-        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: pw, previewHeight: ph)
-        
-        var previewImage = streamImage
-            .oriented(orientation)
-            .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
-            .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
-            
-        if (isPreviewVerticalFlip) {
-            previewImage = previewImage
-                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
-                .transformed(by: CGAffineTransform(translationX: 0, y: ph))
-        }
-        if (isPreviewHorizontalFlip) {
-            previewImage = previewImage
-                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
-                .transformed(by: CGAffineTransform(translationX: pw, y: 0))
-        }
-        return previewImage
+    public func deAttachPreview() {
+        self.mtkView?.device = nil
+        self.mtkView = nil
     }
 }
 
