@@ -18,12 +18,20 @@ public class CameraBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
-    public let metalInterface: MetalStreamInterface
+    public let metalInterface: MetalInterface
     private var callback: CameraBaseCallback? = nil
     
     public init(view: MetalView) {
+        self.metalInterface = view
+        initialize()
+    }
+    
+    public init() {
         self.metalInterface = MetalStreamInterface()
-        self.metalInterface.attachToMTKView(view)
+        initialize()
+    }
+    
+    private func initialize() {
         let callback = createCameraBaseCallbacks()
         self.callback = callback
         cameraManager = CameraManager(callback: callback)
@@ -220,6 +228,7 @@ public class CameraBase {
                 fatalError("Camera resolution not supported")
             }
             metalInterface.setEncoderSize(width: w, height: h)
+            metalInterface.setOrientation(orientation: rotation)
             cameraManager.start()
             onPreview = true
             return true

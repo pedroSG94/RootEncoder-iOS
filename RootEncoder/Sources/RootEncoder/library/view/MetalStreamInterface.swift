@@ -53,7 +53,6 @@ public class MetalStreamInterface: MetalInterface {
     private var rotation = 0
     private var rotated = false
     private let sensorManager = SensorManager()
-    private weak var mtkView: MTKView?
     
     public init() {
         self.device = MTLCreateSystemDefaultDevice()
@@ -64,12 +63,6 @@ public class MetalStreamInterface: MetalInterface {
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
             ((self.rotation == 90 || self.rotation == 2700) && (orientation == 0 || orientation == 180))
         })
-    }
-
-    public func attachToMTKView(_ mtkView: MTKView) {
-        self.mtkView = mtkView
-        mtkView.device = self.device
-        mtkView.framebufferOnly = false
     }
     
     public func setOrientation(orientation: Int) {
@@ -107,14 +100,6 @@ public class MetalStreamInterface: MetalInterface {
         for filter in filters {
             let orientation = SizeCalculator.processMatrix(initialOrientation: .landscapeLeft)
             streamImage = filter.draw(image: streamImage, orientation: orientation)
-        }
-
-        var w = streamImage.extent.width
-        var h = streamImage.extent.height
-                
-        if (rotated) {
-            w = streamImage.extent.height
-            h = streamImage.extent.width
         }
         
         if (isStreamVerticalFlip) {
@@ -157,17 +142,6 @@ public class MetalStreamInterface: MetalInterface {
         if muted {
             streamImage = muteImage(image: streamImage)
         }
-
-        /*
-        if let mtkView = mtkView, let drawable = mtkView.currentDrawable {
-            let renderCommandBuffer = commandQueue.makeCommandBuffer()!
-            let bounds = CGRect(origin: .zero, size: mtkView.drawableSize)
-            
-            context.render(processedImage, to: drawable.texture, commandBuffer: renderCommandBuffer, bounds: bounds, colorSpace: colorSpace)
-            renderCommandBuffer.present(drawable)
-            renderCommandBuffer.commit()
-        }
-         */
         
         guard let pixelBuffer = toPixelBuffer(width: Int(rect.width), height: Int(rect.height)) else { return }
         context.render(streamImage, to: pixelBuffer)
@@ -221,13 +195,46 @@ public class MetalStreamInterface: MetalInterface {
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputGVector")
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputBVector")
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 1), forKey: "inputAVector") // Preserves alpha channel
-
         return blackFilter?.outputImage ?? image
     }
 
     public func setEncoderSize(width: Int, height: Int) {
         self.width = CGFloat(width)
         self.height = CGFloat(height)
+    }
+    
+    private func handlePreview(metalView: MetalView, streamImage: CIImage, orientation: CGImagePropertyOrientation) -> CIImage? {
+        var w = streamImage.extent.width
+        var h = streamImage.extent.height
+                
+        if (rotated) {
+            w = streamImage.extent.height
+            h = streamImage.extent.width
+        }
+        
+        guard let previewWidth = metalView.currentDrawable?.texture.width else { return nil }
+        guard let previewHeight = metalView.currentDrawable?.texture.height else { return nil }
+        
+        let pw = CGFloat(previewWidth)
+        let ph = CGFloat(previewHeight)
+        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: pw, previewHeight: ph)
+        
+        var previewImage = streamImage
+            .oriented(orientation)
+            .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
+            .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
+            
+        if (isPreviewVerticalFlip) {
+            previewImage = previewImage
+                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
+                .transformed(by: CGAffineTransform(translationX: 0, y: ph))
+        }
+        if (isPreviewHorizontalFlip) {
+            previewImage = previewImage
+                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
+                .transformed(by: CGAffineTransform(translationX: pw, y: 0))
+        }
+        return previewImage
     }
 }
 
