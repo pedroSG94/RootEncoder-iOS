@@ -26,6 +26,17 @@ public class GenericCamera: CameraBase {
         )
     }
     
+    public init(connectChecker: ConnectChecker) {
+        self.connectChecker = connectChecker
+        rtmpClient = RtmpClient(connectChecker: connectChecker)
+        rtspClient = RtspClient(connectChecker: connectChecker)
+        super.init()
+        streamClient = GenericStreamClient(
+            rtmpClient: RtmpStreamClient(client: rtmpClient, listener: videoEncoder.createStreamClientListener()),
+            rtspClient: RtspStreamClient(client: rtspClient, listener: videoEncoder.createStreamClientListener())
+        )
+    }
+    
     public func getStreamClient() -> GenericStreamClient {
         return streamClient!
     }

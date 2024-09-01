@@ -16,6 +16,12 @@ public class RtmpCamera: CameraBase {
         streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
     }
     
+    public init(connectChecker: ConnectChecker) {
+        client = RtmpClient(connectChecker: connectChecker)
+        super.init()
+        streamClient = RtmpStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
+    }
+    
     public func getStreamClient() -> RtmpStreamClient {
         return streamClient!
     }

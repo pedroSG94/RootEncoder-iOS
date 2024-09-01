@@ -16,6 +16,12 @@ public class RtspCamera: CameraBase {
         streamClient = RtspStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
     }
     
+    public init(connectChecker: ConnectChecker) {
+        client = RtspClient(connectChecker: connectChecker)
+        super.init()
+        streamClient = RtspStreamClient(client: client, listener: videoEncoder.createStreamClientListener())
+    }
+    
     public func getStreamClient() -> RtspStreamClient {
         return streamClient!
     }

@@ -61,6 +61,21 @@ public class MultiCamera: CameraBase {
         }
     }
     
+    public init(connectCheckerRtmpList: Array<ConnectChecker>?, connectCheckerRtspList: Array<ConnectChecker>?) {
+        super.init()
+        let streamClientListener = videoEncoder.createStreamClientListener()
+        for i in connectCheckerRtmpList ?? [] {
+            let client = RtmpClient(connectChecker: i)
+            rtmpClients.append(client)
+            rtmpStreamClients.append(RtmpStreamClient(client: client, listener: streamClientListener))
+        }
+        for i in connectCheckerRtspList ?? [] {
+            let client = RtspClient(connectChecker: i)
+            rtspClients.append(client)
+            rtspStreamClients.append(RtspStreamClient(client: client, listener: streamClientListener))
+        }
+    }
+    
     public func getStreamClient(type: MultiType, index: Int) -> StreamBaseClient {
         if type == MultiType.RTMP {
             return rtmpStreamClients[index]

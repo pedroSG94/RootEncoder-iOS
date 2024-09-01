@@ -39,7 +39,8 @@ public class MetalStreamInterface: MetalInterface {
     private var isStreamVerticalFlip = false
     private var fpsLimiter = FpsLimiter()
     private var device: MTLDevice!
-    private var commandQueue: MTLCommandQueue!
+    private let commandQueue: MTLCommandQueue
+    private let commandBuffer: MTLCommandBuffer
     private var context: CIContext!
     private var textureCache: CVMetalTextureCache?
     private var filters = [BaseFilterRender]()
@@ -53,11 +54,13 @@ public class MetalStreamInterface: MetalInterface {
     private var rotation = 0
     private var rotated = false
     private let sensorManager = SensorManager()
+    private weak var mtkView: MTKView? = nil
     
     public init() {
         self.device = MTLCreateSystemDefaultDevice()
-        self.commandQueue = device.makeCommandQueue()
+        self.commandQueue = device.makeCommandQueue()!
         self.context = CIContext(mtlDevice: device)
+        self.commandBuffer = commandQueue.makeCommandBuffer()!
         CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
         sensorManager.start(callback: { orientation in
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
@@ -100,6 +103,16 @@ public class MetalStreamInterface: MetalInterface {
         for filter in filters {
             let orientation = SizeCalculator.processMatrix(initialOrientation: .landscapeLeft)
             streamImage = filter.draw(image: streamImage, orientation: orientation)
+        }
+        
+        if let mtkView = mtkView {
+            let previewWidth = mtkView.drawableSize.width
+            let previewHeight = mtkView.drawableSize.height
+            print("view size: \(previewWidth)x\(previewHeight)")
+            if let texture = mtkView.currentDrawable?.texture {
+                let rect = CGRect(origin: .zero, size: mtkView.drawableSize)
+                context.render(streamImage, to: texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
+            }
         }
         
         if (isStreamVerticalFlip) {
@@ -201,6 +214,14 @@ public class MetalStreamInterface: MetalInterface {
     public func setEncoderSize(width: Int, height: Int) {
         self.width = CGFloat(width)
         self.height = CGFloat(height)
+    }
+    
+    public func attachPreview(mtkView: MTKView) {
+        self.mtkView = mtkView
+    }
+
+    public func deAttachPreview() {
+        self.mtkView = nil
     }
     
     private func handlePreview(metalView: MetalView, streamImage: CIImage, orientation: CGImagePropertyOrientation) -> CIImage? {

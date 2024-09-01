@@ -13,7 +13,6 @@ public class SensorManager {
     
     public func start(callback: @escaping (Int) -> Void) {
         running = true
-        let l = callback
         DispatchQueue(label: "SensorManager").async {
             while self.running {
                 DispatchQueue.main.sync {
