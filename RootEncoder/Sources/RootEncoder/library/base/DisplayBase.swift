@@ -21,8 +21,10 @@ public class DisplayBase {
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
     private var callback: DisplayBaseCallback? = nil
+    private(set) public var metalInterface: MetalInterface
 
     public init() {
+        self.metalInterface = MetalStreamInterface()
         let callback = createDisplayBaseCallbacks()
         self.callback = callback
         screenManager = ScreenManager(callbackVideo: callback, callbackAudio: nil)
@@ -62,6 +64,9 @@ public class DisplayBase {
     }
 
     public func prepareVideo(width: Int, height: Int, fps: Int, bitrate: Int, iFrameInterval: Int, rotation: Int = 0) -> Bool {
+        metalInterface.setEncoderSize(width: width, height: height)
+        metalInterface.setForceFps(fps: fps)
+        metalInterface.setOrientation(orientation: rotation)
         recordController.setVideoFormat(witdh: width, height: height, bitrate: bitrate)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
@@ -81,9 +86,11 @@ public class DisplayBase {
         videoEncoder.start()
         microphone.start()
         screenManager.start()
+        metalInterface.setCallback(callback: callback)
     }
     
     private func stopEncoders() {
+        metalInterface.setCallback(callback: nil)
         microphone.stop()
         screenManager.stop()
         audioEncoder.stop()
@@ -203,7 +210,7 @@ public class DisplayBase {
     }
 }
 
-protocol DisplayBaseCallback: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData {}
+protocol DisplayBaseCallback: GetMicrophoneData, GetCameraData, GetAudioData, GetVideoData, MetalViewCallback {}
 
 extension DisplayBase {
     func createDisplayBaseCallbacks() -> DisplayBaseCallback {
@@ -221,8 +228,12 @@ extension DisplayBase {
             }
 
             public func getYUVData(from buffer: CMSampleBuffer) {
-                displayBase.recordController.recordVideo(buffer: buffer)
-                displayBase.videoEncoder.encodeFrame(buffer: buffer)
+                displayBase.metalInterface.sendBuffer(buffer: buffer)
+            }
+            
+            func getVideoData(pixelBuffer: CVPixelBuffer, pts: CMTime) {
+                displayBase.recordController.recordVideo(pixelBuffer: pixelBuffer, pts: pts)
+                displayBase.videoEncoder.encodeFrame(pixelBuffer: pixelBuffer, pts: pts)
             }
 
             public func getAudioData(frame: Frame) {

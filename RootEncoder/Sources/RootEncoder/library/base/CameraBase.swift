@@ -18,8 +18,8 @@ public class CameraBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
-    public var metalInterface: MetalInterface
     private var callback: CameraBaseCallback? = nil
+    private(set) public var metalInterface: MetalInterface
     
     public init(view: MetalView) {
         self.metalInterface = view
