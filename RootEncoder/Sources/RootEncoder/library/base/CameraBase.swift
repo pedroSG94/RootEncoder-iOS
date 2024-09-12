@@ -5,7 +5,7 @@
 
 import Foundation
 import AVFoundation
-import UIKit
+import MetalKit
 
 public class CameraBase {
 
@@ -18,11 +18,20 @@ public class CameraBase {
     private var onPreview = false
     private var fpsListener = FpsListener()
     private let recordController = RecordController()
-    public let metalInterface: MetalInterface
     private var callback: CameraBaseCallback? = nil
+    private(set) public var metalInterface: MetalInterface
     
     public init(view: MetalView) {
         self.metalInterface = view
+        initialize()
+    }
+    
+    public init() {
+        self.metalInterface = MetalStreamInterface()
+        initialize()
+    }
+    
+    private func initialize() {
         let callback = createCameraBaseCallbacks()
         self.callback = callback
         cameraManager = CameraManager(callback: callback)
@@ -60,6 +69,7 @@ public class CameraBase {
         }
         metalInterface.setEncoderSize(width: w, height: h)
         metalInterface.setForceFps(fps: fps)
+        metalInterface.setOrientation(orientation: rotation)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)
     }
@@ -184,6 +194,37 @@ public class CameraBase {
         cameraManager
     }
     
+    public func replaceMetalInterface() {
+        self.metalInterface.setCallback(callback: nil)
+        let metalStreamInterface = MetalStreamInterface()
+        metalStreamInterface.setForceFps(fps: videoEncoder.fps)
+        var w = videoEncoder.width
+        var h = videoEncoder.height
+        if (videoEncoder.rotation == 90 || videoEncoder.rotation == 270) {
+            w = videoEncoder.height
+            h = videoEncoder.width
+        }
+        metalStreamInterface.setEncoderSize(width: w, height: h)
+        metalStreamInterface.setOrientation(orientation: videoEncoder.rotation)
+        metalStreamInterface.setCallback(callback: callback)
+        metalInterface = metalStreamInterface
+    }
+    
+    public func replaceMetalInterface(metalView: MetalView) {
+        self.metalInterface.setCallback(callback: nil)
+        metalView.setForceFps(fps: videoEncoder.fps)
+        var w = videoEncoder.width
+        var h = videoEncoder.height
+        if (videoEncoder.rotation == 90 || videoEncoder.rotation == 270) {
+            w = videoEncoder.height
+            h = videoEncoder.width
+        }
+        metalView.setEncoderSize(width: w, height: h)
+        metalView.setOrientation(orientation: videoEncoder.rotation)
+        metalView.setCallback(callback: callback)
+        metalInterface = metalView
+    }
+    
     public func setVideoBitrateOnFly(bitrate: Int) {
         videoEncoder.setVideoBitrateOnFly(bitrate: bitrate)
     }
@@ -218,6 +259,7 @@ public class CameraBase {
                 fatalError("Camera resolution not supported")
             }
             metalInterface.setEncoderSize(width: w, height: h)
+            metalInterface.setOrientation(orientation: rotation)
             cameraManager.start()
             onPreview = true
             return true

@@ -494,6 +494,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = app/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RootEncoder;
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to get video frames";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your microphone for audio recording";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your storage to save videos";
@@ -522,6 +523,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = app/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RootEncoder;
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to get video frames";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your microphone for audio recording";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your storage to save videos";

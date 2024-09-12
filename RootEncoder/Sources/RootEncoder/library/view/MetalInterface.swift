@@ -10,6 +10,8 @@ import CoreMedia
 
 public protocol MetalInterface {
     
+    func setOrientation(orientation: Int)
+    
     func muteVideo()
     
     func unMuteVideo()

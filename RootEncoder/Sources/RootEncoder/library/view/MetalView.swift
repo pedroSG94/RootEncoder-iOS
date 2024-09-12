@@ -10,6 +10,10 @@ import MetalKit
 import CoreMedia
 
 public class MetalView: MTKView, MetalInterface {
+    public func setOrientation(orientation: Int) {
+        rotation = orientation
+    }
+    
     public func muteVideo() {
         muted = true
     }
@@ -94,6 +98,7 @@ public class MetalView: MTKView, MetalInterface {
     private var context: CIContext? = nil
     private var width: CGFloat = 640
     private var height: CGFloat = 480
+    private var rotation = 0
     private lazy var render: (any MTLCommandQueue)? = {
         return device?.makeCommandQueue()
     }()
@@ -101,7 +106,6 @@ public class MetalView: MTKView, MetalInterface {
     private let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
     private var callback: MetalViewCallback? = nil
     private var filters = [BaseFilterRender]()
-    private let initialOrientation = UIDeviceOrientation(rawValue: CameraHelper.getOrientation().rawValue) ?? UIDeviceOrientation.landscapeLeft
     private var fpsLimiter = FpsLimiter()
     
     public init() {
@@ -166,7 +170,7 @@ extension MetalView: MTKViewDelegate {
             .cropToAspectRatio(aspectRatio: self.width / self.height)
             .scaleTo(width: self.width, height: self.height)
 
-        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: self.initialOrientation)
+        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation)
         
         //apply filters
         for filter in filters {
@@ -272,7 +276,6 @@ extension MetalView: MTKViewDelegate {
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputGVector")
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 0), forKey: "inputBVector")
         blackFilter?.setValue(CIVector(x: 0, y: 0, z: 0, w: 1), forKey: "inputAVector") // Preserva el canal alfa
-
         return blackFilter?.outputImage ?? image
     }
 }
