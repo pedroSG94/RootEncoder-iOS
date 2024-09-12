@@ -91,6 +91,11 @@ public class RtmpClient: SocketCallback {
                         self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                         return
                     }
+                    
+                    let user = urlParser.authUser
+                    let password = urlParser.authPassword
+                    if user != nil && password != nil { setAuth(user: user!, password: password!) }
+                    
                     if (try !self.establishConnection()) {
                         self.connectChecker.onConnectionFailed(reason: "Handshake failed")
                         return
@@ -105,7 +110,7 @@ public class RtmpClient: SocketCallback {
                     }
                     
                     self.handleServerCommands()
-                } catch let error as UriParseException {
+                } catch _ as UriParseException {
                     self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
                     return
                 } catch {
@@ -166,31 +171,6 @@ public class RtmpClient: SocketCallback {
             if self.isStreaming {
                 self.connect(url: reconnectUrl, isRetry: true)
             }
-        }
-    }
-    
-    private func getAppName(app: String, name: String) -> String {
-        if (!name.contains("/")) {
-            return app
-        } else {
-            return "\(app)/\(String(name.prefix(upTo: name.firstIndex(of: "/")!)))"
-        }
-    }
-
-    private func getStreamName(name: String) -> String {
-        if (!name.contains("/")) {
-            return name
-        } else {
-            let index = name.index(name.firstIndex(of: "/")!, offsetBy: 1)
-            return String(name[name.startIndex..<index])
-        }
-    }
-
-    private func getTcUrl(url: String) -> String {
-        if (url.hasSuffix("/")) {
-            return String(url.dropLast(1))
-        } else {
-            return url
         }
     }
 

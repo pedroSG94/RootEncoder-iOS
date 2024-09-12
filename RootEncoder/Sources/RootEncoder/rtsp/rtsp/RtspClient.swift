@@ -91,6 +91,11 @@ public class RtspClient: SocketCallback {
                         self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                         return
                     }
+                    
+                    let user = urlParser.authUser
+                    let password = urlParser.authPassword
+                    if user != nil && password != nil { setAuth(user: user!, password: password!) }
+                    
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self)
                     try self.socket?.connect()
@@ -182,7 +187,7 @@ public class RtspClient: SocketCallback {
                     self.connectChecker.onConnectionSuccess()
                     
                     self.handleServerCommands()
-                } catch let error as UriParseException {
+                } catch _ as UriParseException {
                     self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtsp://ip:port/appname/streamname")
                     return
                 } catch {
