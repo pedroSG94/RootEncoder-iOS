@@ -92,9 +92,9 @@ public class RtspClient: SocketCallback {
                         return
                     }
                     
-                    let user = urlParser.authUser
-                    let password = urlParser.authPassword
-                    if user != nil && password != nil { setAuth(user: user!, password: password!) }
+                    if let user = urlParser.authUser, let password = urlParser.authPassword {
+                        setAuth(user: user, password: password)
+                    }
                     
                     self.commandsManager.setUrl(host: host, port: port, path: path)
                     self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self)

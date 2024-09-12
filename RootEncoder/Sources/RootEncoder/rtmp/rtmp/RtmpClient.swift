@@ -92,9 +92,9 @@ public class RtmpClient: SocketCallback {
                         return
                     }
                     
-                    let user = urlParser.authUser
-                    let password = urlParser.authPassword
-                    if user != nil && password != nil { setAuth(user: user!, password: password!) }
+                    if let user = urlParser.authUser, let password = urlParser.authPassword {
+                        setAuth(user: user, password: password)
+                    }
                     
                     if (try !self.establishConnection()) {
                         self.connectChecker.onConnectionFailed(reason: "Handshake failed")
