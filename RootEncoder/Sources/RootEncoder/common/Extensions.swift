@@ -132,3 +132,21 @@ public extension VideoEncoder {
         return StreamClientHandler(encoder: self)
     }
 }
+
+public extension String {
+    func removePrefix(regex: String) -> String {
+        if self.hasPrefix(regex) {
+            return String(self.dropFirst(regex.count))
+        }
+        return self
+    }
+    
+    func indexes(char: Character) -> [String.Index] {
+        var indexes = [String.Index]()
+        for index in indexes {
+            let c = self[index]
+            if c == char { indexes.append(index) }
+        }
+        return indexes
+    }
+}

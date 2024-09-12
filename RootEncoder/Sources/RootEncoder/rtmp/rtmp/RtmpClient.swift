@@ -7,9 +7,10 @@ import Foundation
 
 public class RtmpClient: SocketCallback {
 
+    private let validSchemes = ["rtmp", "rtmps"]
     private let connectChecker: ConnectChecker
     private var socket: Socket? = nil
-    private let commandManager = RtmpCommandManager()
+    private let commandsManager = RtmpCommandManager()
     private var checkServerAlive = false
     private let rtmpSender: RtmpSender
     var isStreaming = false
@@ -23,25 +24,25 @@ public class RtmpClient: SocketCallback {
 
     public init(connectChecker: ConnectChecker) {
         self.connectChecker = connectChecker
-        rtmpSender = RtmpSender(callback: connectChecker, commandManager: commandManager)
+        rtmpSender = RtmpSender(callback: connectChecker, commandManager: commandsManager)
     }
 
     public func setAuth(user: String, password: String) {
-        commandManager.setAuth(user: user, password: password)
+        commandsManager.setAuth(user: user, password: password)
     }
     
     public func setOnlyAudio(onlyAudio: Bool) {
-        commandManager.audioDisabled = false
-        commandManager.videoDisabled = onlyAudio
+        commandsManager.audioDisabled = false
+        commandsManager.videoDisabled = onlyAudio
     }
 
     public func setOnlyVideo(onlyVideo: Bool) {
-        commandManager.videoDisabled = false
-        commandManager.audioDisabled = onlyVideo
+        commandsManager.videoDisabled = false
+        commandsManager.audioDisabled = onlyVideo
     }
 
     public func forceAkamaiTs(enabled: Bool) {
-        commandManager.akamaiTs = enabled
+        commandsManager.akamaiTs = enabled
     }
 
     public func setVideoInfo(sps: [UInt8], pps: [UInt8], vps: [UInt8]?) {
@@ -49,16 +50,16 @@ public class RtmpClient: SocketCallback {
     }
 
     public func setFps(fps: Int) {
-        commandManager.setFps(fps: fps)
+        commandsManager.setFps(fps: fps)
     }
 
     public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
-        commandManager.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
+        commandsManager.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
         rtmpSender.setAudioInfo(sampleRate: sampleRate, isStereo: isStereo)
     }
 
     public func setVideoResolution(width: Int, height: Int) {
-        commandManager.setVideoResolution(width: width, height: height)
+        commandsManager.setVideoResolution(width: width, height: height)
     }
     
     public func onSocketError(error: String) {
@@ -77,38 +78,38 @@ public class RtmpClient: SocketCallback {
                     return
                 }
                 self.url = url
-                let urlResults = url.groups(for: "^rtmps?://([^/:]+)(?::(\\d+))*/([^/]+)/?([^*]*)$")
-                if urlResults.count > 0 {
-                    let groups = urlResults[0]
-                    self.tlsEnabled = groups[0].hasPrefix("rtmps")
-                    let host = groups[1]
-                    let defaultPort = groups.count == 3
-                    let port = defaultPort ? self.tlsEnabled ? 443 : 1935 : Int(groups[2]) ?? 1935
-                    let _ = "/\(groups[defaultPort ? 2 : 3])/\(groups[defaultPort ? 3 : 4])" //path
-                    self.commandManager.host = host
-                    self.commandManager.port = port
-                    self.commandManager.appName = self.getAppName(app: groups[3], name: groups[4])
-                    self.commandManager.streamName = self.getStreamName(name: groups[4])
-                    let tcUrlIndex = groups[0].index(groups[0].startIndex, offsetBy: groups[0].count - self.commandManager.streamName.count)
-                    self.commandManager.tcUrl = self.getTcUrl(url: String(groups[0].prefix(upTo: tcUrlIndex)))
-                    do {
-                        if (try !self.establishConnection()) {
-                            self.connectChecker.onConnectionFailed(reason: "Handshake failed")
-                            return
-                        }
-                        guard let socket = self.socket else {
-                            throw IOException.runtimeError("Invalid socket, Connection failed")
-                        }
-                        try self.commandManager.sendChunkSize(socket: socket)
-                        try self.commandManager.sendConnect(auth: "", socket: socket)
-                        while (!self.publishPermitted) {
-                            try self.handleMessages()
-                        }
-                        
-                        self.handleServerCommands()
-                    } catch {
-                        self.connectChecker.onConnectionFailed(reason: "Connection failed: \(error)")
+                do {
+                    let urlParser = try UrlParser.parse(endpoint: url, requiredProtocols: self.validSchemes)
+                    tlsEnabled = urlParser.scheme.hasSuffix("s")
+                    commandsManager.host = urlParser.host
+                    let defaultPort = if tlsEnabled { 443 } else { 1935 }
+                    commandsManager.port = urlParser.port ?? defaultPort
+                    commandsManager.appName = urlParser.getAppName()
+                    commandsManager.streamName = urlParser.getStreamName()
+                    commandsManager.tcUrl = urlParser.getTcUrl()
+                    if commandsManager.appName.isEmpty {
+                        self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
+                        return
                     }
+                    if (try !self.establishConnection()) {
+                        self.connectChecker.onConnectionFailed(reason: "Handshake failed")
+                        return
+                    }
+                    guard let socket = self.socket else {
+                        throw IOException.runtimeError("Invalid socket, Connection failed")
+                    }
+                    try commandsManager.sendChunkSize(socket: socket)
+                    try commandsManager.sendConnect(auth: "", socket: socket)
+                    while (!self.publishPermitted) {
+                        try self.handleMessages()
+                    }
+                    
+                    self.handleServerCommands()
+                } catch let error as UriParseException {
+                    self.connectChecker.onConnectionFailed(reason: "Endpoint malformed, should be: rtmp://ip:port/appname/streamname")
+                    return
+                } catch {
+                    self.connectChecker.onConnectionFailed(reason: "Connection failed: \(error)")
                 }
             }
         }
@@ -123,7 +124,7 @@ public class RtmpClient: SocketCallback {
         let task = Task {
             do {
                 if let socket = self.socket {
-                    try self.commandManager.sendClose(socket: socket)
+                    try self.commandsManager.sendClose(socket: socket)
                 }
                 sync.leave()
             } catch {
@@ -212,12 +213,12 @@ public class RtmpClient: SocketCallback {
         guard var socket = socket else {
             throw IOException.runtimeError("Invalid socket, Connection failed")
         }
-        let message = try commandManager.readMessageResponse(socket: socket)
-        try commandManager.checkAndSendAcknowledgement(socket: socket)
+        let message = try commandsManager.readMessageResponse(socket: socket)
+        try commandsManager.checkAndSendAcknowledgement(socket: socket)
         switch message.getType() {
             case .SET_CHUNK_SIZE:
                 let setChunkSize = message as! SetChunkSize
-                commandManager.readChunkSize = setChunkSize.chunkSize
+                commandsManager.readChunkSize = setChunkSize.chunkSize
                 print("chunk size configured to \(setChunkSize.chunkSize)")
             case .ABORT:
                 let _ = message as! Abort
@@ -226,7 +227,7 @@ public class RtmpClient: SocketCallback {
             case .USER_CONTROL:
                 let userControl = message as! UserControl
                 if (userControl.type == ControlType.PING_REQUEST) {
-                    try commandManager.sendPong(event: userControl.event, socket: socket)
+                    try commandsManager.sendPong(event: userControl.event, socket: socket)
                 } else {
                     print("user control command \(userControl.type) ignored")
                 }
@@ -235,22 +236,22 @@ public class RtmpClient: SocketCallback {
                 RtmpConfig.acknowledgementWindowSize = windowAcknowledgementSize.acknowledgementWindowSize
             case .SET_PEER_BANDWIDTH:
                 let _ = message as! SetPeerBandwidth
-                try commandManager.sendWindowAcknowledgementSize(socket: socket)
+                try commandsManager.sendWindowAcknowledgementSize(socket: socket)
             case .COMMAND_AMF0, .COMMAND_AMF3:
                 let command = message as! RtmpCommand
-                let commandName = commandManager.sessionHistory.getName(id: command.commandId)
+                let commandName = commandsManager.sessionHistory.getName(id: command.commandId)
                 switch (command.name) {
                     case "_result":
                         switch (commandName) {
                             case "connect":
-                                if (commandManager.onAuth) {
+                                if (commandsManager.onAuth) {
                                     connectChecker.onAuthSuccess()
-                                    commandManager.onAuth = false
+                                    commandsManager.onAuth = false
                                 }
-                                try commandManager.createStream(socket: socket)
+                                try commandsManager.createStream(socket: socket)
                             case "createStream":
-                                commandManager.streamId = Int((command.data[3] as! AmfNumber).value)
-                                try commandManager.sendPublish(socket: socket)
+                                commandsManager.streamId = Int((command.data[3] as! AmfNumber).value)
+                                try commandsManager.sendPublish(socket: socket)
                             default:
                                 print("success response received from \(commandName ?? "unknown command")")
                         }
@@ -260,7 +261,7 @@ public class RtmpClient: SocketCallback {
                             case "connect":
                                 if (description.contains("reason=authfail") || description.contains("reason=nosuchuser")) {
                                     connectChecker.onAuthError()
-                                } else if (commandManager.user != nil && commandManager.password != nil
+                                } else if (commandsManager.user != nil && commandsManager.password != nil
                                         && description.contains("challenge=") && description.contains("salt=") //adobe response
                                         || description.contains("nonce="))  { //llnw response
                                     closeConnection()
@@ -270,15 +271,15 @@ public class RtmpClient: SocketCallback {
                                     } else {
                                         socket = self.socket!
                                     }
-                                    commandManager.onAuth = true
+                                    commandsManager.onAuth = true
                                     if (description.contains("challenge=") && description.contains("salt=")) { //create adobe auth
                                         let salt = AuthUtil.getSalt(description: description)
                                         let challenge = AuthUtil.getChallenge(description: description)
                                         let opaque = AuthUtil.getOpaque(description: description)
-                                        try commandManager.sendConnect(auth: AuthUtil.getAdobeAuthUserResult(user: commandManager.user ?? "", password: commandManager.password ?? "", salt: salt, challenge: challenge, opaque: opaque), socket: socket)
+                                        try commandsManager.sendConnect(auth: AuthUtil.getAdobeAuthUserResult(user: commandsManager.user ?? "", password: commandsManager.password ?? "", salt: salt, challenge: challenge, opaque: opaque), socket: socket)
                                     } else if (description.contains("nonce=")) { //create llnw auth
                                         let nonce = AuthUtil.getNonce(description: description)
-                                        try commandManager.sendConnect(auth: AuthUtil.getLlnwAuthUserResult(user: commandManager.user ?? "", password: commandManager.password ?? "", nonce: nonce, app: commandManager.appName), socket: socket)
+                                        try commandsManager.sendConnect(auth: AuthUtil.getLlnwAuthUserResult(user: commandsManager.user ?? "", password: commandsManager.password ?? "", nonce: nonce, app: commandsManager.appName), socket: socket)
                                     }
                                 } else if (description.contains("code=403")) {
                                     if (description.contains("authmod=adobe")) {
@@ -290,10 +291,10 @@ public class RtmpClient: SocketCallback {
                                             socket = self.socket!
                                         }
                                         print("sending auth mode adobe")
-                                        try commandManager.sendConnect(auth: "?authmod=adobe&user=\(commandManager.user ?? "")", socket: socket)
+                                        try commandsManager.sendConnect(auth: "?authmod=adobe&user=\(commandsManager.user ?? "")", socket: socket)
                                     } else if (description.contains("authmod=llnw")) {
                                         print("sending auth mode llnw")
-                                        try commandManager.sendConnect(auth: "?authmod=llnw&user=\(commandManager.user ?? "")", socket: socket)
+                                        try commandsManager.sendConnect(auth: "?authmod=llnw&user=\(commandsManager.user ?? "")", socket: socket)
                                     }
                                 } else {
                                     connectChecker.onAuthError()
@@ -305,7 +306,7 @@ public class RtmpClient: SocketCallback {
                         let code = ((command.data[3] as! AmfObject).getProperty(name: "code") as! AmfString).value
                         switch (code) {
                             case "NetStream.Publish.Start":
-                                try commandManager.sendMetadata(socket: socket)
+                                try commandsManager.sendMetadata(socket: socket)
                                 connectChecker.onConnectionSuccess()
                                 rtmpSender.socket = socket
                                 rtmpSender.start()
@@ -327,42 +328,42 @@ public class RtmpClient: SocketCallback {
 
     public func setVideoCodec(codec: VideoCodec) {
         if (!isStreaming) {
-            commandManager.videoCodec = codec
+            commandsManager.videoCodec = codec
         }
     }
     
     public func setAudioCodec(codec: AudioCodec) {
         if (!isStreaming) {
-            commandManager.audioCodec = codec
+            commandsManager.audioCodec = codec
         }
     }
     
     private func closeConnection() {
         socket?.disconnect()
-        commandManager.reset()
+        commandsManager.reset()
     }
 
     public func establishConnection() throws -> Bool {
-        socket = Socket(tlsEnabled: tlsEnabled, host: commandManager.host, port: commandManager.port, callback: self)
+        socket = Socket(tlsEnabled: tlsEnabled, host: commandsManager.host, port: commandsManager.port, callback: self)
         try socket?.connect()
         let timeStamp = Date().millisecondsSince1970 / 1000
         let handshake = Handshake()
         if (try !handshake.sendHandshake(socket: socket!)) {
             return false
         }
-        commandManager.timestamp = Int(timeStamp)
-        commandManager.startTs = Date().millisecondsSince1970 * 1000
+        commandsManager.timestamp = Int(timeStamp)
+        commandsManager.startTs = Date().millisecondsSince1970 * 1000
         return true
     }
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        if (isStreaming && !commandManager.videoDisabled) {
+        if (isStreaming && !commandsManager.videoDisabled) {
             rtmpSender.sendVideo(buffer: buffer, ts: ts)
         }
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
-        if (isStreaming && !commandManager.audioDisabled) {
+        if (isStreaming && !commandsManager.audioDisabled) {
             rtmpSender.sendAudio(buffer: buffer, ts: ts)
         }
     }
