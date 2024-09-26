@@ -143,9 +143,10 @@ public extension String {
     
     func indexes(char: Character) -> [String.Index] {
         var indexes = [String.Index]()
-        for index in indexes {
-            let c = self[index]
-            if c == char { indexes.append(index) }
+        for index in 0..<count {
+            let i = self.index(startIndex, offsetBy: index)
+            let c = self[i]
+            if c == char { indexes.append(i) }
         }
         return indexes
     }
