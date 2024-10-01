@@ -29,8 +29,8 @@ public class RtmpH264Packet: RtmpBasePacket {
         self.pps = pps
     }
     
-    public override func createFlvPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
-        let timeStamp = ts / 1000
+    public override func createFlvPacket(mediaFrame: MediaFrame, callback: (FlvPacket) -> Void) {
+        let timeStamp = mediaFrame.info.timestamp / 1000
         let cts = 0
         header[2] = UInt8(cts >> 16)
         header[3] = UInt8(cts >> 8)
@@ -56,11 +56,11 @@ public class RtmpH264Packet: RtmpBasePacket {
             configSend = true
         }
         
-        let headerSize = getHeaderSize(byteBuffer: buffer)
+        let headerSize = getHeaderSize(byteBuffer: mediaFrame.data)
         
         if headerSize == 0 { return }
         
-        let validBuffer = removeHeader(byteBuffer: buffer, size: headerSize)
+        let validBuffer = removeHeader(byteBuffer: mediaFrame.data, size: headerSize)
         let size = validBuffer.count
         if size < 0 { return }
         packetBuffer = [UInt8](repeating: 0, count: header.count + size + naluSize)

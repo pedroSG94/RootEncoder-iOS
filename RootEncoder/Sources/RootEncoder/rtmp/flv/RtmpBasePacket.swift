@@ -8,7 +8,7 @@
 import Foundation
 
 public class RtmpBasePacket {
-    public func createFlvPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
+    public func createFlvPacket(mediaFrame: MediaFrame, callback: (FlvPacket) -> Void) {
         
     }
     

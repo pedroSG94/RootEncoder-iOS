@@ -15,17 +15,16 @@ public class RtmpG711Packet: RtmpBasePacket {
         self.audioSize = audioSize
     }
     
-    public override func createFlvPacket(buffer: Array<UInt8>, ts: UInt64, callback: (FlvPacket) -> Void) {
-        let length = buffer.count
+    public override func createFlvPacket(mediaFrame: MediaFrame, callback: (FlvPacket) -> Void) {
+        let length = mediaFrame.info.size
         header[0] = AudioSoundType.MONO.rawValue | (audioSize.rawValue << 1) | (AudioSoundRate.SR_5_5K.rawValue << 2) | (AudioFormat.G711_A.rawValue << 4)
                 
         var packetBuffer = [UInt8](repeating: 0, count: length + header.count)
-        packetBuffer[header.count..<packetBuffer.count] = buffer[0..<length]
+        packetBuffer[header.count..<packetBuffer.count] = mediaFrame.data[0..<length]
         packetBuffer[0..<header.count] = header[0..<header.count]
-        let timeStamp = ts / 1000
+        let timeStamp = mediaFrame.info.timestamp / 1000
         callback(FlvPacket(buffer: packetBuffer, timeStamp: Int64(timeStamp), length: packetBuffer.count, type: .AUDIO))
     }
     
-    public override func reset(resetInfo: Bool = true) {
-    }
+    public override func reset(resetInfo: Bool = true) { }
 }

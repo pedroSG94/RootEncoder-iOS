@@ -80,17 +80,13 @@ public class RtmpSender: BaseSender {
         switch mediaFrame.type {
         case .VIDEO:
             videoPacket.createFlvPacket(
-                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
-                callback: { packet in
-                    callback(packet)
-                }
+                mediaFrame: mediaFrame,
+                callback: { packet in callback(packet) }
             )
         case .AUDIO:
             audioPacket.createFlvPacket(
-                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
-                callback: { packet in
-                    callback(packet)
-                }
+                mediaFrame: mediaFrame,
+                callback: { packet in callback(packet) }
             )
         }
     }

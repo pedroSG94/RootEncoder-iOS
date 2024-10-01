@@ -11,9 +11,9 @@ public class RtspH264Packet: RtspBasePacket {
         setSpsPps(sps: sps, pps: pps)
     }
     
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
-        var fixedBuffer = buffer
-        let dts = ts * 1000
+    public override func createAndSendPacket(mediaFrame: MediaFrame, callback: ([RtpFrame]) -> Void) {
+        var fixedBuffer = mediaFrame.data
+        let dts = mediaFrame.info.timestamp * 1000
         
         var header = Array<UInt8>(repeating: 0, count: 5)
         fixedBuffer.get(destiny: &header, index: 0, length: header.count)
@@ -87,7 +87,7 @@ public class RtspH264Packet: RtspBasePacket {
         } else {
             print("waiting for keyframe")
         }
-        callback(frames)
+        if !frames.isEmpty { callback(frames) }
     }
     
     private func setSpsPps(sps: Array<UInt8>, pps: Array<UInt8>) {

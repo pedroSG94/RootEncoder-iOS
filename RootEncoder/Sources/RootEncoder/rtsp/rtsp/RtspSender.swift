@@ -105,17 +105,13 @@ public class RtspSender: BaseSender {
         switch mediaFrame.type {
         case .VIDEO:
             videoPacketizer?.createAndSendPacket(
-                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
-                callback: { frames in
-                    callback(frames)
-                }
+                mediaFrame: mediaFrame,
+                callback: { frames in callback(frames) }
             )
         case .AUDIO:
             audioPacketizer?.createAndSendPacket(
-                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
-                callback: { frames in
-                    callback(frames)
-                }
+                mediaFrame: mediaFrame,
+                callback: { frames in callback(frames) }
             )
         }
     }

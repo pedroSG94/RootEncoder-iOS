@@ -8,10 +8,10 @@ public class RtspAacPacket: RtspBasePacket {
         channelIdentifier = RtpConstants.trackAudio
     }
     
-    public override func createAndSendPacket(buffer: Array<UInt8>, ts: UInt64, callback: ([RtpFrame]) -> Void) {
-        var fixedBuffer = buffer
-        let naluLength = fixedBuffer.count
-        let dts = ts * 1000
+    public override func createAndSendPacket(mediaFrame: MediaFrame, callback: ([RtpFrame]) -> Void) {
+        var fixedBuffer = mediaFrame.data
+        let naluLength = mediaFrame.info.size
+        let dts = mediaFrame.info.timestamp * 1000
         let maxPayload = maxPacketSize - RtpConstants.rtpHeaderLength
         var sum = 0
         var frames = [RtpFrame]()
@@ -44,6 +44,6 @@ public class RtspAacPacket: RtspBasePacket {
             sum += length
             frames.append(frame)
         }
-        callback(frames)
+        if !frames.isEmpty { callback(frames) }
     }
 }
