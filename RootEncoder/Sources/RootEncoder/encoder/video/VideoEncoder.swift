@@ -233,17 +233,17 @@ public class VideoEncoder {
                         parameterSetSizeOut: &ppsSize, parameterSetCountOut: nil, nalUnitHeaderLengthOut: nil)
             }
 
-            var vpsData: NSData? = nil
+            var vpsData: [UInt8]? = nil
             if (codec == .H265) {
-                vpsData = NSData(bytes: vps, length: vpsSize)
+                vpsData = [UInt8](NSData(bytes: vps, length: vpsSize))
             }
-            let spsData = NSData(bytes: sps, length: spsSize)
-            let ppsData = NSData(bytes: pps, length: ppsSize)
+            let spsData = [UInt8](NSData(bytes: sps, length: spsSize))
+            let ppsData = [UInt8](NSData(bytes: pps, length: ppsSize))
 
             if (!isSpsAndPpsSend) {
                 threadOutput.async {
-                    self.callback.onVideoInfo(sps: [UInt8](spsData), pps: [UInt8](ppsData),
-                            vps: vpsData != nil ? [UInt8](vpsData!) : nil)
+                    self.callback.onVideoInfo(sps: spsData, pps: ppsData,
+                            vps: vpsData != nil ? vpsData : nil)
                 }
                 isSpsAndPpsSend = true
             }

@@ -65,38 +65,32 @@ public class RecordController {
     }
 
     func recordVideo(buffer: CMSampleBuffer) {
-        queue.async {
-            self.initialize(time: buffer.presentationTimeStamp)
-            if (self.status != Status.RECORDING) {
-                return
-            }
-            if (self.videoInput?.isReadyForMoreMediaData == true) {
-                self.videoInput?.append(buffer)
-            }
+        self.initialize(time: buffer.presentationTimeStamp)
+        if (self.status != Status.RECORDING) {
+            return
+        }
+        if (self.videoInput?.isReadyForMoreMediaData == true) {
+            self.videoInput?.append(buffer)
         }
     }
     
     func recordVideo(pixelBuffer: CVPixelBuffer, pts: CMTime) {
-        queue.async {
-            self.initialize(time: pts)
-            if (self.status != Status.RECORDING) {
-                return
-            }
-            if (self.videoInput?.isReadyForMoreMediaData == true) {
-                self.videoAdaptor?.append(pixelBuffer, withPresentationTime: pts)
-            }
+        self.initialize(time: pts)
+        if (self.status != Status.RECORDING) {
+            return
+        }
+        if (self.videoInput?.isReadyForMoreMediaData == true) {
+            self.videoAdaptor?.append(pixelBuffer, withPresentationTime: pts)
         }
     }
 
     func recordAudio(buffer: CMSampleBuffer) {
-        queue.async {
-            self.initialize(time: buffer.presentationTimeStamp)
-            if (self.status != Status.RECORDING) {
-                return
-            }
-            if (self.audioInput?.isReadyForMoreMediaData == true) {
-                self.audioInput?.append(buffer)
-            }
+        self.initialize(time: buffer.presentationTimeStamp)
+        if (self.status != Status.RECORDING) {
+            return
+        }
+        if (self.audioInput?.isReadyForMoreMediaData == true) {
+            self.audioInput?.append(buffer)
         }
     }
     
