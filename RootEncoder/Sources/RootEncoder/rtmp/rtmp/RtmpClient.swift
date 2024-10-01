@@ -338,13 +338,13 @@ public class RtmpClient: SocketCallback {
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         if (isStreaming && !commandsManager.videoDisabled) {
-            rtmpSender.sendVideo(buffer: buffer, ts: ts)
+            rtmpSender.sendMediaFrame(mediaFrame: MediaFrame(data: buffer, info: MediaFrame.Info(offset: 0, size: buffer.count, timestamp: ts), type: MediaFrame.MediaType.VIDEO))
         }
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (isStreaming && !commandsManager.audioDisabled) {
-            rtmpSender.sendAudio(buffer: buffer, ts: ts)
+            rtmpSender.sendMediaFrame(mediaFrame: MediaFrame(data: buffer, info: MediaFrame.Info(offset: 0, size: buffer.count, timestamp: ts), type: MediaFrame.MediaType.AUDIO))
         }
     }
     

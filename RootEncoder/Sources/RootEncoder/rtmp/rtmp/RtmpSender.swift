@@ -5,32 +5,19 @@
 
 import Foundation
 
-public class RtmpSender {
+public class RtmpSender: BaseSender {
 
     private var videoPacket: RtmpBasePacket = RtmpH264Packet()
     private var audioPacket: RtmpBasePacket = RtmpAacPacket()
-    private var thread: Task<(), Never>? = nil
-    private var running = false
-    private var cacheSize = 200
-    private let queue: SynchronizedQueue<FlvPacket>
-    private let callback: ConnectChecker
     private let commandManager: RtmpCommandManager
     var socket: Socket? = nil
-    var audioFramesSent = 0
-    var videoFramesSent = 0
-    var droppedAudioFrames = 0
-    var droppedVideoFrames = 0
-    private let bitrateManager: BitrateManager
-    var isEnableLogs = true
 
     public init(callback: ConnectChecker, commandManager: RtmpCommandManager) {
-        self.callback = callback
         self.commandManager = commandManager
-        self.queue = SynchronizedQueue<FlvPacket>(label: "RtmpSenderQueue", size: cacheSize)
-        bitrateManager = BitrateManager(connectChecker: callback)
+        super.init(callback: callback, tag: "RtmpSender")
     }
     
-    public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
+    public override func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {
         switch commandManager.videoCodec {
         case .H264:
             let packet = RtmpH264Packet()
@@ -43,7 +30,7 @@ public class RtmpSender {
         }
     }
     
-    public func setAudioInfo(sampleRate: Int, isStereo: Bool) {
+    public override func setAudioInfo(sampleRate: Int, isStereo: Bool) {
         switch commandManager.audioCodec {
         case .AAC:
             let packet = RtmpAacPacket()
@@ -55,91 +42,56 @@ public class RtmpSender {
         }
     }
     
-    public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
-        if (running) {
-            videoPacket.createFlvPacket(
-                buffer: buffer, ts: ts,
-                callback: { (flvPacket) in
-                    if (!queue.enqueue(flvPacket)) {
-                        print("Video frame discarded")
-                        droppedVideoFrames += 1
-                    }
-                }
-            )
-        }
-    }
-    
-    public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
-        if (running) {
-            audioPacket.createFlvPacket(
-                buffer: buffer, ts: ts,
-                callback: { (flvPacket) in
-                    if (!queue.enqueue(flvPacket)) {
-                        print("Audio frame discarded")
-                        droppedAudioFrames += 1
-                    }
-                }
-            )
-        }
-    }
-    
-    public func start() {
-        queue.clear()
-        running = true
-        thread = Task(priority: .high) {
-            while (self.running) {
-                let flvPacket = self.queue.dequeue()
-                if let flvPacket = flvPacket {
-                    do {
-                        if (flvPacket.type == FlvType.VIDEO) {
-                            let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
-                            if (self.isEnableLogs) {
-                                print("wrote Video packet, size: \(size)")
-                            }
-                            self.videoFramesSent += 1
-                            self.bitrateManager.calculateBitrate(size: Int64(size * 8))
-                        } else {
-                            let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
-                            if (self.isEnableLogs) {
-                                print("wrote Audio packet, size: \(size)")
-                            }
-                            self.audioFramesSent += 1
-                            self.bitrateManager.calculateBitrate(size: Int64(size * 8))
+    public override func onRun() {
+        while (self.running) {
+            let mediaFrame = self.queue.dequeue()
+            getFlvPacket(mediaFrame: mediaFrame, callback: { flvPacket in
+                do {
+                    if (flvPacket.type == FlvType.VIDEO) {
+                        let size = try self.commandManager.sendVideoPacket(flvPacket: flvPacket, socket: self.socket!)
+                        if (self.isEnableLogs) {
+                            print("wrote Video packet, size: \(size)")
                         }
-                    } catch let error {
-                        self.callback.onConnectionFailed(reason: error.localizedDescription)
-                        return
+                        self.videoFramesSent += 1
+                        self.bitrateManager.calculateBitrate(size: Int64(size * 8))
+                    } else {
+                        let size = try self.commandManager.sendAudioPacket(flvPacket: flvPacket, socket: self.socket!)
+                        if (self.isEnableLogs) {
+                            print("wrote Audio packet, size: \(size)")
+                        }
+                        self.audioFramesSent += 1
+                        self.bitrateManager.calculateBitrate(size: Int64(size * 8))
                     }
+                } catch let error {
+                    self.callback.onConnectionFailed(reason: error.localizedDescription)
+                    return
                 }
-            }
+            })
         }
     }
 
-    public func stop(clear: Bool = true) {
-        running = false
-        thread?.cancel()
-        thread = nil
+    public override func stopImp(clear: Bool = true) {
         audioPacket.reset()
         videoPacket.reset(resetInfo: clear)
-        queue.clear()
     }
-    
-    public func hasCongestion(percentUsed: Float) -> Bool {
-        let size = queue.itemsCount()
-        let remaining = queue.remaining()
-        let capacity = size + remaining
-        return Double(size) >= Double(capacity) * Double(percentUsed) / 100 //more than 20% queue used. You could have congestion
-    }
-    
-    public func resizeCache(newSize: Int) {
-        queue.resizeSize(size: newSize)
-    }
-    
-    public func getCacheSize() -> Int {
-        return cacheSize
-    }
-    
-    public func clearCache() {
-        queue.clear()
+
+    private func getFlvPacket(mediaFrame: MediaFrame?, callback: (FlvPacket) -> Void) {
+        guard let mediaFrame = mediaFrame else { return }
+        switch mediaFrame.type {
+        case .VIDEO:
+            videoPacket.createFlvPacket(
+                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
+                callback: { packet in
+                    callback(packet)
+                }
+            )
+        case .AUDIO:
+            audioPacket.createFlvPacket(
+                buffer: mediaFrame.data, ts: mediaFrame.info.timestamp,
+                callback: { packet in
+                    callback(packet)
+                }
+            )
+        }
     }
 }

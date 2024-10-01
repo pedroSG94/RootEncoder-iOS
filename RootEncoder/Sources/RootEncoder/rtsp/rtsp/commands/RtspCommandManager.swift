@@ -13,7 +13,7 @@ public class RtspCommandManager {
     var audioDisabled = false
     //Audio
     private var sampleRate = 44100
-    private var isStereo = true
+    private(set) var isStereo = true
     //Video
     var sps: Array<UInt8>? = nil
     var pps: Array<UInt8>? = nil

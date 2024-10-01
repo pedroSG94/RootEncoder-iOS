@@ -96,11 +96,11 @@ public class RtspClient: SocketCallback {
                         setAuth(user: user, password: password)
                     }
                     
-                    self.commandsManager.setUrl(host: host, port: port, path: path)
+                    self.commandsManager.setUrl(host: host, port: port, path: "/\(path)")
                     self.socket = Socket(tlsEnabled: self.tlsEnabled, host: host, port: port, callback: self)
                     try self.socket?.connect()
                     if (!self.commandsManager.audioDisabled) {
-                        self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate())
+                        self.rtspSender.setAudioInfo(sampleRate: self.commandsManager.getSampleRate(), isStereo: self.commandsManager.isStereo)
                     }
                     if (!self.commandsManager.videoDisabled) {
                         if (!self.commandsManager.videoInfoReady()) {
@@ -248,13 +248,13 @@ public class RtspClient: SocketCallback {
     
     public func sendVideo(buffer: Array<UInt8>, ts: UInt64) {
         if (!commandsManager.videoDisabled) {
-            rtspSender.sendVideo(buffer: buffer, ts: ts)
+            rtspSender.sendMediaFrame(mediaFrame: MediaFrame(data: buffer, info: MediaFrame.Info(offset: 0, size: buffer.count, timestamp: ts), type: MediaFrame.MediaType.VIDEO))
         }
     }
     
     public func sendAudio(buffer: Array<UInt8>, ts: UInt64) {
         if (!commandsManager.audioDisabled) {
-            rtspSender.sendAudio(buffer: buffer, ts: ts)
+            rtspSender.sendMediaFrame(mediaFrame: MediaFrame(data: buffer, info: MediaFrame.Info(offset: 0, size: buffer.count, timestamp: ts), type: MediaFrame.MediaType.AUDIO))
         }
     }
     
