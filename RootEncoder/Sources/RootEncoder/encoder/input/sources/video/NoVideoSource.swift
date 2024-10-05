@@ -10,8 +10,14 @@ import Foundation
 public class NoVideoSource: VideoSource {
     
     private var running = false
+    private var createdValue = false
+
+    public func created() -> Bool {
+        return createdValue
+    }
     
     public func create(width: Int, height: Int, fps: Int, rotation: Int) -> Bool {
+        createdValue = true
         return true
     }
     
@@ -28,6 +34,6 @@ public class NoVideoSource: VideoSource {
     }
     
     public func release() {
-        
+        createdValue = false
     }
 }

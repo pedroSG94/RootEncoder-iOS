@@ -14,11 +14,17 @@ public class CameraSource: VideoSource, GetCameraData {
         CameraManager(callback: self)
     }()
     private var metalInterface: MetalInterface? = nil
+    private var createdValue = false
     
     public init() { }
+
+    public func created() -> Bool {
+        return createdValue
+    }
     
     public func create(width: Int, height: Int, fps: Int, rotation: Int) -> Bool {
-        return camera.prepare(width: width, height: height, fps: fps, rotation: rotation)
+        createdValue = camera.prepare(width: width, height: height, fps: fps, rotation: rotation)
+        return createdValue
     }
     
     public func start(metalInterface: MetalInterface) {
@@ -34,7 +40,9 @@ public class CameraSource: VideoSource, GetCameraData {
         return camera.running
     }
     
-    public func release() { }
+    public func release() {
+        createdValue = false
+    }
     
     public func getYUVData(from buffer: CMSampleBuffer) {
         metalInterface?.sendBuffer(buffer: buffer)

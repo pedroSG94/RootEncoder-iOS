@@ -14,11 +14,17 @@ public class MicrophoneSource: AudioSource, GetMicrophoneData {
     }()
     private var callback: GetMicrophoneData? = nil
     private var running = false
+    private var createdValue = false
     
     public init() { }
+
+    public func created() -> Bool {
+        return createdValue
+    }
     
     public func create(sampleRate: Int, isStereo: Bool) -> Bool {
-        return microphone.createMicrophone()
+        createdValue = microphone.createMicrophone()
+        return createdValue
     }
     
     public func start(calback: GetMicrophoneData) {
@@ -36,7 +42,9 @@ public class MicrophoneSource: AudioSource, GetMicrophoneData {
         return running
     }
     
-    public func release() { }
+    public func release() {
+        createdValue = false
+    }
     
     public func getPcmData(frame: PcmFrame) {
         callback?.getPcmData(frame: frame)

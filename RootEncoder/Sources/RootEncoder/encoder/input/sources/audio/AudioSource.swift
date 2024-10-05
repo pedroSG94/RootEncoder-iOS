@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol AudioSource {
+    func created() -> Bool
     func create(sampleRate: Int, isStereo: Bool) -> Bool
     func start(calback: GetMicrophoneData)
     func stop()

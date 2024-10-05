@@ -19,6 +19,8 @@ public class AudioEncoder {
     private let syncQueue = SynchronizedQueue<PcmFrame>(label: "AudioEncodeQueue", size: 60)
     private var codec = AudioCodec.AAC
     private var inputFormat: AVAudioFormat? = nil
+    private(set) public var sampleRate = 32000.0
+    private(set) public var channels: UInt32 = 2
     private var bitrate = 128 * 1000
     private var ringBuffer: AudioRingBuffer? = nil
     private let audioTime = AudioTime()
@@ -30,6 +32,10 @@ public class AudioEncoder {
     
     public func setCodec(codec: AudioCodec) {
         self.codec = codec
+    }
+    
+    public func prepareAudio() -> Bool {
+        return prepareAudio(sampleRate: sampleRate, channels: channels, bitrate: bitrate)
     }
     
     public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
@@ -48,6 +54,8 @@ public class AudioEncoder {
             return false
         }
         self.outputFormat = outputFormat
+        self.sampleRate = sampleRate
+        self.channels = channels
         self.bitrate = bitrate
         print("prepare audio success")
         return true
