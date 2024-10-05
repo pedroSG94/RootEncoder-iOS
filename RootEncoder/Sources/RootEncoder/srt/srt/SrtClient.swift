@@ -3,3 +3,7 @@
 //
 
 import Foundation
+
+public class SrtClient {
+    
+}
