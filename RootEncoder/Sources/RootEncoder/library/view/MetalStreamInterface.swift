@@ -33,6 +33,11 @@ public class MetalStreamInterface: MetalInterface {
         fpsLimiter.setFps(fps: fps)
     }
     
+    public func setPreviewSize(width: CGFloat, height: CGFloat) {
+        previewWidth = width
+        previewHeight = height
+    }
+    
     private var isPreviewHorizontalFlip = false
     private var isPreviewVerticalFlip = false
     private var isStreamHorizontalFlip = false
@@ -54,6 +59,8 @@ public class MetalStreamInterface: MetalInterface {
     private var rotated = false
     private let sensorManager = SensorManager()
     private weak var mtkView: MTKView? = nil
+    private var previewWidth: CGFloat? = nil
+    private var previewHeight: CGFloat? = nil
     
     public init() {
         self.device = MTLCreateSystemDefaultDevice()
@@ -105,13 +112,23 @@ public class MetalStreamInterface: MetalInterface {
         
         if let mtkView = mtkView, let drawable = mtkView.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() {
             var previewImage = streamImage
+            let pw = if previewWidth != nil {
+                previewWidth
+            } else {
+                previewImage.extent.width
+            }
+            let ph = if previewHeight != nil {
+                previewWidth
+            } else {
+                previewImage.extent.height
+            }
             
-            var w = previewImage.extent.width
-            var h = previewImage.extent.height
+            var w = pw!
+            var h = ph!
                     
             if (rotated) {
-                w = previewImage.extent.height
-                h = previewImage.extent.width
+                w = ph!
+                h = pw!
             }
             
             let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: mtkView.drawableSize.width, previewHeight: mtkView.drawableSize.height)

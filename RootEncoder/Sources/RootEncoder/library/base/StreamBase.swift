@@ -20,8 +20,8 @@ public class StreamBase {
     private let recordController = RecordController()
     private var callback: StreamBaseCallback? = nil
     private(set) public var metalInterface: MetalStreamInterface
-    private var videoSource: VideoSource
-    private var audioSource: AudioSource
+    private(set) public var videoSource: VideoSource
+    private(set) public var audioSource: AudioSource
     
     public init(videoSource: VideoSource, audioSource: AudioSource) {
         self.videoSource = videoSource
@@ -43,7 +43,7 @@ public class StreamBase {
         }
         let videoResult = videoSource.create(width: width, height: height, fps: fps, rotation: rotation)
         if videoResult {
-            metalInterface.setOrientation(orientation: rotation)
+            //metalInterface.setOrientation(orientation: rotation)
             if rotation == 0 || rotation == 180 {
                 metalInterface.setEncoderSize(width: width, height: height)
             } else {
@@ -104,6 +104,7 @@ public class StreamBase {
         }
     }
     
+    @discardableResult
     public func stopRecord() -> Bool {
         recordController.stopRecord()
         if !streaming {
@@ -113,6 +114,19 @@ public class StreamBase {
         return true
     }
     
+    public func isRecording() -> Bool {
+        return recordController.isRecording()
+    }
+    
+    public func isStreaming() -> Bool {
+        return streaming
+    }
+    
+    public func isOnPreview() -> Bool {
+        return onPreview
+    }
+    
+    var metalView: MetalView? = nil
     public func startPreview(view: MTKView) {
         guard let callback = callback else { return }
         onPreview = true
@@ -198,6 +212,18 @@ public class StreamBase {
     
     public func requestKeyframe() {
         videoEncoder.forceKeyFrame()
+    }
+    
+    public func setVideoCodec(codec: VideoCodec) {
+        setVideoCodecImp(codec: codec)
+        recordController.setVideoCodec(codec: codec)
+        videoEncoder.setCodec(codec: codec)
+    }
+    
+    public func setAudioCodec(codec: AudioCodec) {
+        setAudioCodecImp(codec: codec)
+        recordController.setAudioCodec(codec: codec)
+        audioEncoder.setCodec(codec: codec)
     }
     
     func startStreamImp(endpoint: String) {}

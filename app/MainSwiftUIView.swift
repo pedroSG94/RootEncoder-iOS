@@ -13,6 +13,9 @@ struct MainSwiftUIView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 64) {
+                NavigationLink(destination: StreamSwiftUIView()) {
+                    Text("Stream")
+                }
                 NavigationLink(destination: CameraSwiftUIView()) {
                     Text("Camera")
                 }
