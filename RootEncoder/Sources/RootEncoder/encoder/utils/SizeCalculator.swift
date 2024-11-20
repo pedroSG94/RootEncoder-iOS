@@ -30,7 +30,7 @@ public class SizeCalculator {
     
     public static func processMatrix(initialOrientation: UIDeviceOrientation) -> CGImagePropertyOrientation {
         switch initialOrientation {
-        case .landscapeLeft:
+        case .landscapeRight:
             switch UIDevice.current.orientation {
             case .landscapeLeft:
                 return .up
@@ -43,7 +43,7 @@ public class SizeCalculator {
             default:
                 return .up
             }
-        case .landscapeRight:
+        case .landscapeLeft:
             switch UIDevice.current.orientation {
             case .landscapeLeft:
                 return .down

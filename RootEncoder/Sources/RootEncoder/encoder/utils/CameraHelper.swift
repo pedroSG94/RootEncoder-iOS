@@ -25,7 +25,7 @@ public class CameraHelper {
     }
     
     public static func getOrientation() -> UIInterfaceOrientation {
-        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .landscapeLeft
+        return UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .landscapeRight
     }
     
     public enum Facing {

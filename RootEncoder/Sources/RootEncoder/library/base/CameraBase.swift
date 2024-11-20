@@ -64,11 +64,25 @@ public class CameraBase {
             w = height
             h = width
         }
+        var shouldStartPreview = false
+        if onPreview {
+            let size = metalInterface.getEncoderSize()
+            if size.width != CGFloat(w) || size.height != CGFloat(h) {
+                stopPreview()
+                shouldStartPreview = true
+            }
+        }
         if !cameraManager.prepare(width: width, height: height, fps: 30, rotation: rotation) {
             return false
         }
-        metalInterface.setEncoderSize(width: w, height: h)
+        if !cameraManager.running {
+            cameraManager.start()
+            if shouldStartPreview {
+                onPreview = true
+            }
+        }
         metalInterface.setForceFps(fps: fps)
+        metalInterface.setEncoderSize(width: w, height: h)
         metalInterface.setOrientation(orientation: rotation)
         recordController.setVideoFormat(witdh: w, height: h, bitrate: bitrate)
         return videoEncoder.prepareVideo(width: width, height: height, fps: fps, bitrate: bitrate, iFrameInterval: iFrameInterval, rotation: rotation)

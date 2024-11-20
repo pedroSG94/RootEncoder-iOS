@@ -13,6 +13,10 @@ import MetalKit
 
 public class MetalStreamInterface: MetalInterface {
     
+    public func getEncoderSize() -> CGSize {
+        return CGSize(width: width, height: height)
+    }
+    
     public func setIsStreamHorizontalFlip(flip: Bool) {
         isStreamHorizontalFlip = flip
     }
@@ -69,7 +73,8 @@ public class MetalStreamInterface: MetalInterface {
         CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
         sensorManager.start(callback: { orientation in
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
-            ((self.rotation == 90 || self.rotation == 2700) && (orientation == 0 || orientation == 180))
+            ((self.rotation == 90 || self.rotation == 270) && (orientation == 0 || orientation == 180))
+            self.rotation = orientation
         })
     }
     

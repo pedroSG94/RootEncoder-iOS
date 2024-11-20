@@ -19,6 +19,8 @@ public protocol MetalInterface {
     func isVideoMuted() -> Bool
     
     func setEncoderSize(width: Int, height: Int)
+    
+    func getEncoderSize() -> CGSize
         
     func setCallback(callback: MetalViewCallback?)
     
