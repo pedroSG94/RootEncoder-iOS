@@ -74,14 +74,14 @@ struct StreamSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtmp://192.168.0.176/live/pedro"
+    @State private var endpoint = "rtsp://192.168.68.65:8554/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
     @State private var toastText = ""
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
-    @State private var rtmpStream: RtmpStream!
+    @State private var rtmpStream: RtspStream!
     
     @State private var scale: CGFloat = 1.0
     
@@ -109,7 +109,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
                 GeometryReader { geometry in
                     Color.clear
                         .onAppear {
-                            rtmpStream = RtmpStream(connectChecker: self)
+                            rtmpStream = RtspStream(connectChecker: self)
                             let _ = rtmpStream.prepareAudio(sampleRate: 32000, isStereo: true, bitrate: 128 * 1000) && rtmpStream.prepareVideo(width: 640, height: 480, bitrate: 1200 * 1000)
                             rtmpStream.startPreview(view: cameraView)
                         }
@@ -201,6 +201,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
                     }.font(.system(size: 20, weight: Font.Weight.bold))
                 }).padding(.bottom, 24)
             }.frame(alignment: .bottom)
+            
         }.gesture(zoomGesture).showToast(text: toastText, isShowing: $isShowingToast)
     }
 }

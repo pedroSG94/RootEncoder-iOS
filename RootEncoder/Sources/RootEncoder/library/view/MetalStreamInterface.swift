@@ -180,8 +180,10 @@ public class MetalStreamInterface: MetalInterface {
                     .transformed(by: CGAffineTransform(translationX: offset * scaleX, y: 0))
                 rect = CGRect(x: 0, y: 0, width: scaledWidth, height: streamImage.extent.height)
             }
+        } else {
+            streamImage = streamImage.oriented(orientation)
         }
-        
+
         if muted {
             streamImage = muteImage(image: streamImage)
         }

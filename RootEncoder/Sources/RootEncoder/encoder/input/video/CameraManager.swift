@@ -216,6 +216,10 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         output?.connections.filter { $0.isVideoOrientationSupported }.forEach {
             $0.videoOrientation = getOrientation(value: rotation)
         }
+        output?.connections.filter { $0.isVideoMirroringSupported }.forEach {
+            $0.automaticallyAdjustsVideoMirroring = false
+            $0.isVideoMirrored = facing == .FRONT
+        }
         session?.commitConfiguration()
         thread.async {
             self.session?.startRunning()
@@ -231,19 +235,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         return nil
     }
-    
-    private func transformOrientation(orientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
-        switch orientation {
-        case .landscapeLeft:
-            return .landscapeLeft
-        case .landscapeRight:
-            return .landscapeRight
-        case .portraitUpsideDown:
-            return .portraitUpsideDown
-        default:
-            return .portrait
-        }
-    }
+
     
     public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if !fpsLimiter.limitFps() {
