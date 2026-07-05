@@ -7,6 +7,7 @@
 
 ##Xcode
 
+.build/
 xcuserdata/
 .swiftpm/
 Config/Local.xcconfig

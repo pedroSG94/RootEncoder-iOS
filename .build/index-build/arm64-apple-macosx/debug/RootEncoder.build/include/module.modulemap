@@ -1,3 +1,0 @@
-module RootEncoder {
-    header "/Users/pedro/xcode/RootEncoder-iOS/.build/index-build/arm64-apple-macosx/debug/RootEncoder.build/include/RootEncoder-Swift.h"
-}
