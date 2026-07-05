@@ -152,10 +152,14 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     public func getResolutionsByFace(facing: CameraHelper.Facing) -> [CMVideoDimensions] {
         let position = facing == CameraHelper.Facing.BACK ? AVCaptureDevice.Position.back : AVCaptureDevice.Position.front
         let devices = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: position)
+        var resolutions = [CMVideoDimensions]()
+        if devices.devices.isEmpty {
+            return resolutions
+        }
         let device = devices.devices[0]
         let descriptions = device.formats.map(\.formatDescription)
         let sizes = descriptions.map(\.dimensions)
-        var resolutions = [CMVideoDimensions]()
+        
         for size in sizes {
             var exists = false
             for r in resolutions {

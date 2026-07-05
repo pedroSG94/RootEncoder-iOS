@@ -1,0 +1,8 @@
+// Default build settings for the example app.
+//
+// The bundle id below is a placeholder. To use your own, copy
+// Local.xcconfig.sample to Local.xcconfig (git-ignored) and set
+// APP_BUNDLE_ID there. Do not change it here.
+APP_BUNDLE_ID = com.yourcompany.streamer
+
+#include? "Local.xcconfig"

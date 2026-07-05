@@ -1,0 +1,3 @@
+// Copy this file to Local.xcconfig and set your own bundle id.
+// Local.xcconfig is git-ignored, so your bundle id never reaches the repo.
+APP_BUNDLE_ID = com.yourcompany.streamer
