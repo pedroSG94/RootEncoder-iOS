@@ -113,9 +113,6 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             let _ = rtmpStream.prepareAudio(sampleRate: 32000, isStereo: true, bitrate: 128 * 1000) && rtmpStream.prepareVideo(width: 640, height: 480, bitrate: 1200 * 1000)
                             rtmpStream.startPreview(view: cameraView)
                         }
-                        .onChange(of: geometry.size) { newSize in
-                            rtmpStream.metalInterface.setPreviewSize(width: newSize.width, height: newSize.height)
-                        }
                         .onDisappear {
                             if (rtmpStream.isStreaming()) {
                                 rtmpStream.stopStream()

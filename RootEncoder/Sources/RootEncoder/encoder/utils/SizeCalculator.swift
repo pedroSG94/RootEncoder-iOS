@@ -13,6 +13,20 @@ public class SizeCalculator {
     
     public init() { }
     
+    public static func processMatrix(initialOrientation: Int, currentOrientation: Int) -> CGImagePropertyOrientation {
+        let degrees = (currentOrientation - initialOrientation + 360) % 360
+        switch degrees {
+        case 90:
+            return .left
+        case 180:
+            return .down
+        case 270:
+            return .right
+        default:
+            return .up
+        }
+    }
+
     public static func processMatrix(initialOrientation: Int) -> CGImagePropertyOrientation {
         switch initialOrientation {
         case 90:

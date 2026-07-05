@@ -37,11 +37,6 @@ public class MetalStreamInterface: MetalInterface {
         fpsLimiter.setFps(fps: fps)
     }
     
-    public func setPreviewSize(width: CGFloat, height: CGFloat) {
-        previewWidth = width
-        previewHeight = height
-    }
-    
     private var isPreviewHorizontalFlip = false
     private var isPreviewVerticalFlip = false
     private var isStreamHorizontalFlip = false
@@ -60,11 +55,10 @@ public class MetalStreamInterface: MetalInterface {
     private let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
     private let aspectRatioMode = AspectRatioMode.ADJUST
     private var rotation = 0
+    private var currentOrientation = 0
     private var rotated = false
     private let sensorManager = SensorManager()
     private weak var mtkView: MTKView? = nil
-    private var previewWidth: CGFloat? = nil
-    private var previewHeight: CGFloat? = nil
     
     public init() {
         self.device = MTLCreateSystemDefaultDevice()
@@ -74,12 +68,14 @@ public class MetalStreamInterface: MetalInterface {
         sensorManager.start(callback: { orientation in
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
             ((self.rotation == 90 || self.rotation == 270) && (orientation == 0 || orientation == 180))
-            self.rotation = orientation
+            self.currentOrientation = orientation
         })
     }
-    
+
     public func setOrientation(orientation: Int) {
         self.rotation = orientation
+        self.currentOrientation = orientation
+        self.rotated = false
     }
     
     public func setCallback(callback: MetalViewCallback?) {
@@ -107,7 +103,7 @@ public class MetalStreamInterface: MetalInterface {
         streamImage = streamImage.cropToAspectRatio(aspectRatio: width / height)
             .scaleTo(width: width, height: height)
 
-        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation)
+        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation, currentOrientation: currentOrientation)
         
         // Apply filters
         for filter in filters {
@@ -117,23 +113,12 @@ public class MetalStreamInterface: MetalInterface {
         
         if let mtkView = mtkView, let drawable = mtkView.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() {
             var previewImage = streamImage
-            let pw = if previewWidth != nil {
-                previewWidth
-            } else {
-                previewImage.extent.width
-            }
-            let ph = if previewHeight != nil {
-                previewWidth
-            } else {
-                previewImage.extent.height
-            }
-            
-            var w = pw!
-            var h = ph!
-                    
+            var w = previewImage.extent.width
+            var h = previewImage.extent.height
+
             if (rotated) {
-                w = ph!
-                h = pw!
+                w = previewImage.extent.height
+                h = previewImage.extent.width
             }
             
             let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: mtkView.drawableSize.width, previewHeight: mtkView.drawableSize.height)

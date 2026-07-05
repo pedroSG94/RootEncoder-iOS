@@ -43,7 +43,7 @@ public class StreamBase {
         }
         let videoResult = videoSource.create(width: width, height: height, fps: fps, rotation: rotation)
         if videoResult {
-            //metalInterface.setOrientation(orientation: rotation)
+            metalInterface.setOrientation(orientation: rotation)
             if rotation == 0 || rotation == 180 {
                 metalInterface.setEncoderSize(width: width, height: height)
             } else {
