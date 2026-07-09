@@ -42,17 +42,12 @@ public class MetalStreamInterface: NSObject, MetalInterface {
     private var isStreamHorizontalFlip = false
     private var isStreamVerticalFlip = false
     private var fpsLimiter = FpsLimiter()
-    private var device: MTLDevice!
-    private let commandQueue: MTLCommandQueue
-    private var context: CIContext!
-    private var textureCache: CVMetalTextureCache?
-    private var filters = [BaseFilterRender]()
+    private var filtersQueue = SynchronizedQueue<Filter>(label: "filtersQueue", size: Int.max)
     private let blackFilter = CIFilter(name: "CIColorMatrix")
     private var callback: MetalViewCallback?
     private var muted = false
     private var width: CGFloat = 640
     private var height: CGFloat = 480
-    private let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
     private let aspectRatioMode = AspectRatioMode.ADJUST
     private var rotation = 0
     private var currentOrientation = 0
@@ -62,13 +57,10 @@ public class MetalStreamInterface: NSObject, MetalInterface {
     private var previewImage: CIImage? = nil
     private var previewRotated = false
     private var previewOrientation: CGImagePropertyOrientation = .up
+    private let mainRender = MainRender()
 
     public override init() {
-        self.device = MTLCreateSystemDefaultDevice()
-        self.commandQueue = device.makeCommandQueue()!
         super.init()
-        self.context = CIContext(mtlDevice: device)
-        CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, device, nil, &textureCache)
         sensorManager.start(callback: { orientation in
             self.rotated = ((self.rotation == 0 || self.rotation == 180) && (orientation == 90 || orientation == 270)) ||
             ((self.rotation == 90 || self.rotation == 270) && (orientation == 0 || orientation == 180))
@@ -100,120 +92,66 @@ public class MetalStreamInterface: NSObject, MetalInterface {
     
     public func sendBuffer(buffer: CMSampleBuffer) {
         if fpsLimiter.limitFps() { return }
-        
-        guard let imageBuffer = CMSampleBufferGetImageBuffer(buffer) else { return }
-        var streamImage = CIImage(cvPixelBuffer: imageBuffer)
-
-        streamImage = streamImage.cropToAspectRatio(aspectRatio: width / height)
-            .scaleTo(width: width, height: height)
+        guard var streamImage = mainRender.getImage(buffer: buffer) else { return }
 
         let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation, currentOrientation: currentOrientation)
-        
-        // Apply filters
-        for filter in filters {
-            let orientation = SizeCalculator.processMatrix(initialOrientation: .landscapeLeft)
-            streamImage = filter.draw(image: streamImage, orientation: orientation)
+
+        while filtersQueue.itemsCount() > 0 {
+            if let filter = filtersQueue.dequeue() {
+                mainRender.setFilterAction(action: filter.filterAction, position: filter.position, baseFilterRender: filter.baseFilterRender)
+            }
         }
         
         if mtkView != nil {
-            let image = streamImage
+            var previewImage = streamImage
+            mainRender.drawFilters(isPreview: true, image: &previewImage, orientation: orientation)
             let rotated = self.rotated
             DispatchQueue.main.async { [weak self] in
                 guard let self = self, let mtkView = self.mtkView else { return }
-                self.previewImage = image
+                self.previewImage = previewImage
                 self.previewRotated = rotated
                 self.previewOrientation = orientation
                 mtkView.setNeedsDisplay()
             }
         }
         
-        if (isStreamVerticalFlip) {
-            streamImage = streamImage
-                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
-                .transformed(by: CGAffineTransform(translationX: 0, y: streamImage.extent.height))
-        }
-        if (isStreamHorizontalFlip) {
-            streamImage = streamImage
-                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
-                .transformed(by: CGAffineTransform(translationX: streamImage.extent.width, y: 0))
-        }
-        
-        var rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: streamImage.extent.height)
-        
-        if (rotated) {
-            if (streamImage.extent.height > streamImage.extent.width) { //portrait
-                let factor = streamImage.extent.width / streamImage.extent.height
-                let scaledHeight = streamImage.extent.width * factor
-                let scaleY = scaledHeight / streamImage.extent.height
-                let offset = (streamImage.extent.height - scaledHeight) / 2
-
-                streamImage = streamImage.oriented(orientation)
-                    .transformed(by: CGAffineTransform(scaleX: 1, y: 1 - scaleY))
-                    .transformed(by: CGAffineTransform(translationX: 0, y: offset * scaleY))
-                rect = CGRect(x: 0, y: 0, width: streamImage.extent.width, height: scaledHeight)
-            } else { //landscape
-                let factor = streamImage.extent.height / streamImage.extent.width
-                let scaledWidth = streamImage.extent.height * factor
-                let scaleX = scaledWidth / streamImage.extent.width
-                let offset = (streamImage.extent.width - scaledWidth) / 2
-                
-                streamImage = streamImage.oriented(orientation)
-                    .transformed(by: CGAffineTransform(scaleX: 1 - scaleX, y: 1))
-                    .transformed(by: CGAffineTransform(translationX: offset * scaleX, y: 0))
-                rect = CGRect(x: 0, y: 0, width: scaledWidth, height: streamImage.extent.height)
-            }
-        } else {
-            streamImage = streamImage.oriented(orientation)
-        }
-
+        mainRender.drawFilters(isPreview: false, image: &streamImage, orientation: orientation)
+        let rect = mainRender.drawEncoder(image: &streamImage, orientation: orientation, rotated: rotated, verticalFlip: isStreamVerticalFlip, horizontalFlip: isStreamHorizontalFlip)
         if muted {
             streamImage = muteImage(image: streamImage)
         }
         
-        guard let pixelBuffer = toPixelBuffer(width: Int(rect.width), height: Int(rect.height)) else { return }
-        context.render(streamImage, to: pixelBuffer)
-
+        guard let pixelBuffer = mainRender.swapEncoderBuffer(image: streamImage, rect: rect) else { return }
         let pts = CMSampleBufferGetPresentationTimeStamp(buffer)
         callback?.getVideoData(pixelBuffer: pixelBuffer, pts: pts)
     }
 
     public func addFilter(baseFilterRender: BaseFilterRender) {
-        filters.append(baseFilterRender)
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.ADD, position: 0, baseFilterRender: baseFilterRender))
     }
 
     public func addFilter(position: Int, baseFilterRender: BaseFilterRender) {
-        filters.insert(baseFilterRender, at: position)
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.ADD_INDEX, position: position, baseFilterRender: baseFilterRender))
     }
 
+    public func removeFilter(baseFilterRender: BaseFilterRender) {
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.REMOVE, position: 0, baseFilterRender: baseFilterRender))
+    }
+    
     public func removeFilter(position: Int) {
-        filters.remove(at: position)
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.REMOVE_INDEX, position: position, baseFilterRender: NoFilterRender()))
     }
 
     public func clearFilters() {
-        filters.removeAll()
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.CLEAR, position: 0, baseFilterRender: NoFilterRender()))
     }
 
     public func setFilter(baseFilterRender: BaseFilterRender) {
-        setFilter(position: 0, baseFilterRender: baseFilterRender)
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.SET, position: 0, baseFilterRender: baseFilterRender))
     }
 
     public func setFilter(position: Int, baseFilterRender: BaseFilterRender) {
-        if filters.isEmpty && position == 0 {
-            addFilter(baseFilterRender: baseFilterRender)
-        } else {
-            removeFilter(position: position)
-            addFilter(position: position, baseFilterRender: baseFilterRender)
-        }
-    }
-
-    private func toPixelBuffer(width: Int, height: Int) -> CVPixelBuffer? {
-        var pixelBuffer: CVPixelBuffer?
-        let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue,
-                     kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, width, height, kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
-
-        guard status == kCVReturnSuccess else { return nil }
-        return pixelBuffer
+        let _ = filtersQueue.enqueue(Filter(filterAction: FilterAction.SET_INDEX, position: position, baseFilterRender: baseFilterRender))
     }
 
     private func muteImage(image: CIImage) -> CIImage {
@@ -228,12 +166,13 @@ public class MetalStreamInterface: NSObject, MetalInterface {
     public func setEncoderSize(width: Int, height: Int) {
         self.width = CGFloat(width)
         self.height = CGFloat(height)
+        mainRender.initMetal(width: width, height: height)
     }
     
     public func attachPreview(mtkView: MTKView) {
         mtkView.autoResizeDrawable = true
         mtkView.framebufferOnly = false
-        mtkView.device = device
+        mtkView.device = mainRender.device
         mtkView.isPaused = true
         mtkView.enableSetNeedsDisplay = true
         mtkView.delegate = self
@@ -255,38 +194,8 @@ extension MetalStreamInterface: MTKViewDelegate {
 
     public func draw(in view: MTKView) {
         guard var previewImage = previewImage else { return }
-        guard let drawable = view.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() else { return }
-
-        var w = previewImage.extent.width
-        var h = previewImage.extent.height
-
-        if (previewRotated) {
-            w = previewImage.extent.height
-            h = previewImage.extent.width
-        }
-
-        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: view.drawableSize.width, previewHeight: view.drawableSize.height)
-
-        previewImage = previewImage
-            .oriented(previewOrientation)
-            .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
-            .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
-
-        if (isPreviewVerticalFlip) {
-            previewImage = previewImage
-                .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
-                .transformed(by: CGAffineTransform(translationX: 0, y: view.drawableSize.height))
-        }
-        if (isPreviewHorizontalFlip) {
-            previewImage = previewImage
-                .transformed(by: CGAffineTransform(scaleX: -1, y: 1))
-                .transformed(by: CGAffineTransform(translationX: view.drawableSize.width, y: 0))
-        }
-
-        let rect = CGRect(origin: .zero, size: view.drawableSize)
-        context.render(previewImage, to: drawable.texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+        mainRender.drawPreview(previewImage: &previewImage, view: view, aspectRatioMode: aspectRatioMode, orientation: previewOrientation, rotated: previewRotated, verticalFlip: isPreviewVerticalFlip, horizontalFlip: isPreviewHorizontalFlip)
+        mainRender.swapPreviewBuffer(view: view, image: previewImage)
     }
 }
 

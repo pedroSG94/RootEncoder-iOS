@@ -177,9 +177,10 @@ extension MetalView: MTKViewDelegate {
 
         let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation)
         
-        //apply filters
+        //apply filters. MetalView uses the same image for preview and encoder so renderMode
+        //is not supported here, filters are applied as output
         for filter in filters {
-            streamImage = filter.draw(image: streamImage, orientation: orientation)
+            streamImage = filter.draw(image: streamImage, orientation: orientation, isPreview: false)
         }
         
         var w = streamImage.extent.width

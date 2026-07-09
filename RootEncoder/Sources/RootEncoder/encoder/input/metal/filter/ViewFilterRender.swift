@@ -18,7 +18,7 @@ public class ViewFilterRender: BaseFilterRender {
         self.view = view
     }
     
-    public func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage {
+    public override func draw(image: CIImage, orientation: CGImagePropertyOrientation, isPreview: Bool) -> CIImage {
         let filterView = toCIImage(view: view)
         guard let filterView = filterView else { return image }
         

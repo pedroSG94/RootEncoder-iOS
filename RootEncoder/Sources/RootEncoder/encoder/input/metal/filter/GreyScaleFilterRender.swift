@@ -9,12 +9,10 @@ import Foundation
 import CoreImage
 
 public class GreyScaleFilterRender: BaseFilterRender {
-    
+        
     private let filter = CIFilter(name: "CIColorMonochrome")
-    
-    public init() {}
-    
-    public func draw(image: CIImage, orientation: CGImagePropertyOrientation) -> CIImage {
+        
+    public override func draw(image: CIImage, orientation: CGImagePropertyOrientation, isPreview: Bool) -> CIImage {
         filter?.setValue(image, forKey: kCIInputImageKey)
         filter?.setValue(CIColor(red: 0.75, green: 0.75, blue: 0.75), forKey: kCIInputColorKey)
         filter?.setValue(1.0, forKey: kCIInputIntensityKey)

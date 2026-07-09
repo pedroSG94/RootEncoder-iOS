@@ -147,6 +147,11 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             Text("Sepia")
                         }
                         Button(action: {
+                            rtmpStream.metalInterface.setFilter(baseFilterRender: VignetteShaderFilterRender())
+                        }) {
+                            Text("Vignette (shader)")
+                        }
+                        Button(action: {
                             let filterView = ViewFilterRender(view: filter.view)
                             rtmpStream.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)

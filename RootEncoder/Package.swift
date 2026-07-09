@@ -17,7 +17,12 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "RootEncoder"
+            name: "RootEncoder",
+            resources: [
+                //shader files are read as strings at runtime and compiled with device.makeLibrary,
+                //declared as resources to avoid the offline Metal compiler (no Metal Toolchain needed)
+                .copy("encoder/input/metal/shaders")
+            ]
         ),
         .testTarget(
             name: "RootEncoderTests",
