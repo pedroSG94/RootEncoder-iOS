@@ -115,6 +115,7 @@ public class MetalStreamInterface: NSObject, MetalInterface {
             }
         }
         
+        guard let callback = callback else { return }
         mainRender.drawFilters(isPreview: false, image: &streamImage, orientation: orientation)
         let rect = mainRender.drawEncoder(image: &streamImage, orientation: orientation, rotated: rotated, verticalFlip: isStreamVerticalFlip, horizontalFlip: isStreamHorizontalFlip)
         if muted {
@@ -123,7 +124,7 @@ public class MetalStreamInterface: NSObject, MetalInterface {
         
         guard let pixelBuffer = mainRender.swapEncoderBuffer(image: streamImage, rect: rect) else { return }
         let pts = CMSampleBufferGetPresentationTimeStamp(buffer)
-        callback?.getVideoData(pixelBuffer: pixelBuffer, pts: pts)
+        callback.getVideoData(pixelBuffer: pixelBuffer, pts: pts)
     }
 
     public func addFilter(baseFilterRender: BaseFilterRender) {
