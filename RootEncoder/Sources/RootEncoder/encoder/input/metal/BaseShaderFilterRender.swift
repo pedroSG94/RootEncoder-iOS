@@ -14,18 +14,21 @@ open class BaseShaderFilterRender: BaseFilterRender {
     
     private var context: CIContext? = nil
     private var commandQueue: MTLCommandQueue? = nil
+    private var device: MTLDevice? = nil
     private let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
     private var pipelineState: MTLRenderPipelineState? = nil
     private var inputTexture: MTLTexture? = nil
     private var outputTexturePreview: MTLTexture? = nil
     private var outputTextureOutput: MTLTexture? = nil
+    public private(set) var resolution = SIMD2<Float>(640, 480)
 
     public override func setMetalInfo(commandQueue: any MTLCommandQueue, context: CIContext) {
         self.commandQueue = commandQueue
         self.context = context
     }
     
-    public override func initMetal(width: Int, height: Int, device: MTLDevice) {
+    public override func initMetal(device: MTLDevice) {
+        self.device = device
         do {
             let library = try device.makeLibrary(source: initMetalFilter(), options: nil)
             guard let vertexFunction = library.makeFunction(name: "vertexFilter"),
@@ -37,22 +40,29 @@ open class BaseShaderFilterRender: BaseFilterRender {
             descriptor.fragmentFunction = fragmentFunction
             descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
             self.pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
-            self.inputTexture = MetalUtils.getTexture(device: device, texture: &inputTexture, width: width, height: height)
-            self.outputTexturePreview = MetalUtils.getTexture(device: device, texture: &outputTexturePreview, width: width, height: height)
-            self.outputTextureOutput = MetalUtils.getTexture(device: device, texture: &outputTextureOutput, width: width, height: height)
         } catch {
             fatalError("Shader compilation failed: \(error)")
         }
     }
 
     public override func draw(image: CIImage, orientation: CGImagePropertyOrientation, isPreview: Bool) -> CIImage {
-        let outputTexture = if isPreview { outputTexturePreview } else { outputTextureOutput }
+        let width = Int(image.extent.width)
+        let height = Int(image.extent.height)
+        if width <= 0 || height <= 0 { return image }
         guard let pipelineState = pipelineState,
+              let device = device,
               let commandBuffer = commandQueue?.makeCommandBuffer(),
-              let context = context,
-              let input = inputTexture,
-              let output = outputTexture else { return image }
-        
+              let context = context else { return image }
+        resolution = SIMD2<Float>(Float(width), Float(height))
+        let output: MTLTexture?
+        if isPreview {
+            output = MetalUtils.getTexture(device: device, texture: &outputTexturePreview, width: width, height: height)
+        } else {
+            output = MetalUtils.getTexture(device: device, texture: &outputTextureOutput, width: width, height: height)
+        }
+        guard let input = MetalUtils.getTexture(device: device, texture: &inputTexture, width: width, height: height),
+              let output = output else { return image }
+
         context.render(image, to: input, commandBuffer: commandBuffer, bounds: image.extent, colorSpace: colorSpace)
 
         let descriptor = MTLRenderPassDescriptor()

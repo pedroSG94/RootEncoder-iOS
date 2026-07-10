@@ -17,5 +17,5 @@ open class BaseFilterRender {
         fatalError("draw method must be overriden")
     }
     open func setMetalInfo(commandQueue: any MTLCommandQueue, context: CIContext) { }
-    open func initMetal(width: Int, height: Int, device: MTLDevice) { }
+    open func initMetal(device: MTLDevice) { }
 }
