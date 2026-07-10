@@ -6,16 +6,11 @@
 //
 
 import Foundation
-import CoreImage
+import Metal
 
-public class GreyScaleFilterRender: BaseFilterRender {
-        
-    private let filter = CIFilter(name: "CIColorMonochrome")
-        
-    public override func draw(image: CIImage, orientation: CGImagePropertyOrientation, isPreview: Bool) -> CIImage {
-        filter?.setValue(image, forKey: kCIInputImageKey)
-        filter?.setValue(CIColor(red: 0.75, green: 0.75, blue: 0.75), forKey: kCIInputColorKey)
-        filter?.setValue(1.0, forKey: kCIInputIntensityKey)
-        return filter?.outputImage ?? image
+public class GreyScaleFilterRender: BaseShaderFilterRender {
+
+    public override func initMetalFilter() -> String {
+        return MetalUtils.readShader(name: "FilterVertex") + MetalUtils.readShader(name: "GreyScaleFilter")
     }
 }

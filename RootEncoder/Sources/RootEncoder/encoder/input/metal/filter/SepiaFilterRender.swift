@@ -6,15 +6,11 @@
 //
 
 import Foundation
-import CoreImage
+import Metal
 
-public class SepiaFilterRender: BaseFilterRender {
-    
-    private let filter = CIFilter(name: "CISepiaTone")
-        
-    public override func draw(image: CIImage, orientation: CGImagePropertyOrientation, isPreview: Bool) -> CIImage {
-        filter?.setValue(image, forKey: kCIInputImageKey)
-        filter?.setValue(1.0, forKey: kCIInputIntensityKey)
-        return filter?.outputImage ?? image
+public class SepiaFilterRender: BaseShaderFilterRender {
+
+    public override func initMetalFilter() -> String {
+        return MetalUtils.readShader(name: "FilterVertex") + MetalUtils.readShader(name: "SepiaFilter")
     }
 }

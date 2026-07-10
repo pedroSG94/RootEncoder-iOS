@@ -16,6 +16,12 @@ struct FilterData {
     float2 uv;
 };
 
+//GLSL style mod (uses floor). Metal fmod truncates toward zero and differs with negative values
+inline float glslMod(float x, float y) { return x - y * floor(x / y); }
+inline float2 glslMod(float2 x, float y) { return x - y * floor(x / y); }
+inline float3 glslMod(float3 x, float y) { return x - y * floor(x / y); }
+inline float4 glslMod(float4 x, float y) { return x - y * floor(x / y); }
+
 vertex FilterData vertexFilter(uint id [[vertex_id]]) {
     const float2 vertices[4] = { float2(-1, -1), float2(1, -1), float2(-1, 1), float2(1, 1) };
     FilterData data;
