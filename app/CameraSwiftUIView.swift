@@ -82,7 +82,8 @@ struct CameraSwiftUIView: View, ConnectChecker {
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
     @State private var genericCamera: GenericCamera!
-    
+    @State private var filter = FilterUIView()
+
     @State private var scale: CGFloat = 1.0
     
     private var zoomGesture: some Gesture {
@@ -95,7 +96,6 @@ struct CameraSwiftUIView: View, ConnectChecker {
     
     var body: some View {
         ZStack {
-            let filter = FilterUIView()
             filter.edgesIgnoringSafeArea(.all)
             
             let camera = CameraUIView()
@@ -108,6 +108,7 @@ struct CameraSwiftUIView: View, ConnectChecker {
                 genericCamera.startPreview()
             }
             camera.onDisappear {
+                genericCamera.metalInterface.clearFilters()
                 if (genericCamera.isStreaming()) {
                     genericCamera.stopStream()
                 }
@@ -136,7 +137,8 @@ struct CameraSwiftUIView: View, ConnectChecker {
                             Text("Sepia")
                         }
                         Button(action: {
-                            let filterView = ViewFilterRender(view: filter.view)
+                            let filterView = ViewFilterRender()
+                            filterView.setView(view: filter.view)
                             genericCamera.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)

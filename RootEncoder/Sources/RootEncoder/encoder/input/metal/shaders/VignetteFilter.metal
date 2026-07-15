@@ -1,14 +1,3 @@
-//
-//  VignetteFilter.metal
-//  RootEncoder
-//
-//  Created by Pedro  on 8/7/25.
-//
-//  Fragment function of VignetteShaderFilterRender.
-//  This file is not compiled standalone, it is concatenated after FilterVertex.metal
-//  (that provides the header and the FilterData struct) and compiled at runtime.
-//
-
 fragment float4 fragmentFilter(FilterData data [[stage_in]],
                                texture2d<float> tex [[texture(0)]],
                                constant float &intensity [[buffer(0)]]) {

@@ -34,7 +34,7 @@ public class MainRender {
     
     private func setFilter(position: Int, baseFilterRender: BaseFilterRender) {
         baseFilterRender.setMetalInfo(commandQueue: commandQueue, context: context)
-        baseFilterRender.initMetal(width: width, height: height, device: device)
+        baseFilterRender.initMetal(device: device)
         if filterRenders.isEmpty && position == 0 {
             addFilter(baseFilterRender: baseFilterRender)
         } else {
@@ -45,25 +45,28 @@ public class MainRender {
     
     private func addFilter(baseFilterRender: BaseFilterRender) {
         baseFilterRender.setMetalInfo(commandQueue: commandQueue, context: context)
-        baseFilterRender.initMetal(width: width, height: height, device: device)
+        baseFilterRender.initMetal(device: device)
         filterRenders.append(baseFilterRender)
     }
     
     private func addFilter(position: Int, baseFilterRender: BaseFilterRender) {
         baseFilterRender.setMetalInfo(commandQueue: commandQueue, context: context)
-        baseFilterRender.initMetal(width: width, height: height, device: device)
+        baseFilterRender.initMetal(device: device)
         filterRenders.insert(baseFilterRender, at: position)
     }
     
     private func removeFilter(baseFilterRender: BaseFilterRender) {
         filterRenders.removeAll { ($0 as AnyObject) === (baseFilterRender as AnyObject) }
+        baseFilterRender.release()
     }
     
     private func removeFilter(position: Int) {
-        filterRenders.remove(at: position)
+        let filter = filterRenders.remove(at: position)
+        filter.release()
     }
     
     private func clearFilters() {
+        filterRenders.forEach { filter in filter.release() }
         filterRenders.removeAll()
     }
     
@@ -98,8 +101,22 @@ public class MainRender {
         let validFilters = filterRenders.filter {
             if isPreview { $0.renderMode != .OUTPUT } else { $0.renderMode != .PREVIEW }
         }
+        if validFilters.isEmpty { return }
+        var filteredImage = image.oriented(orientation)
         validFilters.forEach { filter in
-            image = filter.draw(image: image, orientation: orientation, isPreview: isPreview)
+            filteredImage = filter.draw(image: filteredImage, orientation: orientation, isPreview: isPreview)
+        }
+        image = filteredImage.oriented(inverseOrientation(orientation))
+    }
+
+    private func inverseOrientation(_ orientation: CGImagePropertyOrientation) -> CGImagePropertyOrientation {
+        switch orientation {
+        case .left:
+            return .right
+        case .right:
+            return .left
+        default:
+            return orientation
         }
     }
     

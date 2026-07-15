@@ -1,7 +1,4 @@
 //
-//  VignetteShaderFilterRender.swift
-//  RootEncoder
-//
 //  Created by Pedro  on 8/7/25.
 //
 
@@ -9,7 +6,7 @@ import Foundation
 import Metal
 
 
-open class VignetteShaderFilterRender: BaseShaderFilterRender {
+open class VignetteShaderFilterRender: BaseFilterRender {
 
     public var intensity: Float
 

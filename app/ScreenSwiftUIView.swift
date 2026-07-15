@@ -95,6 +95,7 @@ struct ScreenSwiftUIView: View, ConnectChecker {
                 genericDisplay.getStreamClient().setRetries(reTries: 10)
             }
             camera.onDisappear {
+                genericDisplay.metalInterface.clearFilters()
                 if (genericDisplay.isStreaming()) {
                     genericDisplay.stopStream()
                 }

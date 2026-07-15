@@ -82,7 +82,8 @@ struct StreamSwiftUIView: View, ConnectChecker {
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
     @State private var rtmpStream: RtspStream!
-    
+    @State private var filter = FilterUIView()
+
     @State private var scale: CGFloat = 1.0
     
     private var zoomGesture: some Gesture {
@@ -97,9 +98,64 @@ struct StreamSwiftUIView: View, ConnectChecker {
         }
     }
     
+    private let filterList: [(String, () -> BaseFilterRender)] = [
+        ("AnalogTV", { AnalogTVFilterRender() }),
+        ("Basic deformation", { BasicDeformationFilterRender() }),
+        ("Beauty", { BeautyFilterRender() }),
+        ("Black", { BlackFilterRender() }),
+        ("Blur", { BlurFilterRender() }),
+        ("Brightness", { BrightnessFilterRender() }),
+        ("Cartoon", { CartoonFilterRender() }),
+        ("Chromatic aberration", { ChromaticAberrationFilterRender() }),
+        ("Circle", { CircleFilterRender() }),
+        ("Color", { ColorFilterRender() }),
+        ("Contrast", { ContrastFilterRender() }),
+        ("Crop", {
+            let filter = CropFilterRender()
+            filter.setCropArea(offsetX: 25, offsetY: 25, width: 50, height: 50)
+            return filter
+        }),
+        ("Distorted TV", { DistortedTvFilterRender() }),
+        ("Duotone", { DuotoneFilterRender() }),
+        ("Early bird", { EarlyBirdFilterRender() }),
+        ("Edge detection", { EdgeDetectionFilterRender() }),
+        ("Exposure", { ExposureFilterRender() }),
+        ("Fire", { FireFilterRender() }),
+        ("Gamma", { GammaFilterRender() }),
+        ("Glitch", { GlitchFilterRender() }),
+        ("GreyScale", { GreyScaleFilterRender() }),
+        ("Halftone lines", { HalftoneLinesFilterRender() }),
+        ("Image 70s", { Image70sFilterRender() }),
+        ("Lamoish", { LamoishFilterRender() }),
+        ("Money", { MoneyFilterRender() }),
+        ("Negative", { NegativeFilterRender() }),
+        ("Noise", { NoiseFilterRender() }),
+        ("Pixelated", { PixelatedFilterRender() }),
+        ("Polygonization", { PolygonizationFilterRender() }),
+        ("Rainbow", { RainbowFilterRender() }),
+        ("RGB saturation", {
+            let filter = RGBSaturationFilterRender()
+            filter.setRGBSaturation(r: 1.0, g: 0.4, b: 0.4)
+            return filter
+        }),
+        ("Ripple", { RippleFilterRender() }),
+        ("Rotation", {
+            let filter = RotationFilterRender()
+            filter.rotation = 90
+            return filter
+        }),
+        ("Saturation", { SaturationFilterRender() }),
+        ("Sepia", { SepiaFilterRender() }),
+        ("Sharpness", { SharpnessFilterRender() }),
+        ("Snow", { SnowFilterRender() }),
+        ("Swirl", { SwirlFilterRender() }),
+        ("Temperature", { TemperatureFilterRender() }),
+        ("Vignette", { VignetteShaderFilterRender() }),
+        ("Zebra", { ZebraFilterRender() })
+    ]
+
     var body: some View {
         ZStack {
-            let filter = FilterUIView()
             filter.edgesIgnoringSafeArea(.all)
             
             let camera = MetalUIView()
@@ -114,6 +170,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             rtmpStream.startPreview(view: cameraView)
                         }
                         .onDisappear {
+                            rtmpStream.metalInterface.clearFilters()
                             if (rtmpStream.isStreaming()) {
                                 rtmpStream.stopStream()
                             }
@@ -137,27 +194,20 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             Text("No filter")
                         }
                         Button(action: {
-                            rtmpStream.metalInterface.setFilter(baseFilterRender: GreyScaleFilterRender())
-                        }) {
-                            Text("GreyScale")
-                        }
-                        Button(action: {
-                            rtmpStream.metalInterface.setFilter(baseFilterRender: SepiaFilterRender())
-                        }) {
-                            Text("Sepia")
-                        }
-                        Button(action: {
-                            rtmpStream.metalInterface.setFilter(baseFilterRender: VignetteShaderFilterRender())
-                        }) {
-                            Text("Vignette (shader)")
-                        }
-                        Button(action: {
-                            let filterView = ViewFilterRender(view: filter.view)
+                            let filterView = ViewFilterRender()
+                            filterView.setView(view: filter.view)
                             rtmpStream.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)
                         }) {
                             Text("View")
+                        }
+                        ForEach(filterList.indices, id: \.self) { index in
+                            Button(action: {
+                                rtmpStream.metalInterface.setFilter(baseFilterRender: filterList[index].1())
+                            }) {
+                                Text(filterList[index].0)
+                            }
                         }
                     }
                 }.padding(.trailing, 16)
