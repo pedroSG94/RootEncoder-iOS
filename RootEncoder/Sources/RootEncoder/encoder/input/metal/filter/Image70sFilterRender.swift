@@ -1,10 +1,3 @@
-//
-//  Image70sFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android Image70sFilterRender
-//
-
 import Foundation
 import Metal
 

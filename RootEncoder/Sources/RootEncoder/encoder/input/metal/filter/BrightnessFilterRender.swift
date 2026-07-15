@@ -1,10 +1,3 @@
-//
-//  BrightnessFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android BrightnessFilterRender
-//
-
 import Foundation
 import Metal
 

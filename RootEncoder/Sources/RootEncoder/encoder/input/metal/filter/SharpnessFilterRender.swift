@@ -1,10 +1,3 @@
-//
-//  SharpnessFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android SharpnessFilterRender
-//
-
 import Foundation
 import Metal
 

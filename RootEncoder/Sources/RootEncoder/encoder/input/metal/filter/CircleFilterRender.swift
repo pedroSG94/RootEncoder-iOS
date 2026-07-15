@@ -1,10 +1,3 @@
-//
-//  CircleFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android CircleFilterRender
-//
-
 import Foundation
 import Metal
 

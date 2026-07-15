@@ -1,10 +1,3 @@
-//
-//  BlackFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android BlackFilterRender
-//
-
 import Foundation
 import Metal
 

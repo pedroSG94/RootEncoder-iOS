@@ -1,11 +1,3 @@
-//
-//  EarlyBirdFilter.metal
-//  RootEncoder
-//
-//  Ported from Android earlybird_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float3x3 earlyBirdSaturationMatrix(float saturation) {
     float3 luminance = float3(0.3086, 0.6094, 0.0820);
     float oneMinusSat = 1.0 - saturation;

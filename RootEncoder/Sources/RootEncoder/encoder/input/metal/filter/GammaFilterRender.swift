@@ -1,10 +1,3 @@
-//
-//  GammaFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android GammaFilterRender
-//
-
 import Foundation
 import Metal
 

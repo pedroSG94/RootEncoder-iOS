@@ -1,10 +1,3 @@
-//
-//  PolygonizationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android PolygonizationFilterRender
-//
-
 import Foundation
 import Metal
 

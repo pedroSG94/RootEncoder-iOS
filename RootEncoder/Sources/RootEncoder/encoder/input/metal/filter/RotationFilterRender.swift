@@ -1,10 +1,3 @@
-//
-//  RotationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android RotationFilterRender
-//
-
 import Foundation
 import Metal
 

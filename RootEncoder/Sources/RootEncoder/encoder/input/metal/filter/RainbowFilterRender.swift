@@ -1,10 +1,3 @@
-//
-//  RainbowFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android RainbowFilterRender
-//
-
 import Foundation
 import Metal
 

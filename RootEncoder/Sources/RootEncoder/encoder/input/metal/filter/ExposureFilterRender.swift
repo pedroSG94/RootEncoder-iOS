@@ -1,10 +1,3 @@
-//
-//  ExposureFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android ExposureFilterRender
-//
-
 import Foundation
 import Metal
 

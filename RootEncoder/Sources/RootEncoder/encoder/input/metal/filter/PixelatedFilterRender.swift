@@ -1,10 +1,3 @@
-//
-//  PixelatedFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android PixelatedFilterRender
-//
-
 import Foundation
 import Metal
 

@@ -1,10 +1,3 @@
-//
-//  SwirlFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android SwirlFilterRender
-//
-
 import Foundation
 import Metal
 

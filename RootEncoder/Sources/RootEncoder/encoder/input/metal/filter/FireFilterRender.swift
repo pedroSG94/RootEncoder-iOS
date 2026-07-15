@@ -1,10 +1,3 @@
-//
-//  FireFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android FireFilterRender
-//
-
 import Foundation
 import Metal
 

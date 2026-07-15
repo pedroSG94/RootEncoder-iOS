@@ -1,10 +1,3 @@
-//
-//  EarlyBirdFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android EarlyBirdFilterRender
-//
-
 import Foundation
 import Metal
 

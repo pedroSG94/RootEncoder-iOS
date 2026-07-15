@@ -1,11 +1,3 @@
-//
-//  GlitchFilter.metal
-//  RootEncoder
-//
-//  Ported from Android glitch_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float3 glitchMod289(float3 x) {
     return x - floor(x * (1.0 / 289.0)) * 289.0;
 }

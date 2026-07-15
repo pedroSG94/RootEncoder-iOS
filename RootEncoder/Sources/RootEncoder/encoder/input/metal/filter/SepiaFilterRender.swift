@@ -1,7 +1,4 @@
 //
-//  SepiaFilterRender.swift
-//  encoder
-//
 //  Created by Pedro  on 5/4/24.
 //
 

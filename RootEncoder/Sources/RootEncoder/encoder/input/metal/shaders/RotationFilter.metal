@@ -1,12 +1,3 @@
-//
-//  RotationFilter.metal
-//  RootEncoder
-//
-//  Ported from Android RotationFilterRender (vertex matrix rotation implemented as uv rotation).
-//  uRotation in radians, uFlips is (horizontalFlip, verticalFlip) with 0 or 1 values.
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 fragment float4 fragmentFilter(FilterData data [[stage_in]],
                                texture2d<float> tex [[texture(0)]],
                                constant float &uRotation [[buffer(0)]],

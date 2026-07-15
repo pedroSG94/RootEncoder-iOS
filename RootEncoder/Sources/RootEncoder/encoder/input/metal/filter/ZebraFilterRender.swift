@@ -1,10 +1,3 @@
-//
-//  ZebraFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android ZebraFilterRender
-//
-
 import Foundation
 import Metal
 

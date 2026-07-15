@@ -1,11 +1,3 @@
-//
-//  NoiseFilter.metal
-//  RootEncoder
-//
-//  Ported from Android noise_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float noiseHash(float2 p) {
     p = fract(p * 0.3183099) * 50.0;
     return fract(p.x * p.y * (p.x + p.y));

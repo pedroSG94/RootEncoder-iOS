@@ -1,10 +1,3 @@
-//
-//  CartoonFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android CartoonFilterRender
-//
-
 import Foundation
 import Metal
 

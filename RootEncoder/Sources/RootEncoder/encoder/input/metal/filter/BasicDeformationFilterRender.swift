@@ -1,10 +1,3 @@
-//
-//  BasicDeformationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android BasicDeformationFilterRender
-//
-
 import Foundation
 import Metal
 

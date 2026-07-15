@@ -1,10 +1,3 @@
-//
-//  DistortedTvFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android DistortedTvFilterRender
-//
-
 import Foundation
 import Metal
 

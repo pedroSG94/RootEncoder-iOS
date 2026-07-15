@@ -1,10 +1,3 @@
-//
-//  TemperatureFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android TemperatureFilterRender
-//
-
 import Foundation
 import Metal
 

@@ -1,10 +1,3 @@
-//
-//  HalftoneLinesFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android HalftoneLinesFilterRender
-//
-
 import Foundation
 import Metal
 

@@ -1,10 +1,5 @@
 //
-//  CropFilter.metal
-//  RootEncoder
-//
-//  Ported from Android CropFilterRender (vertex matrix crop implemented as uv remap).
 //  uArea is (offsetX, offsetY, width, height) normalized 0.0 to 1.0 from top left corner.
-//  Concatenated after FilterVertex.metal at runtime.
 //
 
 fragment float4 fragmentFilter(FilterData data [[stage_in]],

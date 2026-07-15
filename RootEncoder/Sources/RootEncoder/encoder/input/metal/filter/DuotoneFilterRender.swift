@@ -1,10 +1,3 @@
-//
-//  DuotoneFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android DuotoneFilterRender
-//
-
 import Foundation
 import Metal
 

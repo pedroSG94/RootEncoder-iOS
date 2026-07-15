@@ -1,10 +1,3 @@
-//
-//  ColorFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android ColorFilterRender
-//
-
 import Foundation
 import Metal
 

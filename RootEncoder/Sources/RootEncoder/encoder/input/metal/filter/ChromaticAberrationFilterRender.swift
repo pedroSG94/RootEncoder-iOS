@@ -1,10 +1,3 @@
-//
-//  ChromaticAberrationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android ChromaticAberrationFilterRender
-//
-
 import Foundation
 import Metal
 

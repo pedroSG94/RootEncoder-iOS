@@ -1,11 +1,3 @@
-//
-//  HalftoneLinesFilter.metal
-//  RootEncoder
-//
-//  Ported from Android halftone_lines_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float halftoneRgbToGray(float4 rgba) {
     const float3 W = float3(0.2125, 0.7154, 0.0721);
     return dot(rgba.xyz, W);

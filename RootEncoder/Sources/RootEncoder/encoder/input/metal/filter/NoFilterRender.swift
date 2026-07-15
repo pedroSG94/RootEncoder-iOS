@@ -1,8 +1,5 @@
 //
-//  NoFilterRender.swift
-//  RootEncoder
-//
-//  Created by Pedro  on 09/07/2026.
+//  Created by Pedro on 09/07/2026.
 //
 import Foundation
 import CoreImage

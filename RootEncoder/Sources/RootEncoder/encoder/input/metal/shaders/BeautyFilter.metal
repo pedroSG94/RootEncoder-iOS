@@ -1,11 +1,3 @@
-//
-//  BeautyFilter.metal
-//  RootEncoder
-//
-//  Ported from Android beauty_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float beautyHardLight(float color) {
     if (color <= 0.5) {
         color = color * color * 2.0;

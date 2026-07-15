@@ -1,10 +1,3 @@
-//
-//  NegativeFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android NegativeFilterRender
-//
-
 import Foundation
 import Metal
 

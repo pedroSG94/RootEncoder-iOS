@@ -1,10 +1,3 @@
-//
-//  MoneyFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android MoneyFilterRender
-//
-
 import Foundation
 import Metal
 

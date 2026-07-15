@@ -1,10 +1,3 @@
-//
-//  LamoishFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android LamoishFilterRender
-//
-
 import Foundation
 import Metal
 

@@ -1,10 +1,3 @@
-//
-//  BlurFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android BlurFilterRender
-//
-
 import Foundation
 import Metal
 

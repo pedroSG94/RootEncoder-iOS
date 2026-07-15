@@ -1,7 +1,4 @@
 //
-//  VignetteShaderFilterRender.swift
-//  RootEncoder
-//
 //  Created by Pedro  on 8/7/25.
 //
 

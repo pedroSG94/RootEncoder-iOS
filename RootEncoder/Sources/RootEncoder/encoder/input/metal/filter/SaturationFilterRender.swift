@@ -1,10 +1,3 @@
-//
-//  SaturationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android SaturationFilterRender
-//
-
 import Foundation
 import Metal
 

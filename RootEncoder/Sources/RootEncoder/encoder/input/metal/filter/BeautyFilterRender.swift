@@ -1,10 +1,3 @@
-//
-//  BeautyFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android BeautyFilterRender
-//
-
 import Foundation
 import Metal
 

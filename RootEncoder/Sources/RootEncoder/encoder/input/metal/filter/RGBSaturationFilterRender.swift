@@ -1,10 +1,3 @@
-//
-//  RGBSaturationFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android RGBSaturationFilterRender
-//
-
 import Foundation
 import Metal
 

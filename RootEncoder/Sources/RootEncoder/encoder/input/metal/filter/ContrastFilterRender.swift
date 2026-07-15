@@ -1,10 +1,3 @@
-//
-//  ContrastFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android ContrastFilterRender
-//
-
 import Foundation
 import Metal
 

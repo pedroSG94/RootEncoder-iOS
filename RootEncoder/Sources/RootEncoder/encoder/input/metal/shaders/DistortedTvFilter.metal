@@ -1,11 +1,3 @@
-//
-//  DistortedTvFilter.metal
-//  RootEncoder
-//
-//  Ported from Android distorted_tv_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float3 distortedMod289(float3 x) {
     return x - floor(x * (1.0 / 289.0)) * 289.0;
 }

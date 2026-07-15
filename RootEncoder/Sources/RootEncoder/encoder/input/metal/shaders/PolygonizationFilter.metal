@@ -1,11 +1,3 @@
-//
-//  PolygonizationFilter.metal
-//  RootEncoder
-//
-//  Ported from Android polygonization_fragment.glsl
-//  Concatenated after FilterVertex.metal at runtime.
-//
-
 inline float2 polygonHash2(float2 p) {
     return fract(sin(float2(dot(p, float2(127.1, 311.7)), dot(p, float2(269.5, 183.3)))) * 43758.5453);
 }

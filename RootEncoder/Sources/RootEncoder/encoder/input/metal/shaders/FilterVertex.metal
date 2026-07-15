@@ -1,13 +1,3 @@
-//
-//  FilterVertex.metal
-//  RootEncoder
-//
-//  Created by Pedro  on 8/7/25.
-//
-//  Default vertex function shared by shader filters. It draws a full screen quad
-//  with uv coordinates using bottom-left as origin (OpenGL style).
-//
-
 #include <metal_stdlib>
 using namespace metal;
 

@@ -1,10 +1,3 @@
-//
-//  GlitchFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android GlitchFilterRender
-//
-
 import Foundation
 import Metal
 

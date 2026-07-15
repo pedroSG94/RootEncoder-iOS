@@ -1,10 +1,3 @@
-//
-//  SnowFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android SnowFilterRender
-//
-
 import Foundation
 import Metal
 

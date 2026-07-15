@@ -1,10 +1,3 @@
-//
-//  NoiseFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android NoiseFilterRender
-//
-
 import Foundation
 import Metal
 

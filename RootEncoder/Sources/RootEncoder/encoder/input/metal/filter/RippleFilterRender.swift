@@ -1,10 +1,3 @@
-//
-//  RippleFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android RippleFilterRender
-//
-
 import Foundation
 import Metal
 

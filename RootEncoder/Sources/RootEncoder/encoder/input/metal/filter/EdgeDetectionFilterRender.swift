@@ -1,10 +1,3 @@
-//
-//  EdgeDetectionFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android EdgeDetectionFilterRender
-//
-
 import Foundation
 import Metal
 

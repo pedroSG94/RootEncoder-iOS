@@ -1,10 +1,3 @@
-//
-//  AnalogTVFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android AnalogTVFilterRender
-//
-
 import Foundation
 import Metal
 

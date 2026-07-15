@@ -1,10 +1,3 @@
-//
-//  CropFilterRender.swift
-//  RootEncoder
-//
-//  Ported from Android CropFilterRender
-//
-
 import Foundation
 import Metal
 
