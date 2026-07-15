@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class GlitchFilterRender: BaseShaderFilterRender {
+public class GlitchFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

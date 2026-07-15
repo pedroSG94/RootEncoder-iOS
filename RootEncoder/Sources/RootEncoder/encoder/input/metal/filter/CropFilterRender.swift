@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class CropFilterRender: BaseShaderFilterRender {
+public class CropFilterRender: BaseFilterRender {
 
     private var area = SIMD4<Float>(0, 0, 1, 1)
 

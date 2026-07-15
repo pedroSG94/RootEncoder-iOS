@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class ExposureFilterRender: BaseShaderFilterRender {
+public class ExposureFilterRender: BaseFilterRender {
 
     public var exposure: Float = 0.5
 

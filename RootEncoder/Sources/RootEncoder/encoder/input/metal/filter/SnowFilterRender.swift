@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class SnowFilterRender: BaseShaderFilterRender {
+public class SnowFilterRender: BaseFilterRender {
 
     public var layers: Float = 5
     public var depth: Float = 0.5

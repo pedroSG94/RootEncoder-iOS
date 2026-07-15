@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class ColorFilterRender: BaseShaderFilterRender {
+public class ColorFilterRender: BaseFilterRender {
 
     //color in percent (0.0 to 1.0)
     public var color = SIMD3<Float>(0, 0, 1)

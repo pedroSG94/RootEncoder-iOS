@@ -6,7 +6,7 @@ import Foundation
 import Metal
 
 
-open class VignetteShaderFilterRender: BaseShaderFilterRender {
+open class VignetteShaderFilterRender: BaseFilterRender {
 
     public var intensity: Float
 

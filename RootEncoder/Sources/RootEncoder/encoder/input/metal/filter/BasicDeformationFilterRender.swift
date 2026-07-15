@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class BasicDeformationFilterRender: BaseShaderFilterRender {
+public class BasicDeformationFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

@@ -5,7 +5,7 @@
 import Foundation
 import Metal
 
-public class SepiaFilterRender: BaseShaderFilterRender {
+public class SepiaFilterRender: BaseFilterRender {
 
     public override func initMetalFilter() -> String {
         return MetalUtils.readShader(name: "FilterVertex") + MetalUtils.readShader(name: "SepiaFilter")

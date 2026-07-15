@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class HalftoneLinesFilterRender: BaseShaderFilterRender {
+public class HalftoneLinesFilterRender: BaseFilterRender {
 
     //mode from 1 to 7
     public var mode: Float = 1

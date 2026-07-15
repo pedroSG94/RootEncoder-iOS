@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class BrightnessFilterRender: BaseShaderFilterRender {
+public class BrightnessFilterRender: BaseFilterRender {
 
     public var brightness: Float = 0.5
 

@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class NoiseFilterRender: BaseShaderFilterRender {
+public class NoiseFilterRender: BaseFilterRender {
 
     public var strength: Float = 16
     private let startTime = Date()

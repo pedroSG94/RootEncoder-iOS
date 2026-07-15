@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class SharpnessFilterRender: BaseShaderFilterRender {
+public class SharpnessFilterRender: BaseFilterRender {
 
     public var sharpness: Float = 16
 

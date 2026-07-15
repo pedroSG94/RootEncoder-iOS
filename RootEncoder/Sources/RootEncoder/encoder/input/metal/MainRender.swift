@@ -57,13 +57,16 @@ public class MainRender {
     
     private func removeFilter(baseFilterRender: BaseFilterRender) {
         filterRenders.removeAll { ($0 as AnyObject) === (baseFilterRender as AnyObject) }
+        baseFilterRender.release()
     }
     
     private func removeFilter(position: Int) {
-        filterRenders.remove(at: position)
+        let filter = filterRenders.remove(at: position)
+        filter.release()
     }
     
     private func clearFilters() {
+        filterRenders.forEach { filter in filter.release() }
         filterRenders.removeAll()
     }
     

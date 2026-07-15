@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class ChromaticAberrationFilterRender: BaseShaderFilterRender {
+public class ChromaticAberrationFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

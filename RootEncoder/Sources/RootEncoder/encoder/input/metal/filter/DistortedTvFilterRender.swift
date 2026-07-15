@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class DistortedTvFilterRender: BaseShaderFilterRender {
+public class DistortedTvFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

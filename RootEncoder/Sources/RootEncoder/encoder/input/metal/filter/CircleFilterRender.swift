@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class CircleFilterRender: BaseShaderFilterRender {
+public class CircleFilterRender: BaseFilterRender {
 
     public var radius: Float = 0.5
     //center of the circle in percent (0.0 to 1.0)

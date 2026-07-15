@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class RainbowFilterRender: BaseShaderFilterRender {
+public class RainbowFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

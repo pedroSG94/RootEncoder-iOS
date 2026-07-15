@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class AnalogTVFilterRender: BaseShaderFilterRender {
+public class AnalogTVFilterRender: BaseFilterRender {
 
     private let startTime = Date()
 

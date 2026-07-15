@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class PixelatedFilterRender: BaseShaderFilterRender {
+public class PixelatedFilterRender: BaseFilterRender {
 
     public var pixelated: Float = 0.01
 

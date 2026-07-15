@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class ContrastFilterRender: BaseShaderFilterRender {
+public class ContrastFilterRender: BaseFilterRender {
 
     public var contrast: Float = 0.5
 

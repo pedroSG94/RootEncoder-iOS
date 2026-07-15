@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class RippleFilterRender: BaseShaderFilterRender {
+public class RippleFilterRender: BaseFilterRender {
 
     public var speed: Float = 15
     private let startTime = Date()

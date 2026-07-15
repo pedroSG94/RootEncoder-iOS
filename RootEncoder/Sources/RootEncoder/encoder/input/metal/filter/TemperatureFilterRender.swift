@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class TemperatureFilterRender: BaseShaderFilterRender {
+public class TemperatureFilterRender: BaseFilterRender {
 
     //temperature between -1.0 (cold) and 1.0 (warm)
     public var temperature: Float = 0.8

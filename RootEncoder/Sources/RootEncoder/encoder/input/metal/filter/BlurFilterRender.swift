@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class BlurFilterRender: BaseShaderFilterRender {
+public class BlurFilterRender: BaseFilterRender {
 
     public var blur: Float = 10
     public var radius: Float = 0.03

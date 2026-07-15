@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class RGBSaturationFilterRender: BaseShaderFilterRender {
+public class RGBSaturationFilterRender: BaseFilterRender {
 
     //saturation of each color in percent (0.0 to 1.0)
     public var saturation = SIMD3<Float>(1, 1, 1)

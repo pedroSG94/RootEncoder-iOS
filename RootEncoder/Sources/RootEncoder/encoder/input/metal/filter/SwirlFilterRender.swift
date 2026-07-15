@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class SwirlFilterRender: BaseShaderFilterRender {
+public class SwirlFilterRender: BaseFilterRender {
 
     public var radius: Float = 0.2
     //center of the effect in percent (0.0 to 1.0)

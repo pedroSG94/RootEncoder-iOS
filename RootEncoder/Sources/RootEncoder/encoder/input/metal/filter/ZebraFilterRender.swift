@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class ZebraFilterRender: BaseShaderFilterRender {
+public class ZebraFilterRender: BaseFilterRender {
 
     public var levels: Float = 8
     private let startTime = Date()

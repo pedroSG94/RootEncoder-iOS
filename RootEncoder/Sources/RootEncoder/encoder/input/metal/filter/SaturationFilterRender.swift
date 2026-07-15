@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class SaturationFilterRender: BaseShaderFilterRender {
+public class SaturationFilterRender: BaseFilterRender {
 
     private var saturation: Float = -0.5
     private var shift: Float = 1.0 / 255.0

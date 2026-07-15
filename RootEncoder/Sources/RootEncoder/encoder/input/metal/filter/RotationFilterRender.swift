@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class RotationFilterRender: BaseShaderFilterRender {
+public class RotationFilterRender: BaseFilterRender {
 
     //rotation in degrees
     public var rotation: Int = 0

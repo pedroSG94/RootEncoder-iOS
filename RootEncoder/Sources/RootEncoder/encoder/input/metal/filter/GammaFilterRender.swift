@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class GammaFilterRender: BaseShaderFilterRender {
+public class GammaFilterRender: BaseFilterRender {
 
     public var gamma: Float = 0.5
 

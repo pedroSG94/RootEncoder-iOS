@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class CartoonFilterRender: BaseShaderFilterRender {
+public class CartoonFilterRender: BaseFilterRender {
 
     public var cartoon: Float = 0.007
 

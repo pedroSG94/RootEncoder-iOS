@@ -82,7 +82,8 @@ struct StreamSwiftUIView: View, ConnectChecker {
     @State private var bitrateText = ""
     @State private var filePath: URL? = nil
     @State private var rtmpStream: RtspStream!
-    
+    @State private var filter = FilterUIView()
+
     @State private var scale: CGFloat = 1.0
     
     private var zoomGesture: some Gesture {
@@ -155,7 +156,6 @@ struct StreamSwiftUIView: View, ConnectChecker {
 
     var body: some View {
         ZStack {
-            let filter = FilterUIView()
             filter.edgesIgnoringSafeArea(.all)
             
             let camera = MetalUIView()
@@ -170,6 +170,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             rtmpStream.startPreview(view: cameraView)
                         }
                         .onDisappear {
+                            rtmpStream.metalInterface.clearFilters()
                             if (rtmpStream.isStreaming()) {
                                 rtmpStream.stopStream()
                             }
@@ -193,7 +194,8 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             Text("No filter")
                         }
                         Button(action: {
-                            let filterView = ViewFilterRender(view: filter.view)
+                            let filterView = ViewFilterRender()
+                            filterView.setView(view: filter.view)
                             rtmpStream.metalInterface.setFilter(baseFilterRender: filterView)
                             filterView.setScale(percentX: 100, percentY: 100)
                             filterView.translateTo(translation: .CENTER)

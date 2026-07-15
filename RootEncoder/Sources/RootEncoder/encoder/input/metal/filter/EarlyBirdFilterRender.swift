@@ -1,7 +1,7 @@
 import Foundation
 import Metal
 
-public class EarlyBirdFilterRender: BaseShaderFilterRender {
+public class EarlyBirdFilterRender: BaseFilterRender {
 
     public override func initMetalFilter() -> String {
         return MetalUtils.readShader(name: "FilterVertex") + MetalUtils.readShader(name: "EarlyBirdFilter")
