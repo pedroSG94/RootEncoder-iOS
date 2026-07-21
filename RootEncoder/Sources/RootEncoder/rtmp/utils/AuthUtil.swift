@@ -5,6 +5,7 @@
 //  Created by Pedro  on 23/4/24.
 //
 
+import Common
 import Foundation
 
 public class AuthUtil {

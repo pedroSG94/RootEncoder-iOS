@@ -5,20 +5,20 @@
 //  Created by Pedro  on 1/10/24.
 //
 
-public class BaseSender {
+open class BaseSender {
     
     private var thread: Task<(), Never>? = nil
-    private(set) var running = false
+    public private(set) var running = false
     private var cacheSize = 200
-    let queue: SynchronizedQueue<MediaFrame>
-    let callback: ConnectChecker
+    public let queue: SynchronizedQueue<MediaFrame>
+    public let callback: ConnectChecker
 
-    var audioFramesSent = 0
-    var videoFramesSent = 0
-    var droppedAudioFrames = 0
-    var droppedVideoFrames = 0
-    let bitrateManager: BitrateManager
-    var isEnableLogs = true
+    public var audioFramesSent = 0
+    public var videoFramesSent = 0
+    public var droppedAudioFrames = 0
+    public var droppedVideoFrames = 0
+    public let bitrateManager: BitrateManager
+    public var isEnableLogs = true
     
     public init(callback: ConnectChecker, tag: String) {
         self.callback = callback
@@ -26,10 +26,10 @@ public class BaseSender {
         bitrateManager = BitrateManager(connectChecker: callback)
     }
 
-    public func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) { }
-    public func setAudioInfo(sampleRate: Int, isStereo: Bool) { }
-    public func onRun() { }
-    public func stopImp(clear: Bool = true) { }
+    open func setVideoInfo(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) { }
+    open func setAudioInfo(sampleRate: Int, isStereo: Bool) { }
+    open func onRun() { }
+    open func stopImp(clear: Bool = true) { }
     
     public func sendMediaFrame(mediaFrame: MediaFrame) {
         if running && !queue.enqueue(mediaFrame) {

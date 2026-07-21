@@ -3,6 +3,11 @@
 // Copyright (c) 2021 pedroSG94. All rights reserved.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 import AVFoundation
 import MetalKit
@@ -294,7 +299,7 @@ public class CameraBase {
         videoEncoder.setCodec(codec: codec)
     }
     
-    public func setAudioCodec(codec: AudioCodec) {
+    public func setAudioCodec(codec: Common.AudioCodec) {
         setAudioCodecImp(codec: codec)
         recordController.setAudioCodec(codec: codec)
         audioEncoder.setCodec(codec: codec)
@@ -302,7 +307,7 @@ public class CameraBase {
 
     func setVideoCodecImp(codec: VideoCodec) {}
     
-    func setAudioCodecImp(codec: AudioCodec) {}
+    func setAudioCodecImp(codec: Common.AudioCodec) {}
     
     func getAudioDataImp(frame: Frame) {}
 

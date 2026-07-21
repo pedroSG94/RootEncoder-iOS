@@ -1,6 +1,7 @@
 //
 //  Created by Pedro on 09/07/2026.
 //
+import Common
 import Foundation
 import CoreImage
 

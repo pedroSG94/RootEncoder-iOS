@@ -5,6 +5,7 @@
 // Only 1 byte of size where 0 is false and another value is true
 //
 
+import Common
 import Foundation
 
 public class AmfBoolean: AmfData, CustomStringConvertible {

@@ -5,6 +5,7 @@
 // A string encoded in ASCII where 2 first bytes indicate string size
 //
 
+import Common
 import Foundation
 
 public class AmfString: AmfData, CustomStringConvertible {

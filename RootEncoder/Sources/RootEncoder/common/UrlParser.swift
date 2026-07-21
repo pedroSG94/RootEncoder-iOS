@@ -9,13 +9,13 @@ import Foundation
 
 public class UrlParser {
     
-    private(set) var scheme: String = ""
-    private(set) var host: String = ""
-    private(set) var port: Int? = nil
-    private(set) var path: String = ""
-    private(set) var query: String? = nil
-    private(set) var authUser: String? = nil
-    private(set) var authPassword: String? = nil
+    public private(set) var scheme: String = ""
+    public private(set) var host: String = ""
+    public private(set) var port: Int? = nil
+    public private(set) var path: String = ""
+    public private(set) var query: String? = nil
+    public private(set) var authUser: String? = nil
+    public private(set) var authPassword: String? = nil
     private let url: String
     
     private init(uri: URL, url: String) {

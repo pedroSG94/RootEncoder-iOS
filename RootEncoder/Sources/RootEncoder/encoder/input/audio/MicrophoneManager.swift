@@ -6,6 +6,7 @@
 //  Copyright © 2020 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 import AVFoundation
 import Accelerate

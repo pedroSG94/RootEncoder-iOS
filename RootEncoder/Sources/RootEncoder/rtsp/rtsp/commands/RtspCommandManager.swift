@@ -1,3 +1,4 @@
+import Common
 import Foundation
 
 public class RtspCommandManager {
@@ -28,7 +29,7 @@ public class RtspCommandManager {
     var videoServerPorts = [5006, 5007]
     private let commandParser = CommandParser()
     var videoCodec = VideoCodec.H264
-    var audioCodec = AudioCodec.AAC
+    var audioCodec = Common.AudioCodec.AAC
     
     public init() {
         let time = Date().millisecondsSince1970

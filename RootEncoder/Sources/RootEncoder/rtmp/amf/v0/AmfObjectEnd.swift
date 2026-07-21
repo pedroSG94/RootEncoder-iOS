@@ -6,6 +6,7 @@
 // This is a final sequence of 3 bytes.
 //
 
+import Common
 import Foundation
 
 public class AmfObjectEnd: AmfData {

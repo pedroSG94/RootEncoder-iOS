@@ -3,6 +3,11 @@
 // Copyright (c) 2021 pedroSG94. All rights reserved.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 
 public class RtspCamera: CameraBase {
@@ -30,7 +35,7 @@ public class RtspCamera: CameraBase {
         client.setVideoCodec(codec: codec)
     }
     
-    override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: Common.AudioCodec) {
         client.setAudioCodec(codec: codec)
     }
 

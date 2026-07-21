@@ -5,6 +5,11 @@
 //  Created by Pedro  on 26/8/24.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 
 public class GenericCamera: CameraBase {
@@ -46,7 +51,7 @@ public class GenericCamera: CameraBase {
         rtspClient.setVideoCodec(codec: codec)
     }
     
-    override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: Common.AudioCodec) {
         rtmpClient.setAudioCodec(codec: codec)
         rtspClient.setAudioCodec(codec: codec)
     }

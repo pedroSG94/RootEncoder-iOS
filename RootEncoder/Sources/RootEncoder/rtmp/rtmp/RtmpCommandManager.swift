@@ -3,6 +3,7 @@
 // Copyright (c) 2022 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 
 public class RtmpCommandManager {
@@ -34,7 +35,7 @@ public class RtmpCommandManager {
     private var bytesRead = 0
     private var acknowledgementSequence = 0
     var videoCodec = VideoCodec.H264
-    var audioCodec = AudioCodec.AAC
+    var audioCodec = Common.AudioCodec.AAC
 
     public func setVideoResolution(width: Int, height: Int) {
         self.width = width

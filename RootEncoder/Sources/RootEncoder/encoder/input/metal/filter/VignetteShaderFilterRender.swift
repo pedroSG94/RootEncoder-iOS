@@ -2,6 +2,7 @@
 //  Created by Pedro  on 8/7/25.
 //
 
+import Common
 import Foundation
 import Metal
 

@@ -5,6 +5,7 @@
 //  Created by Pedro  on 9/7/24.
 //
 
+import Common
 import Accelerate
 import AVFoundation
 import CoreMedia

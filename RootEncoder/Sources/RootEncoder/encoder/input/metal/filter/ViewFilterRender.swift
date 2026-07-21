@@ -2,6 +2,7 @@
 //  Created by Pedro  on 4/8/24.
 //
 
+import Common
 import Foundation
 import CoreImage
 import SwiftUI

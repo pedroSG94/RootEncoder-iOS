@@ -3,6 +3,7 @@
 // Copyright (c) 2022 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 
 public enum FlvType {

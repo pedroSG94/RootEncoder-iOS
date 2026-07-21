@@ -6,6 +6,7 @@
 //  Copyright © 2023 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 
 public enum VideoNalType: UInt8 {

@@ -5,6 +5,7 @@
 //  Created by Pedro  on 23/7/24.
 //
 
+import Common
 import Foundation
 
 public class FpsLimiter {
@@ -14,7 +15,9 @@ public class FpsLimiter {
     private var ratio: Int64 = 1000 / 30
     private var frameStartTs: Int64 = 0
     private var configured = false
-    
+
+    public init() {}
+
     public func setFps(fps: Int) {
         if fps <= 0 {
             configured = false

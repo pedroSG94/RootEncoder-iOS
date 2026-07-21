@@ -3,6 +3,11 @@
 // Copyright (c) 2021 pedroSG94. All rights reserved.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 import AVFoundation
 
@@ -150,11 +155,11 @@ public class RecordController {
         }
     }
     
-    func setAudioCodec(codec: AudioCodec) {
+    func setAudioCodec(codec: Common.AudioCodec) {
         audioCodec = switch codec {
-        case AudioCodec.AAC:
+        case Common.AudioCodec.AAC:
             kAudioFormatMPEG4AAC
-        case AudioCodec.G711:
+        case Common.AudioCodec.G711:
             kAudioFormatALaw
         }
     }

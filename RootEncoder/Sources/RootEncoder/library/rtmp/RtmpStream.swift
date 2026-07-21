@@ -3,6 +3,11 @@
 // Copyright (c) 2022 pedroSG94. All rights reserved.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 
 public class RtmpStream: StreamBase {
@@ -24,7 +29,7 @@ public class RtmpStream: StreamBase {
         client.setVideoCodec(codec: codec)
     }
     
-    override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: Common.AudioCodec) {
         client.setAudioCodec(codec: codec)
     }
 

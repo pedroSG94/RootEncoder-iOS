@@ -5,6 +5,7 @@
 // A Map of others amf packets where key is an AmfString and value could be any amf packet
 //
 
+import Common
 import Foundation
 
 public class AmfObject: AmfData, CustomStringConvertible {

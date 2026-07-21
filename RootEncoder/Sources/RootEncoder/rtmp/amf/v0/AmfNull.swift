@@ -5,6 +5,7 @@
 // Contain an empty body
 //
 
+import Common
 import Foundation
 
 public class AmfNull: AmfData, CustomStringConvertible {

@@ -5,6 +5,7 @@
 // A number in 8 bytes IEEE-754 double precision floating point value
 //
 
+import Common
 import Foundation
 
 public class AmfNumber: AmfData, CustomStringConvertible {

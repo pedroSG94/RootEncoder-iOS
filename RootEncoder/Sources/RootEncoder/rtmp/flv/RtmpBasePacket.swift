@@ -5,6 +5,7 @@
 //  Created by Pedro  on 27/3/24.
 //
 
+import Common
 import Foundation
 
 public class RtmpBasePacket {

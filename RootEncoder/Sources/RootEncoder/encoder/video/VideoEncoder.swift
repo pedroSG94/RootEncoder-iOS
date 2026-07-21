@@ -6,6 +6,7 @@
 //  Copyright © 2021 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 import AVFoundation
 import VideoToolbox
@@ -13,16 +14,16 @@ import CoreFoundation
 
 public class VideoEncoder {
     
-    private(set) var width = 640
-    private(set) var height = 480
-    private(set) var fps: Int = 30
+    public private(set) var width = 640
+    public private(set) var height = 480
+    public private(set) var fps: Int = 30
     private var bitrate: Int = 1500 * 1000
     private var iFrameInterval: Int = 2
     private var initTs: Int64 = 0
     private var isSpsAndPpsSend = false
     private var running = false
     private var forceKey = false
-    private(set) var rotation = 0
+    public private(set) var rotation = 0
     private var codec = CodecUtil.H264
     private let thread = DispatchQueue(label: "VideoEncoder")
     private let threadOutput = DispatchQueue(label: "VideoEncoderOutput")

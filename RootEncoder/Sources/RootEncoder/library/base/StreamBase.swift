@@ -5,6 +5,11 @@
 //  Created by Pedro  on 5/10/24.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 import AVFoundation
 import MetalKit
@@ -220,7 +225,7 @@ public class StreamBase {
         videoEncoder.setCodec(codec: codec)
     }
     
-    public func setAudioCodec(codec: AudioCodec) {
+    public func setAudioCodec(codec: Common.AudioCodec) {
         setAudioCodecImp(codec: codec)
         recordController.setAudioCodec(codec: codec)
         audioEncoder.setCodec(codec: codec)
@@ -232,7 +237,7 @@ public class StreamBase {
     func onVideoInfoImp(sps: Array<UInt8>, pps: Array<UInt8>, vps: Array<UInt8>?) {}
     
     func setVideoCodecImp(codec: VideoCodec) {}
-    func setAudioCodecImp(codec: AudioCodec) {}
+    func setAudioCodecImp(codec: Common.AudioCodec) {}
     func getAudioDataImp(frame: Frame) {}
     func getVideoDataImp(frame: Frame) {}
 }

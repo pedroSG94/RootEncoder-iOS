@@ -5,6 +5,7 @@
 //  Created by Pedro  on 30/6/24.
 //
 
+import Common
 import Foundation
 import AVFoundation
 

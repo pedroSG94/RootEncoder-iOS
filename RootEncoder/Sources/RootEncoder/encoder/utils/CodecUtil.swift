@@ -3,6 +3,7 @@
 // Copyright (c) 2021 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 import VideoToolbox
 

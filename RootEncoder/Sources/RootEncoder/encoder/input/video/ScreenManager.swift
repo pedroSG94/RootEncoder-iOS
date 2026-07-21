@@ -5,6 +5,7 @@
 //  Created by Pedro  on 23/10/23.
 //
 
+import Common
 import Foundation
 import ReplayKit
 
@@ -15,7 +16,7 @@ public class ScreenManager {
     private let callbackVideo: GetCameraData?
     private var callbackAudio: GetMicrophoneData?
     private var muted = false
-    private(set) var recordingInternalAudio = false
+    public private(set) var recordingInternalAudio = false
     
     public init(callbackVideo: GetCameraData?, callbackAudio: GetMicrophoneData?) {
         self.callbackVideo = callbackVideo

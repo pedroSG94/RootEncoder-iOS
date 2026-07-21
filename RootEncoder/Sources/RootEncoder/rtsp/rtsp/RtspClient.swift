@@ -1,3 +1,4 @@
+import Common
 import Foundation
 
 public class RtspClient: SocketCallback {
@@ -264,7 +265,7 @@ public class RtspClient: SocketCallback {
         }
     }
     
-    public func setAudioCodec(codec: AudioCodec) {
+    public func setAudioCodec(codec: Common.AudioCodec) {
         if (!streaming) {
             commandsManager.audioCodec = codec
         }

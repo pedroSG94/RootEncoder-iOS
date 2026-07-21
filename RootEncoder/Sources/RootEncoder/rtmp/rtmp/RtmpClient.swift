@@ -3,6 +3,7 @@
 // Copyright (c) 2022 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 
 public class RtmpClient: SocketCallback {
@@ -13,7 +14,7 @@ public class RtmpClient: SocketCallback {
     private let commandsManager = RtmpCommandManager()
     private var checkServerAlive = false
     private let rtmpSender: RtmpSender
-    var isStreaming = false
+    public internal(set) var isStreaming = false
     private var publishPermitted = false
     private var tlsEnabled = false
     private var doingRetry = false
@@ -312,7 +313,7 @@ public class RtmpClient: SocketCallback {
         }
     }
     
-    public func setAudioCodec(codec: AudioCodec) {
+    public func setAudioCodec(codec: Common.AudioCodec) {
         if (!isStreaming) {
             commandsManager.audioCodec = codec
         }

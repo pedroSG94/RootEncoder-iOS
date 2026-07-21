@@ -5,6 +5,7 @@
 //  Copyright © 2020 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 import AVFoundation
 
@@ -17,7 +18,7 @@ public class AudioEncoder {
     private var initTs: UInt64 = 0
     private let thread = DispatchQueue(label: "AudioEncoder")
     private let syncQueue = SynchronizedQueue<PcmFrame>(label: "AudioEncodeQueue", size: 60)
-    private var codec = AudioCodec.AAC
+    private var codec = Common.AudioCodec.AAC
     private var inputFormat: AVAudioFormat? = nil
     private(set) public var sampleRate = 32000.0
     private(set) public var channels: UInt32 = 2
@@ -30,7 +31,7 @@ public class AudioEncoder {
         
     }
     
-    public func setCodec(codec: AudioCodec) {
+    public func setCodec(codec: Common.AudioCodec) {
         self.codec = codec
     }
     
@@ -39,13 +40,13 @@ public class AudioEncoder {
     }
     
     public func prepareAudio(sampleRate: Double, channels: UInt32, bitrate: Int) -> Bool {
-        if (codec == AudioCodec.G711 && (sampleRate != 8000 || channels != 1)) {
+        if (codec == Common.AudioCodec.G711 && (sampleRate != 8000 || channels != 1)) {
             print("G711 only support samplerate 8000 and mono channel")
             return false
         }
-        let format: AVAudioFormat? = if codec == AudioCodec.AAC {
+        let format: AVAudioFormat? = if codec == Common.AudioCodec.AAC {
             getAACFormat(sampleRate: sampleRate, channels: channels)
-        } else if codec == AudioCodec.G711 {
+        } else if codec == Common.AudioCodec.G711 {
             getG711AFormat(sampleRate: sampleRate, channels: channels)
         } else {
             nil
@@ -94,10 +95,10 @@ public class AudioEncoder {
                     if !self.audioTime.hasAnchor {
                         self.audioTime.anchor(pcmFrame.time, sampleRate: outputFormat.sampleRate)
                     }
-                    if self.codec == AudioCodec.AAC {
+                    if self.codec == Common.AudioCodec.AAC {
                         self.ringBuffer?.append(pcmFrame.buffer)
                         self.convertAAC(error: &error)
-                    } else if self.codec == AudioCodec.G711 {
+                    } else if self.codec == Common.AudioCodec.G711 {
                         self.convertG711(inputBuffer: pcmFrame.buffer, error: &error)
                     }
                 }

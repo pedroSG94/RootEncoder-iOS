@@ -5,6 +5,11 @@
 //  Created by Pedro  on 24/10/23.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 
 public class RtmpDisplay: DisplayBase {
@@ -26,7 +31,7 @@ public class RtmpDisplay: DisplayBase {
         client.setVideoCodec(codec: codec)
     }
     
-    override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: Common.AudioCodec) {
         client.setAudioCodec(codec: codec)
     }
     

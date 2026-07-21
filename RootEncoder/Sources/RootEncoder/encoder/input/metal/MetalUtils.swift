@@ -4,6 +4,7 @@
 //
 //  Created by Pedro  on 09/07/2026.
 //
+import Common
 import Metal
 
 public class MetalUtils {

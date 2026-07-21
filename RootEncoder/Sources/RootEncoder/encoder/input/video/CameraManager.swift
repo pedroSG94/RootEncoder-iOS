@@ -6,6 +6,7 @@
 //  Copyright © 2020 pedroSG94. All rights reserved.
 //
 
+import Common
 import UIKit
 import Foundation
 import AVFoundation
@@ -26,7 +27,7 @@ public class CameraManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     private var height: Int = 480
     private var resolution = CameraHelper.Resolution.vga640x480
     public var rotation: Int = 0
-    private(set) var running = false
+    public private(set) var running = false
     private var callback: GetCameraData
     private var prepared = false
     

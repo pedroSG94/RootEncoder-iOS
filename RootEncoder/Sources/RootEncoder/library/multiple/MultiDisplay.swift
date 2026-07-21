@@ -5,6 +5,11 @@
 //  Created by Pedro  on 16/7/24.
 //
 
+import Common
+import Encoder
+import RTMP
+import RTSP
+import SRT
 import Foundation
 
 /*
@@ -76,7 +81,7 @@ public class MultiDisplay: DisplayBase {
         }
     }
     
-    override func setAudioCodecImp(codec: AudioCodec) {
+    override func setAudioCodecImp(codec: Common.AudioCodec) {
         for rtmp in rtmpClients {
             rtmp.setAudioCodec(codec: codec)
         }

@@ -36,6 +36,7 @@
 */
 //
 
+import Common
 import Foundation
 
 public class BasicHeader: CustomStringConvertible {

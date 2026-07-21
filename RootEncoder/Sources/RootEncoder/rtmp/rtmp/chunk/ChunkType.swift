@@ -10,6 +10,7 @@
 //
 // message stream id = 4 bytes (transactionId as little endian format)
 
+import Common
 import Foundation
 
 public enum ChunkType: UInt8 {

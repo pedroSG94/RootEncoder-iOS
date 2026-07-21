@@ -5,6 +5,7 @@
 //  Created by Pedro  on 24/3/24.
 //
 
+import Common
 import Foundation
 
 public enum FourCCPacketType: Int {

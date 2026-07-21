@@ -5,6 +5,7 @@
 // A list of any amf packets that start with an UInt32 to indicate number of items
 //
 
+import Common
 import Foundation
 
 public class AmfStrictArray: AmfData, CustomStringConvertible {

@@ -4,6 +4,7 @@
 //
 //  Created by Pedro  on 09/07/2026.
 //
+import Common
 import Foundation
 import CoreMedia
 import CoreImage
@@ -13,13 +14,13 @@ import MetalKit
 public class MainRender {
     
     private let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceRGB()
-    let device: MTLDevice
+    public let device: MTLDevice
     private let commandQueue: MTLCommandQueue
     private let context: CIContext
     private var width = 0
     private var height = 0
     
-    init() {
+    public init() {
         self.device = MTLCreateSystemDefaultDevice()!
         self.commandQueue = device.makeCommandQueue()!
         self.context = CIContext(mtlCommandQueue: commandQueue)
@@ -70,7 +71,7 @@ public class MainRender {
         filterRenders.removeAll()
     }
     
-    func setFilterAction(action: FilterAction, position: Int, baseFilterRender: BaseFilterRender) {
+    public func setFilterAction(action: FilterAction, position: Int, baseFilterRender: BaseFilterRender) {
         switch (action) {
         case .SET:
             if filterRenders.count > 0 {
@@ -97,7 +98,7 @@ public class MainRender {
         return filterRenders.count
     }
     
-    func drawFilters(isPreview: Bool, image: inout CIImage, orientation: CGImagePropertyOrientation) {
+    public func drawFilters(isPreview: Bool, image: inout CIImage, orientation: CGImagePropertyOrientation) {
         let validFilters = filterRenders.filter {
             if isPreview { $0.renderMode != .OUTPUT } else { $0.renderMode != .PREVIEW }
         }
@@ -120,7 +121,7 @@ public class MainRender {
         }
     }
     
-    func drawPreview(previewImage: inout CIImage, view: MTKView, aspectRatioMode: AspectRatioMode, orientation: CGImagePropertyOrientation, rotated: Bool, verticalFlip: Bool, horizontalFlip: Bool) {
+    public func drawPreview(previewImage: inout CIImage, view: MTKView, aspectRatioMode: AspectRatioMode, orientation: CGImagePropertyOrientation, rotated: Bool, verticalFlip: Bool, horizontalFlip: Bool) {
         var w = previewImage.extent.width
         var h = previewImage.extent.height
 
@@ -149,7 +150,7 @@ public class MainRender {
         }
     }
     
-    func drawEncoder(image: inout CIImage, orientation: CGImagePropertyOrientation, rotated: Bool, verticalFlip: Bool, horizontalFlip: Bool) -> CGRect {
+    public func drawEncoder(image: inout CIImage, orientation: CGImagePropertyOrientation, rotated: Bool, verticalFlip: Bool, horizontalFlip: Bool) -> CGRect {
         if (verticalFlip) {
             image = image
                 .transformed(by: CGAffineTransform(scaleX: 1, y: -1))
@@ -191,7 +192,7 @@ public class MainRender {
         return rect
     }
     
-    func swapEncoderBuffer(image: CIImage, rect: CGRect) -> CVPixelBuffer? {
+    public func swapEncoderBuffer(image: CIImage, rect: CGRect) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer?
         let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue,
                      kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
@@ -201,7 +202,7 @@ public class MainRender {
         return buffer
     }
     
-    func getImage(buffer: CMSampleBuffer) -> CIImage? {
+    public func getImage(buffer: CMSampleBuffer) -> CIImage? {
         let width = CGFloat(width)
         let height = CGFloat(height)
         guard let imageBuffer = CMSampleBufferGetImageBuffer(buffer) else { return nil }
@@ -209,7 +210,7 @@ public class MainRender {
             .scaleTo(width: width, height: height)
     }
     
-    func swapPreviewBuffer(view: MTKView, image: CIImage) {
+    public func swapPreviewBuffer(view: MTKView, image: CIImage) {
         guard let drawable = view.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() else { return }
         let rect = CGRect(origin: .zero, size: view.drawableSize)
         context.render(image, to: drawable.texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)

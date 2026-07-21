@@ -42,6 +42,7 @@
 //
 
 
+import Common
 import Foundation
 
 public class Handshake {

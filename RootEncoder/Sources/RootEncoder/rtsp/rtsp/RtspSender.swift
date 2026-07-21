@@ -1,3 +1,4 @@
+import Common
 import Foundation
 
 public class RtspSender: BaseSender {
@@ -41,9 +42,9 @@ public class RtspSender: BaseSender {
     
     public override func setAudioInfo(sampleRate: Int, isStereo: Bool) {
         audioPacketizer = switch commandsManager.audioCodec {
-        case AudioCodec.AAC:
+        case Common.AudioCodec.AAC:
             RtspAacPacket(sampleRate: sampleRate)
-        case AudioCodec.G711:
+        case Common.AudioCodec.G711:
             RtspG711Packet(sampleRate: sampleRate)
         }
     }

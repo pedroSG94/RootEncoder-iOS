@@ -6,11 +6,12 @@
 //  Copyright © 2020 pedroSG94. All rights reserved.
 //
 
+import Common
 import Foundation
 
 public struct Frame {
-    let buffer: Array<UInt8>
-    let timeStamp: UInt64
+    public let buffer: Array<UInt8>
+    public let timeStamp: UInt64
     
     public init(buffer: Array<UInt8>, timeStamp: UInt64) {
         self.buffer = buffer

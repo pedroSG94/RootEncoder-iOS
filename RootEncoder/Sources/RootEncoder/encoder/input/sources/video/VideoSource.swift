@@ -5,6 +5,7 @@
 //  Created by Pedro  on 5/10/24.
 //
 
+import Common
 import Foundation
 
 public protocol VideoSource {
