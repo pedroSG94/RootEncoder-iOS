@@ -18,13 +18,17 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "RootEncoder",
-            path: "RootEncoder/Sources",
-            sources: ["RootEncoder"],
-            resources: [.copy("PrivacyInfo.xcprivacy")]
+            path: "RootEncoder/Sources/RootEncoder",
+            resources: [
+                //shader files are read as strings at runtime and compiled with device.makeLibrary,
+                //declared as resources to avoid the offline Metal compiler (no Metal Toolchain needed)
+                .copy("encoder/input/metal/shaders"),
+            ]
         ),
         .testTarget(
             name: "RootEncoderTests",
-            dependencies: ["RootEncoder"]
+            dependencies: ["RootEncoder"],
+            path: "RootEncoder/Tests/RootEncoderTests"
         ),
     ]
 )

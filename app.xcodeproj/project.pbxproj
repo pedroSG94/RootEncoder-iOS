@@ -69,7 +69,6 @@
 		EBCF00012E15AA0000000001 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Shared.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
 		EB07EC4B2B0D51FD0001309D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EB2D9C3B2C66BCD500FF1C95 /* ViewFilter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewFilter.xib; sourceTree = "<group>"; };
-		EB733D882C2FE3B1002318DA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		EB94C7272BDC2286002CCC0B /* RootEncoder */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RootEncoder; sourceTree = "<group>"; };
 		EBA4000F2ABA6A1600249638 /* MainSwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSwiftUIView.swift; sourceTree = "<group>"; };
 		EBA400112ABA7AED00249638 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
@@ -111,8 +110,7 @@
 		044138282501A02300732969 = {
 			isa = PBXGroup;
 			children = (
-				EB733D882C2FE3B1002318DA /* PrivacyInfo.xcprivacy */,
-				EB94C7272BDC2286002CCC0B /* RootEncoder */,
+					EB94C7272BDC2286002CCC0B /* RootEncoder */,
 				044138332501A02300732969 /* app */,
 				0441384A2501A02500732969 /* appTests */,
 				044138552501A02500732969 /* appUITests */,
@@ -287,6 +285,9 @@
 				Base,
 			);
 			mainGroup = 044138282501A02300732969;
+			packageReferences = (
+				EBEB00000000000000000001 /* XCLocalSwiftPackageReference "." */,
+			);
 			productRefGroup = 044138322501A02300732969 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -684,9 +685,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		EBEB00000000000000000001 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		EBDA58A62BEE915E002F85A2 /* RootEncoder */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = EBEB00000000000000000001 /* XCLocalSwiftPackageReference "." */;
 			productName = RootEncoder;
 		};
 /* End XCSwiftPackageProductDependency section */
