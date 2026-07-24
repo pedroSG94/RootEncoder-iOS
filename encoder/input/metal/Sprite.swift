@@ -86,6 +86,18 @@ public class Sprite {
         positionX = x
         positionY = y
     }
+
+    public func getScale() -> CGSize {
+        return CGSize(width: scaleX, height: scaleY)
+    }
+
+    public func getPosition() -> CGPoint {
+        return CGPoint(x: positionX, y: positionY)
+    }
+
+    public func getRotation() -> Double {
+        return rotation
+    }
     
     public func setScale(x: Double, y: Double) {
         scaleX = x

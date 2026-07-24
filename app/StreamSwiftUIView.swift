@@ -98,7 +98,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
         }
     }
     
-    private let filterList: [(String, () -> BaseFilterRender)] = [
+    private var filterList: [(String, () -> BaseFilterRender)] { [
         ("AnalogTV", { AnalogTVFilterRender() }),
         ("Basic deformation", { BasicDeformationFilterRender() }),
         ("Beauty", { BeautyFilterRender() }),
@@ -125,6 +125,15 @@ struct StreamSwiftUIView: View, ConnectChecker {
         ("Glitch", { GlitchFilterRender() }),
         ("GreyScale", { GreyScaleFilterRender() }),
         ("Halftone lines", { HalftoneLinesFilterRender() }),
+        ("Image", {
+            let filter = ImageFilterRender()
+            if let image = UIImage(named: "ic_launcher") {
+                filter.setImage(image: image)
+            }
+            filter.setScale(percentX: 50, percentY: 50)
+            filter.translateTo(translation: .CENTER)
+            return filter
+        }),
         ("Image 70s", { Image70sFilterRender() }),
         ("Lamoish", { LamoishFilterRender() }),
         ("Money", { MoneyFilterRender() }),
@@ -150,9 +159,23 @@ struct StreamSwiftUIView: View, ConnectChecker {
         ("Snow", { SnowFilterRender() }),
         ("Swirl", { SwirlFilterRender() }),
         ("Temperature", { TemperatureFilterRender() }),
+        ("Text", {
+            let filter = TextFilterRender()
+            filter.setText(text: "Hello world", textSize: 22, textColor: .red)
+            filter.setScale(percentX: 50, percentY: 50)
+            filter.translateTo(translation: .CENTER)
+            return filter
+        }),
+        ("View", {
+            let filterView = ViewFilterRender()
+            filterView.setView(view: filter.view)
+            filterView.setScale(percentX: 100, percentY: 100)
+            filterView.translateTo(translation: .CENTER)
+            return filterView
+        }),
         ("Vignette", { VignetteShaderFilterRender() }),
         ("Zebra", { ZebraFilterRender() })
-    ]
+    ] }
 
     var body: some View {
         ZStack {
@@ -192,15 +215,6 @@ struct StreamSwiftUIView: View, ConnectChecker {
                             rtmpStream.metalInterface.clearFilters()
                         }) {
                             Text("No filter")
-                        }
-                        Button(action: {
-                            let filterView = ViewFilterRender()
-                            filterView.setView(view: filter.view)
-                            rtmpStream.metalInterface.setFilter(baseFilterRender: filterView)
-                            filterView.setScale(percentX: 100, percentY: 100)
-                            filterView.translateTo(translation: .CENTER)
-                        }) {
-                            Text("View")
                         }
                         ForEach(filterList.indices, id: \.self) { index in
                             Button(action: {
