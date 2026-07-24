@@ -1,17 +1,18 @@
 # RootEncoder iOS
 
+[![Release](https://img.shields.io/github/v/release/pedroSG94/RootEncoder-iOS)](https://github.com/pedroSG94/RootEncoder-iOS/releases/latest)
+
 RootEncoder iOS (rtmp-rtsp-stream-client-swift) is a stream encoder to push video/audio to media servers using protocols RTMP, RTSP and SRT with all code written in Swift
 
 
 ## Status
 
 The project is not stable yet.
-For now, the min iOS version required is iOS14 but I have plan to downgrade it a bit. 
-Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 
 ## Features
 
-- [X] H264 and AAC support
+- [X] Required iOS 14 and Swift 5
+- [X] H264, H265 and AAC support
 - [X] Switch camera while streaming
 - [X] RTSP TCP/UDP
 - [X] RTSPS
@@ -19,21 +20,60 @@ Swift 5 is required because RTMP and RTSP protocol use async await in sockets.
 - [X] RTMP auth (adobe and llnw)
 - [X] RTMP
 - [X] RTMPS
-- [X] Real time filters (with Metal). For now, support only filters with CIImage but I have plan to add filters using vertex and fragment
+- [X] Real time filters (with Metal)
 - [X] Reconnection (RTMP and RTSP)
 - [X] Stream from device display (DisplayRtsp/DisplayRtmp)
-- [X] H265 support (RTSP and RTMP)
 - [X] Get upload bandwidth used (RTMP and RTSP)
 - [X] Local video record
 
 ## Compile
 
-### SPM
+The library is distributed with Swift Package Manager. 
+Minimum requirements: iOS 14 and Swift 5.10.
 
-In Xcode go to:
-Project > Package dependencies > + > add this to the search bar:
+### Adding it from Xcode
+
+1. Open your project and go to `File > Add Package Dependencies...` (or `Project > Package Dependencies > +`).
+2. Paste this URL in the search bar:
 ```
 https://github.com/pedroSG94/RootEncoder-iOS
+```
+3. In `Dependency Rule` select `Up to Next Major Version` and set the last release as version:
+```
+0.1.1
+```
+4. Add the `RootEncoder` library product to your app target.
+
+### Adding it from Package.swift
+
+Add the dependency and then the product to your target:
+```swift
+dependencies: [
+    .package(url: "https://github.com/pedroSG94/RootEncoder-iOS.git", from: "0.1.1")
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "RootEncoder", package: "RootEncoder-iOS")
+        ]
+    )
+]
+```
+
+### Using the master branch
+
+If you want the last changes not released yet you can point to the branch instead of a version:
+```swift
+.package(url: "https://github.com/pedroSG94/RootEncoder-iOS.git", branch: "master")
+```
+In Xcode select `Branch` in `Dependency Rule` and write `master`.
+
+### Import
+
+The library exposes a single module with all the protocols included:
+```swift
+import RootEncoder
 ```
 
 ## Use examples:
@@ -48,9 +88,8 @@ https://github.com/pedroSG94/RootEncoder-iOS/blob/master/app/RtspSwiftUIView.swi
 
 ## Incoming features
 
-I will develop this features but not in this order.
-
-- [ ] Stream from file (FromFileRtsp/FromFileRtmp)
-- [ ] Upload to cocoapod
-- [ ] Minors features: video bitrate on fly, adaptative bitrate.
-- [ ] SRT (maybe the last one)
+- [ ] Stream from file and others video/audio sources
+- [ ] Make RTMP module equivalent in features to Android version
+- [ ] Make RTSP module equivalent in features to Android version
+- [ ] SRT
+- [ ] WHIP
