@@ -9,6 +9,7 @@
 import SwiftUI
 import RootEncoder
 import Photos
+import AVFoundation
 
 struct StreamSwiftUIView: View, ConnectChecker {
     
@@ -157,6 +158,24 @@ struct StreamSwiftUIView: View, ConnectChecker {
         ("Sepia", { SepiaFilterRender() }),
         ("Sharpness", { SharpnessFilterRender() }),
         ("Snow", { SnowFilterRender() }),
+        ("Surface", {
+            let filter = SurfaceFilterRender()
+            let url = URL(string: "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4")!
+            let player = AVPlayer(url: url)
+            filter.setPlayer(player: player, looping: true)
+            player.play()
+            //Filters draw over the stream image with the phone rotation applied (portrait: 480x640, landscape: 640x480),
+            //so calculate the scale percent with that resolution to render the video (16:9) with 50% of width keeping aspect ratio
+            let portrait = UIScreen.main.bounds.height > UIScreen.main.bounds.width
+            let canvasWidth = portrait ? 480.0 : 640.0
+            let canvasHeight = portrait ? 640.0 : 480.0
+            let videoAspectRatio = 16.0 / 9.0
+            let percentX = 50.0
+            let percentY = (canvasWidth * percentX / 100) / videoAspectRatio / canvasHeight * 100
+            filter.setScale(percentX: percentX, percentY: percentY)
+            filter.translateTo(translation: .CENTER)
+            return filter
+        }),
         ("Swirl", { SwirlFilterRender() }),
         ("Temperature", { TemperatureFilterRender() }),
         ("Text", {
