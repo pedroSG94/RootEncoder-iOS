@@ -155,7 +155,7 @@ extension MetalView: MTKViewDelegate {
         guard let buffer = buffer else { return }
         guard var streamImage = mainRender.getImage(buffer: buffer) else { return }
         
-        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation)
+        let orientation: CGImagePropertyOrientation = SizeCalculator.processMatrix(initialOrientation: rotation, currentOrientation: CameraHelper.getCameraOrientation())
         
         while filtersQueue.itemsCount() > 0 {
             if let filter = filtersQueue.dequeue() {
@@ -167,7 +167,7 @@ extension MetalView: MTKViewDelegate {
         let rotated = drawableSize.width > drawableSize.height && previewImage.extent.height > previewImage.extent.width
             || drawableSize.height > drawableSize.width && previewImage.extent.width > previewImage.extent.height
         mainRender.drawFilters(isPreview: true, image: &previewImage, orientation: orientation)
-        mainRender.drawPreview(previewImage: &previewImage, view: view, aspectRatioMode: aspectRatioMode, orientation: orientation, rotated: rotated, verticalFlip: isPreviewVerticalFlip, horizontalFlip: isPreviewHorizontalFlip)
+        mainRender.drawPreview(previewImage: &previewImage, view: view, aspectRatioMode: aspectRatioMode, orientation: orientation, verticalFlip: isPreviewVerticalFlip, horizontalFlip: isPreviewHorizontalFlip)
         mainRender.swapPreviewBuffer(view: view, image: previewImage)
         
         guard let callback = callback else { return }

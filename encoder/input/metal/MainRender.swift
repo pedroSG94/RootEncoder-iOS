@@ -121,20 +121,15 @@ public class MainRender {
         }
     }
     
-    public func drawPreview(previewImage: inout CIImage, view: MTKView, aspectRatioMode: AspectRatioMode, orientation: CGImagePropertyOrientation, rotated: Bool, verticalFlip: Bool, horizontalFlip: Bool) {
-        var w = previewImage.extent.width
-        var h = previewImage.extent.height
+    public func drawPreview(previewImage: inout CIImage, view: MTKView, aspectRatioMode: AspectRatioMode, orientation: CGImagePropertyOrientation, verticalFlip: Bool, horizontalFlip: Bool) {
+        var oriented = previewImage.oriented(orientation)
+        oriented = oriented.transformed(by: CGAffineTransform(translationX: -oriented.extent.origin.x, y: -oriented.extent.origin.y))
 
-        if (rotated) {
-            w = previewImage.extent.height
-            h = previewImage.extent.width
-        }
         let previewWidth = view.drawableSize.width
         let previewHeight = view.drawableSize.height
-        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: w, streamHeight: h, previewWidth: previewWidth, previewHeight: previewHeight)
+        let viewport = SizeCalculator.getViewPort(mode: aspectRatioMode, streamWidth: oriented.extent.width, streamHeight: oriented.extent.height, previewWidth: previewWidth, previewHeight: previewHeight)
 
-        previewImage = previewImage
-            .oriented(orientation)
+        previewImage = oriented
             .transformed(by: CGAffineTransform(scaleX: viewport.scaleX, y: viewport.scaleY))
             .transformed(by: CGAffineTransform(translationX: viewport.positionX, y: viewport.positionY))
 
@@ -213,7 +208,8 @@ public class MainRender {
     public func swapPreviewBuffer(view: MTKView, image: CIImage) {
         guard let drawable = view.currentDrawable, let commandBuffer = commandQueue.makeCommandBuffer() else { return }
         let rect = CGRect(origin: .zero, size: view.drawableSize)
-        context.render(image, to: drawable.texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
+        let background = CIImage(color: CIColor.black).cropped(to: rect)
+        context.render(image.composited(over: background), to: drawable.texture, commandBuffer: commandBuffer, bounds: rect, colorSpace: colorSpace)
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }

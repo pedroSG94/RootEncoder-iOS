@@ -60,7 +60,6 @@ public class MetalStreamInterface: NSObject, MetalInterface {
     private let sensorManager = SensorManager()
     private weak var mtkView: MTKView? = nil
     private var previewImage: CIImage? = nil
-    private var previewRotated = false
     private var previewOrientation: CGImagePropertyOrientation = .up
     private let mainRender = MainRender()
 
@@ -110,11 +109,9 @@ public class MetalStreamInterface: NSObject, MetalInterface {
         if mtkView != nil {
             var previewImage = streamImage
             mainRender.drawFilters(isPreview: true, image: &previewImage, orientation: orientation)
-            let rotated = self.rotated
             DispatchQueue.main.async { [weak self] in
                 guard let self = self, let mtkView = self.mtkView else { return }
                 self.previewImage = previewImage
-                self.previewRotated = rotated
                 self.previewOrientation = orientation
                 mtkView.setNeedsDisplay()
             }
@@ -200,7 +197,7 @@ extension MetalStreamInterface: MTKViewDelegate {
 
     public func draw(in view: MTKView) {
         guard var previewImage = previewImage else { return }
-        mainRender.drawPreview(previewImage: &previewImage, view: view, aspectRatioMode: aspectRatioMode, orientation: previewOrientation, rotated: previewRotated, verticalFlip: isPreviewVerticalFlip, horizontalFlip: isPreviewHorizontalFlip)
+        mainRender.drawPreview(previewImage: &previewImage, view: view, aspectRatioMode: aspectRatioMode, orientation: previewOrientation, verticalFlip: isPreviewVerticalFlip, horizontalFlip: isPreviewHorizontalFlip)
         mainRender.swapPreviewBuffer(view: view, image: previewImage)
     }
 }

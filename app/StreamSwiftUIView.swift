@@ -13,6 +13,14 @@ import AVFoundation
 
 struct StreamSwiftUIView: View, ConnectChecker {
     
+    private let rotation = 0
+    private let width = 640
+    private let height = 480
+    private let videoBitrate = 1200 * 1000
+    private let samplerate = 32000
+    private let isStereo = true
+    private let audioBitrate = 128 * 1000
+    
     func onConnectionSuccess() {
         print("connection success")
         toastText = "connection success"
@@ -75,7 +83,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
     }
     
     
-    @State private var endpoint = "rtsp://192.168.68.65:8554/live/pedro"
+    @State private var endpoint = "rtsp://192.168.68.59:8554/live/pedro"
     @State private var bStreamText = "Start stream"
     @State private var bRecordText = "Start record"
     @State private var isShowingToast = false
@@ -208,7 +216,7 @@ struct StreamSwiftUIView: View, ConnectChecker {
                     Color.clear
                         .onAppear {
                             rtmpStream = RtspStream(connectChecker: self)
-                            let _ = rtmpStream.prepareAudio(sampleRate: 32000, isStereo: true, bitrate: 128 * 1000) && rtmpStream.prepareVideo(width: 640, height: 480, bitrate: 1200 * 1000)
+                            let _ = rtmpStream.prepareAudio(sampleRate: samplerate, isStereo: isStereo, bitrate: audioBitrate) && rtmpStream.prepareVideo(width: width, height: height, bitrate: videoBitrate, rotation: rotation)
                             rtmpStream.startPreview(view: cameraView)
                         }
                         .onDisappear {
